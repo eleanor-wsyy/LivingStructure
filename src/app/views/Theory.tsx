@@ -9,7 +9,7 @@ import {
   Eye, Layers, ArrowUpRight
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-import langjialiImage from "figma:asset/f7e3018aad1493cfe769b1faa78355dd3d38d0e1.png";
+const langjialiImage = "/images/Boundaries.png";
 
 // --- Data ---
 
@@ -24,22 +24,23 @@ const properties = [
       mechZh: "小尺度中心数量远多于大尺度中心，形成层级深度 H。",
       relEn: "Primarily increases H (Hierarchy) by establishing depth.",
       relZh: "通过建立深度主要增加 H（层级）。",
-      exampleEn: "A large courtyard surrounded by smaller rooms, which have even smaller windows.",
-      exampleZh: "一个被小房间包围的大庭院，房间又有更小的窗户。",
-      imgPos: "https://ibb.co/pvYrDTcg",
-      imgNeg: "https://images.unsplash.com/photo-1763475775795-c0bd560aaeae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtaW5pbWFsaXN0JTIwd2hpdGUlMjBjb25jcmV0ZSUyMHdhbGwlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzcxNjQ5OTUwfDA&ixlib=rb-4.1.0&q=80&w=1080"
+      exampleEn: "The architectural facade in the left image exhibits a rich scaling hierarchy through the use of variably sized windows and brickwork. The fenestration is further subdivided by frames into smaller panes, while the brick surfaces feature subtle textures. This creates a multi-level scalar structure that transitions seamlessly from the overall facade to the windows, subdivisions, bricks, and finally to the micro-textures.In contrast, the facade in the right image lacks such intricate articulation of its windows and wall surfaces. Its overall texture and detailing are relatively monotonous, resulting in a flat scaling hierarchy and a comparatively bland appearance.",
+      exampleZh: "左图展示的建筑立面通过不同大小的窗户和墙面砖块体现了丰富的尺度层次。窗户由窗框进一步划分为小的分格，而砖块表面还有细腻的纹理，形成了从立面整体到窗户、分格、砖块，再到纹理的多重尺度层级。右图的建筑立面缺乏窗户和墙面的细致划分，整体纹理和细节也较为单一，导致其尺度层次单薄，显得较为平淡。",
+      imgPos: "/images/level of scale.png",
+      imgNeg: "/images/LOSNEG.png"
     },
     {
       n: 2, tEn: "Strong Centers", tZh: "强中心",
-      quoteEn: "A center is a region of intensified coherence supported by surrounding centers.",
-      quoteZh: "中心是由周围结构支撑而强化的区域。",
+      quoteEn: "The strength of the centers dictates the cohesion and order of spatial organization.",
+      quoteZh: "中心的强度决定了空间的组织是否紧密有序。",
       mechEn: "Strength depends on relational density (S).",
       mechZh: "强度取决于关系密度 S。",
       relEn: "Primarily increases S (Strength) by intensifying focus.",
       relZh: "通过强化焦点主要增加 S（强度）。",
-      exampleEn: "A main hall in a temple complex that anchors the entire site layout.",
-      exampleZh: "寺庙建筑群中的主殿，锚定整个场地布局。",
-      imgPos: "https://images.unsplash.com/photo-1610650394144-a778795cf585"
+      exampleEn: "The residence in the left image reinforces its 'strong centers' through its spatial configuration. Within each room, the arrangement of furniture establishes local centers, while the overall architecture unfolds around a central courtyard. The courtyard and the main hall serve as the core spaces, fostering closer human connections. Crucially, this centricity is derived not solely from the courtyard itself, but relies on the holistic organization of the adjacent rooms and furnishings. These elements mutually reinforce one another, collectively enhancing the spatial hierarchy.Conversely, the architecture in the right image lacks definitive centers. Its spatial layout is fragmented, leading to dispersed and isolated human activities devoid of organic connection.",
+      exampleZh: "左图的住宅通过空间组织强化了中心性。每个房间内部由家具布局形成局部中心，而整个建筑围绕庭院展开，庭院和大厅成为核心空间，使人们的生活更加紧密联系。这种中心性不仅来自庭院本身，还依赖于周围房间和家具的整体组织，它们相互衬托，共同强化空间的层次感。相比之下，右图的建筑缺乏清晰的中心，空间分散，人们的活动更为松散和孤立，缺少有机的联系。",
+      imgPos: "/images/Strong centers.png",
+      imgNeg: "/images/SCNEG.png"
     },
     {
       n: 3, tEn: "Boundaries", tZh: "边界",
@@ -49,21 +50,23 @@ const properties = [
       mechZh: "层级边界增强空间连续性。",
       relEn: "Increases S (Strength) by containing energy.",
       relZh: "通过包含能量增加 S（强度）。",
-      exampleEn: "Thick walls, arcades, or hedges that define a garden space.",
-      exampleZh: "定义花园空间的厚墙、拱廊或树篱。",
-      imgPos: "https://images.unsplash.com/photo-1770261402245-36f19477f758"
+      exampleEn: "The left image shows the Gwalior Fort in India. The top-level railing acts as a boundary, highlighting the architectural facade as the center while harmonizing the relationship between the sky and the facade. The right image shows a 20th-century apartment building; due to a lack of boundaries, the architecture appears isolated from its surroundings. Boundaries exist not only on the exterior but also permeate through the various hierarchies within the center. In the Gwalior Fort, boundaries are incorporated across all scales—from railings and columns to wall surfaces. Internally, each boundary is composed of even smaller centers and boundaries, progressing hierarchically to achieve a rich and unified whole.",
+      exampleZh: "左图为印度瓜廖尔城堡，顶层的围栏作为边界，凸显了建筑立面这一中心，同时协调了天空与立面的关系。右图为一座20世纪公寓，因缺乏边界，建筑显得孤立于周围环境。边界不仅存在于外部，也贯穿于中心内部的各个等级。在瓜廖尔城堡中，围栏、立柱、墙面等各尺度都包含边界，每个边界内部又由更小的中心和边界组成，层层递进，丰富统一。",
+      imgPos: "/images/Boundaries.png",
+      imgNeg: "/images/BN.png"
     },
     {
       n: 4, tEn: "Alternating Repetition", tZh: "交替重复",
       quoteEn: "Simple repetition is mechanical and lifeless. Living repetition is alternating.",
       quoteZh: "简单的重复是机械且无生命的。有生命的重复是交替的。",
-      mechEn: "The mechanism relies on binary or complex rhythm. Instead of A-A-A-A, the structure uses A-B-A-B.",
-      mechZh: "该机制依赖于二元或复杂的节奏。结构不是 A-A-A-A，而是使用 A-B-A-B。",
+      mechEn: "A special form of alternating repetition refers to the alternating occurrence of two or more vibrant centers, creating a unique rhythm. By mutually accentuating one another, they enhance the overall vitality of the whole.",
+      mechZh: "特殊的“交替重复”指两种或多种富有活力的中心交替出现，形成独特的韵律，彼此衬托，增强整体的生命力。",
       relEn: "Increases H (Hierarchy) through rhythmic complexity.",
       relZh: "通过节奏复杂性增加 H（层级）。",
-      exampleEn: "Columns with intervening statues or windows alternating with wall segments.",
-      exampleZh: "柱子中间有雕像，或窗户与墙段交替。",
-      imgPos: "https://images.unsplash.com/photo-1635305587346-6b2d68f3565b"
+      exampleEn: "Designs featuring alternating repetition follow two principles. First, the substructures participating in the alternation must themselves possess vitality.The left image shows Brunelleschi's Hospital (Ospedale degli Innocenti) in Florence, Italy. On its facade, columns, arches, circular medallions, and intercolumnar spaces alternate. Each substructure is imbued with life, generating an overall vitality through alternating repetition. The right image depicts the colonnade of a modern building; although there is an alternation between the columns and the spaces between them, the overall structure lacks vitality because the substructures are monotonous and mechanical.Furthermore, alternating repetition exists within organizations across different scales. Small-scale substructures form large-scale substructures through alternating repetition, and these large-scale structures construct an even larger whole in a similar manner. In the left image, the arched colonnade and the intercolumnar spaces form a large-scale alternating repetition, while each individual arch creates a small-scale alternating repetition through its convex and concave curved lines. This cross-scale recursive organization ensures that the design is full of vitality at every level.",
+      exampleZh: "具有“交替重复”的设计遵循两个原则。首先，参与交替的子结构本身需要是有活力的。左图为意大利佛罗伦萨布鲁内莱斯基医院，其立面中柱子、圆拱、圆形符号以及柱间空间交替出现，每个子结构都富有生命力，通过交替重复形成整体的活力。右图为某现代建筑的柱廊，尽管存在柱子与柱间空间的交替，但因子结构单调机械，整体显得缺乏活力。此外，“交替重复”存在于不同尺度的组织中。小尺度的子结构通过交替重复形成大尺度的子结构，而大尺度的结构又以类似方式构成更大的整体。左图中拱形柱廊与柱间空间形成大尺度的交替重复，而每个圆拱本身又通过凸起与凹陷的弧形线条在小尺度形成交替重复。这种跨尺度的递归组织，使设计在每个层级都充满生命力。",
+      imgPos: "/images/Alternating repetition.png",
+      imgNeg: "/images/ARNEG.png"
     },
     {
       n: 5, tEn: "Positive Space", tZh: "正空间",
@@ -75,10 +78,11 @@ const properties = [
       relZh: "通过塑造虚空增加 S（强度）。",
       exampleEn: "A public square defined by continuous building facades.",
       exampleZh: "由连续建筑立面定义的公共广场。",
-      imgPos: "https://images.unsplash.com/photo-1598838665060-9a59c9b6683d"
+      imgPos: "/images/Positive space.png",
+      imgNeg: "/images/PSNEG.png"
     },
     {
-      n: 6, tEn: "Good Shape", tZh: "良形",
+      n: 6, tEn: "Good Shape", tZh: "良好形状",
       quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.",
       quoteZh: "生命结构中的每个元素都应该有一个“良形”——简单且连贯。",
       mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).",
@@ -87,22 +91,24 @@ const properties = [
       relZh: "通过几何连贯性增加 S（强度）。",
       exampleEn: "A perfectly proportioned rectangular window or circular arch.",
       exampleZh: "比例完美的矩形窗或圆拱。",
-      imgPos: "https://images.unsplash.com/photo-1758543710327-89e7674894f2"
+      imgPos: "/images/Good shape.png",
+      imgNeg: "/images/GSNEG.png"
     },
     {
-      n: 7, tEn: "Local Symmetries", tZh: "局部对称",
+      n: 7,tEn: "Local Symmetries", tZh: "局部对称",
       quoteEn: "Small parts of the structure should be symmetrical within themselves.",
       quoteZh: "结构的微小部分在自身内部应对称。",
-      mechEn: "The mechanism is the creation of 'sub-centers' through reflection.",
+      mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", 
       mechZh: "该机制是通过反射创建“子中心”。",
       relEn: "Increases S (Strength) by binding centers locally.",
       relZh: "通过局部结合中心增加 S（强度）。",
       exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.",
       exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。",
-      imgPos: "https://images.unsplash.com/photo-1758543710327-89e7674894f2"
+      imgPos: "/images/Local symmetries.png",
+      imgNeg: "/images/LSNEG.png"
     },
     {
-      n: 8, tEn: "Deep Interlock", tZh: "深度嵌合",
+      n: 8,tEn: "Deep interlock and ambiguity", tZh: "深度交织与模糊性",
       quoteEn: "Elements should not simply sit next to each other; they should interlock.",
       quoteZh: "元素不应仅仅彼此相邻；它们应该嵌合。",
       mechEn: "The mechanism uses 'ambiguity of belonging' where material A penetrates material B.",
@@ -111,7 +117,8 @@ const properties = [
       relZh: "通过融合相邻中心增加 S（强度）。",
       exampleEn: "Dove-tail joints in wood or interlocking paving stones.",
       exampleZh: "木材中的燕尾榫或互锁铺路石。",
-      imgPos: "https://images.unsplash.com/photo-1590150392241-a4f05ecdaa3e"
+      imgPos: "/images/Deep interlock and ambiguity.png",
+      imgNeg: "/images/DNEG.png"
     },
     {
       n: 9, tEn: "Contrast", tZh: "对比",
@@ -123,7 +130,8 @@ const properties = [
       relZh: "通过阐明区别增加 S（强度）。",
       exampleEn: "Light against dark, rough stone against smooth plaster.",
       exampleZh: "明与暗，粗糙石头与光滑灰泥。",
-      imgPos: "https://images.unsplash.com/photo-1719985968746-20cfb5634cc9"
+      imgPos: "/images/Contrast.png",
+      imgNeg: "/images/CNEG.png"
     },
     {
       n: 10, tEn: "Gradients", tZh: "渐变",
@@ -135,7 +143,8 @@ const properties = [
       relZh: "通过连接尺度增加 H（层级）。",
       exampleEn: "Steps of a staircase or diminishing sizes of arches.",
       exampleZh: "楼梯的台阶或逐渐缩小的拱门。",
-      imgPos: "https://images.unsplash.com/photo-1770261402245-36f19477f758"
+      imgPos: "/images/Gradients.png",
+      imgNeg: "/images/GRNEG.png"
     },
     {
       n: 11, tEn: "Roughness", tZh: "粗糙性",
@@ -147,10 +156,11 @@ const properties = [
       relZh: "通过适应现实增加 S（强度）。",
       exampleEn: "Hand-laid brick walls with slight irregularities.",
       exampleZh: "手工砌筑的略带不规则的砖墙。",
-      imgPos: "https://images.unsplash.com/photo-1590150392241-a4f05ecdaa3e"
+      imgPos: "/images/Roughness.png",
+      imgNeg: "/images/RNEG.png"
     },
     {
-      n: 12, tEn: "Echoes", tZh: "呼应",
+      n: 12, tEn: "Echoes", tZh: "共鸣",
       quoteEn: "The same structural logic appears at different scales throughout the design.",
       quoteZh: "相同结构逻辑出现在设计的不同尺度中。",
       mechEn: "The mechanism is the use of a 'generative seed' or fractal DNA recursively.",
@@ -159,10 +169,11 @@ const properties = [
       relZh: "通过自相似性增加 H（层级）。",
       exampleEn: "The curve of a dome echoed in the arches below it.",
       exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。",
-      imgPos: "https://images.unsplash.com/photo-1758543710327-89e7674894f2"
+      imgPos: "/images/Echoes.png",
+      imgNeg: "/images/ENEG.png"
     },
     {
-      n: 13, tEn: "The Void", tZh: "空性",
+      n: 13, tEn: "The Void", tZh: "虚空",
       quoteEn: "In the most intense centers, there is often a moment of pure silence.",
       quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。",
       mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.",
@@ -170,11 +181,12 @@ const properties = [
       relEn: "Increases S (Strength) by creating a calm center.",
       relZh: "通过创造平静中心增加 S（强度）。",
       exampleEn: "An empty altar or a quiet central courtyard.",
-      exampleZh: "空的祭坛或安静的中央庭院。",
-      imgPos: "https://images.unsplash.com/photo-1598838665060-9a59c9b6683d"
+      exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。无论宗教建筑还是其他建筑，中心的虚空空间都至关重要，它能平衡嘈杂与宁静，提升空间的舒适性与体验感。",
+      imgPos: "/images/The void.png",
+      imgNeg: "/images/VNEG.png"
     },
     {
-      n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与宁静",
+      n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与内在平静",
       quoteEn: "The form feels calm because everything is exactly where it needs to be.",
       quoteZh: "形式感觉平静，因为一切都在它应该在的地方。",
       mechEn: "The mechanism is the removal of structural noise (Occam's Razor).",
@@ -183,10 +195,11 @@ const properties = [
       relZh: "通过消除摩擦增加 S（强度）。",
       exampleEn: "A Shaker chair or a Zen garden.",
       exampleZh: "震颤派椅子或禅宗花园。",
-      imgPos: "https://images.unsplash.com/photo-1610650394144-a778795cf585"
+      imgPos: "/images/Simplicity and inner calm.png",
+      imgNeg: "/images/SINEG.png"
     },
     {
-      n: 15, tEn: "Not-Separateness", tZh: "不可分离性",
+      n: 15, tEn: "Not-Separateness", tZh: "非分离性",
       quoteEn: "A living structure is not separate from its surroundings; it grows out of them.",
       quoteZh: "生命结构与其周围环境不是分离的；它是从中生长出来的。",
       mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.",
@@ -195,7 +208,8 @@ const properties = [
       relZh: "通过连接到最大整体增加 H（层级）。",
       exampleEn: "A building that steps down the hillside, merging with the terrain.",
       exampleZh: "顺山势而下的建筑，与地形融为一体。",
-      imgPos: "https://images.unsplash.com/photo-1758543710327-89e7674894f2"
+      imgPos: "/images/Not separateness.png",
+      imgNeg: "/images/NSNEG.png"
     }
 ];
 
@@ -730,7 +744,7 @@ export function Theory() {
               </div>
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
-                   <ImageWithFallback src="https://images.unsplash.com/photo-1701463387028-3947648f1337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxQcm9mZXNzb3IlMjBhY2FkZW1pYyUyMHBvcnRyYWl0JTIwYXNpYW4lMjBtYWxlJTIwYmxhY2slMjBhbmQlMjB3aGl0ZXxlbnwxfHx8fDE3NzE2NDkyMzd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Bin Jiang" className="w-full h-full object-cover" />
+                   <ImageWithFallback src="/images/BJ.png" alt="Bin Jiang" className="w-full h-full object-cover" />
                  </div>
                  <div className="text-xs">
                     <div className="font-bold text-stone-900">Prof. Bin Jiang</div>

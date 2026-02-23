@@ -26,7 +26,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
     { id: "library", label: trans.nav.library, icon: LibraryIcon },
-    { id: "about", label: trans.nav.about, icon: Info },
+    
   ];
 
   const appTitle = language === 'zh' ? "活力结构" : "Living Structure";
