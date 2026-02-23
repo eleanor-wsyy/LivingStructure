@@ -64,7 +64,15 @@ export const translations = {
       readAbstract: "Read Abstract",
       communityAnalysis: "Community Analysis",
       communitySubtitle: "Recent anonymous submissions from the research network.",
-      vitalityScore: "Vitality Score"
+      vitalityScore: "Vitality Score",
+      platformStatement: {
+        title: "Understanding Wholeness Through Structure",
+        desc: "This platform explores Living Structure as an aesthetic and architectural principle. It aims to cultivate structural perception and restore a sense of order and inner calm."
+      },
+      featuredConcept: {
+        title: "Featured Concept",
+        button: "Explore in Theory"
+      }
     },
     theory: {
       propertiesTitle: "15 Properties",
@@ -75,6 +83,37 @@ export const translations = {
       high: "High",
       aiInterpretation: "AI Interpretation",
       aiInterpretationPrefix: "Our algorithms detect",
+      origin: {
+        title: "The Origin of Living Structure",
+        content1: "Living Structure originates from Christopher Alexander’s concept of “wholeness” and the 15 structural properties. The theory proposes that vitality is measurable and structurally generated.",
+        content2: "Professor Jiang Bin further developed the theory within the context of Chinese traditional architecture, formulating the mathematical relationship L = S × H.",
+        formulaTitle: "Fundamental Equation",
+        formulaL: "Living Intensity",
+        formulaS: "Structural Coherence",
+        formulaH: "Hierarchical Depth"
+      },
+      aesthetic: {
+        title: "Why Modern Architecture Lost Vitality",
+        p1: "Modernism simplified structure but removed layered hierarchy. Flat repetition replaced recursive centers.",
+        p2: "Ornament was removed instead of structurally integrated, whereas Chinese traditional architecture preserved hierarchical order and recursive centers."
+      },
+      howToSee: {
+        title: "How to Perceive Structure",
+        method1: "Identify Centers",
+        method1Desc: "Look for strong, focal regions that organize space.",
+        method2: "Observe Levels",
+        method2Desc: "Notice the hierarchy of scales from large to small.",
+        method3: "Mutual Reinforcement",
+        method3Desc: "See how centers strengthen each other."
+      },
+      chinese: {
+        title: "Living Structure in Chinese Architecture",
+        intro: "Chinese architecture is a profound embodiment of living order. Through recursive wood joinery (Dougong) and the fractal organization of courtyards, it creates a system where every part supports the whole.",
+        viewAnalysis: "View Structural Analysis",
+        analysisTitle: "Structural Analysis",
+        layerExplainer: "Layered Hierarchy Analysis",
+        toggleCenters: "Highlight Centers"
+      },
       attributes: {
         1: { name: "Levels of Scale", description: "A balanced hierarchy of sizes." },
         2: { name: "Strong Centers", description: "Focal points that organize space." },
@@ -217,7 +256,7 @@ export const translations = {
     },
     discover: {
       title: "测量空间的",
-      titleHighlight: "生命力",
+      titleHighlight: "活力",
       titleSuffix: "",
       subtitle: "活力结构理论的AI解读。量化我们建筑环境中的活力结构。",
       ctaAnalyze: "分析空间",
@@ -230,7 +269,15 @@ export const translations = {
       readAbstract: "阅读摘要",
       communityAnalysis: "社区分析",
       communitySubtitle: "来自研究网络的近期匿名提交。",
-      vitalityScore: "生命力评分"
+      vitalityScore: "活力评分",
+      platformStatement: {
+        title: "通过结构理解整体",
+        desc: "本平台探索活力结构作为一种美学和建筑原则。它旨在培养结构感知，恢复秩序感和内在平静。"
+      },
+      featuredConcept: {
+        title: "精选概念",
+        button: "在理论中探索"
+      }
     },
     theory: {
       propertiesTitle: "15个属性",
@@ -241,6 +288,37 @@ export const translations = {
       high: "高",
       aiInterpretation: "AI 解读",
       aiInterpretationPrefix: "我们的算法通过分析图像输入检测",
+      origin: {
+        title: "活力结构的起源",
+        content1: "活力结构源于克里斯托弗·亚历山大的“整体”概念和15个结构属性。该理论认为活力是可测量的，并且是在结构上生成的。",
+        content2: "江斌教授在中国传统建筑的背景下进一步发展了该理论，提出了数学关系 L = S × H。",
+        formulaTitle: "基本方程",
+        formulaL: "活力强度",
+        formulaS: "结构连贯性",
+        formulaH: "层级深度"
+      },
+      aesthetic: {
+        title: "为何现代建筑失去了活力",
+        p1: "现代主义简化了结构，但去除了层级。平面的重复取代了递归中心。",
+        p2: "装饰被移除而不是在结构上整合，而中国传统建筑保留了层级秩序和递归中心。"
+      },
+      howToSee: {
+        title: "如何感知结构",
+        method1: "识别中心",
+        method1Desc: "寻找组织空间的强焦点区域。",
+        method2: "观察层级",
+        method2Desc: "注意从大到小的尺度层级。",
+        method3: "相互强化",
+        method3Desc: "观察中心如何相互加强。"
+      },
+      chinese: {
+        title: "中国建筑中的活力结构",
+        intro: "中国建筑是活力秩序的深刻体现。通过递归的木结构（斗拱）和庭院的分形组织，它创造了一个每个部分都支持整体的系统。",
+        viewAnalysis: "查看结构分析",
+        analysisTitle: "结构分析",
+        layerExplainer: "层级结构分析",
+        toggleCenters: "高亮中心"
+      },
       attributes: {
         1: { name: "尺度层级 (Levels of Scale)", description: "大小的平衡层级。" },
         2: { name: "强中心 (Strong Centers)", description: "组织空间的焦点。" },
@@ -260,7 +338,7 @@ export const translations = {
       },
       content: {
           levelsOfScale: {
-              interpretation: "“尺度层级”指的是在多个量级上存在的中心。高生命力空间展示了一种分形层级，其中大结构与中等和小的细节相平衡（1:2.7比例）。没有这种比例，空间会感觉压抑（太大）或杂乱（太小）。",
+              interpretation: "“尺度层级”指的是在多个量级上存在的中心。高活力空间展示了一种分形层级，其中大结构与中等和小的细节相平衡（1:2.7比例）。没有这种比例，空间会感觉压抑（太大）或杂乱（太小）。",
               metric: "理想比例因子 (欧拉数)"
           }
       }
@@ -272,7 +350,7 @@ export const translations = {
       uploadTitle: "上传平面图或照片",
       uploadDesc: "拖放文件到此处，或点击浏览。支持 JPG, PNG, PDF。",
       selectFile: "选择文件",
-      analyzingTitle: "分析结构生命力",
+      analyzingTitle: "分析结构活力",
       analyzingDesc: "正在检测中心、边界和对称性...",
       logs: {
         preprocessing: "[OK] 图像预处理完成",
@@ -280,8 +358,8 @@ export const translations = {
         mapped: "[OK] 15个属性映射完成"
       },
       insightTitle: "AI 结构洞察",
-      insightText: "被分析的空间展示了强烈的**局部对称**和**边界**，有助于获得高连贯性得分。然而，**尺度层级**在中频范围内有所欠缺，建议增加中等大小的建筑元素（如柱子、窗格或家具布置）将显著提高生命力得分。",
-      scoreLabel: "生命力评分",
+      insightText: "被分析的空间展示了强烈的**局部对称**和**边界**，有助于获得高连贯性得分。然而，**尺度层级**在中频范围内有所欠缺，建议增加中等大小的建筑元素（如柱子、窗格或家具布置）将显著提高活力得分。",
+      scoreLabel: "活力评分",
       formula: "L = S × H (结构 × 和谐)",
       breakdown: "属性细分",
       downloadReport: "下载完整报告",
@@ -289,30 +367,30 @@ export const translations = {
     },
     practice: {
       title: "具身实践",
-      subtitle: "生命力不仅仅是一个智力概念，更是一种切身体验。使用这些工具来调整你对活力结构的感知。",
+      subtitle: "活力不仅仅是一个智力概念，更是一种切身体验。使用这些工具来调整你对活力结构的感知。",
       breathing: "视觉呼吸",
       breathingInstruction: "让你的呼吸与扩张和收缩的中心同步。扩张时吸气，收缩时呼气。",
       breatheAction: "呼吸...",
       startSession: "开始会话",
       awareness: "空间觉知练习",
       awarenessDesc: "5分钟的引导观察，识别你周围环境中的强中心。",
-      log: "每日生命力日志",
+      log: "每日活力日志",
       logPlaceholder: "你当前的环境让你感觉如何？（例如：平静、警觉、受限...）",
       saveEntry: "保存条目",
       today: "今天"
     },
     construct: {
       title: "结构工作室",
-      subtitle: "探索生命力如何从建筑空间中中心、边界和尺度层级的强化中涌现。",
+      subtitle: "探索活力如何从建筑空间中中心、边界和尺度层级的强化中涌现。",
       initialState: "初始状态",
       emergingOrder: "涌现秩序",
-      vitality: "结构生命力",
+      vitality: "结构活力",
       controls: {
         depth: "层级深度",
         center: "中心强度",
         boundary: "边界清晰度"
       },
-      insight: "随着结构加深，生命力增强。",
+      insight: "随着结构加深，活力增强。",
       insightSub: "秩序不是强加的——它是涌现的。",
       footerPrompt: "“你的中心在哪里？什么在强化它？什么边界在保护它？”"
     },

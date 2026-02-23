@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, Badge } from "@/app/components/ui";
 import { 
   ArrowRight, BookOpen, ScanEye, PenTool, 
@@ -90,31 +90,39 @@ const ProgressIndicator = () => {
 };
 
 const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
+  const { trans, language } = useLanguage();
+  const [randomId, setRandomId] = useState<number>(1);
+
+  useEffect(() => {
+    // Random property between 1 and 15
+    setRandomId(Math.floor(Math.random() * 15) + 1);
+  }, []);
+
+  // Use type assertion or check if key exists
+  const propertyKey = randomId as keyof typeof trans.theory.attributes;
+  const property = trans.theory.attributes[propertyKey] || trans.theory.attributes[1];
+
   return (
     <div className="bg-stone-900 text-stone-50 overflow-hidden relative rounded-sm">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-10 lg:p-16 flex flex-col justify-center relative z-10">
            <div className="mb-6 flex items-center gap-2">
              <Sparkles className="w-4 h-4 text-amber-200" />
-             <span className="text-xs font-bold uppercase tracking-widest text-amber-100">Daily Concept</span>
+             <span className="text-xs font-bold uppercase tracking-widest text-amber-100">{trans.discover.dailyInsight}</span>
            </div>
            
-           <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">Strong Centers</h2>
+           <h2 className="text-4xl md:text-5xl font-serif font-bold text-white mb-6">{property.name}</h2>
            
            <blockquote className="text-xl md:text-2xl font-serif italic text-stone-300 mb-8 leading-relaxed border-l-2 border-stone-700 pl-6">
-             "A center is not a point, but a field of organized space that intensifies life."
+             "{property.description}"
            </blockquote>
            
-           <p className="text-stone-400 mb-10 text-sm leading-relaxed max-w-md">
-             Strong centers are the fundamental building blocks of living structure. They act as anchors that organize the surrounding space, creating hierarchy and coherence.
-           </p>
-
            <Button 
              variant="outline"
              className="w-fit border-stone-600 text-stone-200 hover:bg-stone-800 hover:text-white hover:border-stone-500"
              onClick={() => onNavigate("theory")}
            >
-             Learn More about Centers
+             {trans.discover.featuredConcept?.button || "Explore in Theory"}
            </Button>
         </div>
 
@@ -212,7 +220,7 @@ const InteractivePreview = () => {
       </div>
     </div>
   );
-}
+};
 
 const TheoryFounder = ({ name, role, description, image, align = "left" }: { name: string, role: string, description: string, image: string, align?: "left" | "right" }) => (
   <div className={`flex flex-col md:flex-row items-center gap-8 ${align === "right" ? "md:flex-row-reverse" : ""}`}>
@@ -235,52 +243,51 @@ export function Discover({ onNavigate }: DiscoverProps) {
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-24">
       
-      {/* 1. Hero Section (Bilingual) */}
-      <section className="relative pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center border-b border-stone-200 mb-16">
+      {/* 1. Manifesto Block (Refined Hero) */}
+      <section className="pt-32 pb-32 px-4 max-w-2xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.8 }}
         >
-          <div className="inline-block mb-6 px-3 py-1 bg-stone-100 text-stone-500 text-[10px] font-bold uppercase tracking-[0.2em] rounded-full">
-            Living Structure Studio
-          </div>
-          <h1 className="text-5xl md:text-7xl font-serif font-bold text-stone-900 tracking-tight mb-2">
-            活力结构
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 tracking-tight mb-6">
+            Understanding Wholeness Through Structure
           </h1>
-          <h2 className="text-2xl md:text-3xl font-serif text-stone-400 font-light italic mb-8">
-            Living Structure
-          </h2>
-          <p className="text-lg md:text-xl text-stone-600 font-light max-w-2xl mx-auto leading-relaxed">
-            AI 视角下的中国传统建筑之美
-            <br/>
-            <span className="text-sm text-stone-400 mt-2 block font-sans">
-              The Beauty of Traditional Chinese Architecture from an AI Perspective
-            </span>
-          </p>
+          <div className="space-y-2 mb-10">
+            <p className="text-lg text-stone-600 font-light leading-relaxed">
+              Living Structure explores hierarchical order in architecture.
+            </p>
+            <p className="text-lg text-stone-600 font-light leading-relaxed">
+              This platform presents its theory and architectural embodiment.
+            </p>
+          </div>
+          <Button 
+            onClick={() => onNavigate("theory")}
+            variant="outline"
+            className="px-8 py-6 text-sm uppercase tracking-widest border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white transition-all rounded-sm"
+          >
+            Explore Theory
+          </Button>
         </motion.div>
       </section>
 
-      {/* 2. Research Context */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-24">
-        <div className="bg-stone-50 border border-stone-200 p-8 md:p-12 relative">
-          <Quote className="absolute top-8 left-8 w-8 h-8 text-stone-200" />
+      {/* 2. Platform Statement (Simplified) */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-32">
+        <div className="bg-stone-50 border border-stone-200 p-12 md:p-16 relative">
+          <Quote className="absolute top-8 left-8 w-6 h-6 text-stone-300" />
           <div className="relative z-10 text-center space-y-6">
-            <p className="text-lg font-serif text-stone-800 leading-relaxed">
-              Based on Professor Bin Jiang's <span className="font-bold">Living Structure Theory</span> (L = S × H), this project explores the quantitative beauty of space. By integrating traditional Chinese architectural wisdom—such as the fractal complexity of Dougong brackets and the spatial harmony of courtyards—we bridge ancient aesthetics with modern complexity science.
-            </p>
-            <p className="text-sm text-stone-500 font-light leading-relaxed max-w-3xl mx-auto">
-              本项目基于江斌教授的“生命结构理论”（L = S × H），探索空间的定量之美。通过融合中国传统建筑智慧——如斗拱的分形复杂性和庭院的空间和谐——我们将古代美学与现代复杂性科学连接起来。
+            <p className="text-lg font-serif text-stone-800 leading-relaxed italic max-w-2xl mx-auto">
+              {trans.discover.platformStatement?.desc || "This platform explores Living Structure as an aesthetic and architectural principle. It aims to cultivate structural perception and restore a sense of order and inner calm."}
             </p>
           </div>
         </div>
       </section>
 
       {/* 3. Theory Founders */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto mb-24 space-y-16">
-        <div className="text-center mb-12">
+      <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto mb-32 space-y-20">
+        <div className="text-center mb-16">
           <h2 className="text-3xl font-serif font-bold text-stone-900">Theory Founders</h2>
-          <p className="text-stone-400 text-sm mt-2 font-mono uppercase tracking-widest">Pioneers of Structural Wholeness</p>
+          <p className="text-stone-400 text-xs mt-3 font-mono uppercase tracking-widest">Pioneers of Structural Wholeness</p>
         </div>
         
         <TheoryFounder 
@@ -291,7 +298,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           align="left"
         />
         
-        <div className="w-24 h-px bg-stone-200 mx-auto" />
+        <div className="w-16 h-px bg-stone-200 mx-auto" />
 
         <TheoryFounder 
           name="Prof. Bin Jiang"
@@ -303,13 +310,13 @@ export function Discover({ onNavigate }: DiscoverProps) {
       </section>
 
       {/* 4. Quick Start Dashboard */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-20">
-        <div className="flex items-center gap-4 mb-8">
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
+        <div className="flex items-center gap-4 mb-12">
           <div className="h-px bg-stone-200 flex-1" />
-          <h2 className="text-xl font-serif font-bold text-stone-900 uppercase tracking-widest">Start Exploring</h2>
+          <h2 className="text-sm font-serif font-bold text-stone-400 uppercase tracking-widest">Start Exploring</h2>
           <div className="h-px bg-stone-200 flex-1" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <QuickStartCard 
             title="Learn Theory"
             description="Master the 15 fundamental properties of living structure through interactive definitions and case studies."
@@ -338,36 +345,36 @@ export function Discover({ onNavigate }: DiscoverProps) {
       <ProgressIndicator />
 
       {/* 6. Featured Concept */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="mb-12 flex items-baseline justify-between">
-           <h2 className="text-3xl font-serif font-bold text-stone-900">Featured Concept</h2>
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="mb-16 flex items-baseline justify-between">
+           <h2 className="text-3xl font-serif font-bold text-stone-900">{trans.discover.featuredConcept?.title || "Featured Concept"}</h2>
            <button 
              onClick={() => onNavigate("theory")}
-             className="text-stone-500 hover:text-stone-900 text-sm font-medium flex items-center gap-2 transition-colors"
+             className="text-stone-400 hover:text-stone-900 text-xs font-medium uppercase tracking-widest flex items-center gap-2 transition-colors"
            >
-             View All 15 Properties <ChevronRight className="w-4 h-4" />
+             View All 15 Properties <ChevronRight className="w-3 h-3" />
            </button>
         </div>
         <FeaturedConcept onNavigate={onNavigate} />
       </section>
 
       {/* 7. Interactive Preview */}
-      <section className="pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="mb-12">
+      <section className="pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="mb-16">
            <h2 className="text-3xl font-serif font-bold text-stone-900">Interactive Preview</h2>
-           <p className="text-stone-500 mt-2">Test your intuition before diving deep.</p>
+           <p className="text-stone-500 mt-2 font-light">Test your intuition before diving deep.</p>
         </div>
         <InteractivePreview />
       </section>
 
       {/* 8. Footer Quote (Preserved) */}
-      <section className="border-t border-stone-200 bg-white py-16 text-center">
+      <section className="border-t border-stone-200 bg-white py-24 text-center">
         <div className="max-w-3xl mx-auto px-4">
-          <Quote className="h-8 w-8 text-stone-300 mx-auto mb-6" />
-          <p className="text-xl font-serif italic text-stone-800 leading-relaxed mb-4">
+          <Quote className="h-6 w-6 text-stone-300 mx-auto mb-8" />
+          <p className="text-xl font-serif italic text-stone-800 leading-relaxed mb-6">
             "We must learn to see the world not as a collection of things, but as a structure of centers."
           </p>
-          <div className="text-sm font-bold text-stone-400 uppercase tracking-widest">
+          <div className="text-xs font-bold text-stone-400 uppercase tracking-widest">
             Christopher Alexander
           </div>
         </div>
