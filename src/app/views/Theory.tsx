@@ -735,7 +735,7 @@ export function Theory() {
            <div className="flex gap-8 border-t border-stone-100 pt-8">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
-                   <ImageWithFallback src="https://images.unsplash.com/photo-1630756408085-ee4db9767669?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDaHJpc3RvcGhlciUyMEFsZXhhbmRlciUyMGFyY2hpdGVjdCUyMHBvcnRyYWl0JTIwYmxhY2slMjBhbmQlMjB3aGl0ZXxlbnwxfHx8fDE3NzE2NDkyMzZ8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="C. Alexander" className="w-full h-full object-cover" />
+                   <ImageWithFallback src="/images/A.png" alt="C. Alexander" className="w-full h-full object-cover" />
                  </div>
                  <div className="text-xs">
                     <div className="font-bold text-stone-900">Christopher Alexander</div>
