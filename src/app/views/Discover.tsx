@@ -422,15 +422,15 @@ export function Discover({ onNavigate }: DiscoverProps) {
           roleZh="建筑师与设计理论家"
           descEn="Renowned for 'A Pattern Language' and 'The Nature of Order'. He identified the 15 fundamental properties of living structures, proposing that space itself has a degree of life derived from geometric coherence."
           descZh="以《建筑模式语言》和《秩序的本质》闻名于世。他界定了活力结构的15个基本属性，提出空间本身具有一种源于几何连贯性的‘生命力’。"
-          image="https://images.unsplash.com/photo-1630756408085-ee4db9767669?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDaHJpc3RvcGhlciUyMEFsZXhhbmRlciUyMGFyY2hpdGVjdCUyMHBvcnRyYWl0JTIwYmxhY2slMjBhbmQlMjB3aGl0ZXxlbnwxfHx8fDE3NzE2NDkyMzZ8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+          image="/images/A.png"
           align="left"
         />
         
         <div className="w-16 h-px bg-stone-200 mx-auto" />
 
         <TheoryFounder 
-          nameEn="Prof. Bin Jiang"
-          nameZh="江斌教授 (Prof. Bin Jiang)"
+          nameEn="Professor Bin Jiang"
+          nameZh="江斌教授 (Professor Bin Jiang)"
           roleEn="Professor of Geo-Informatics"
           roleZh="地理信息科学教授"
           descEn="Creator of the 'Living Structure' mathematical framework (L = S × H). His work transforms Alexander's qualitative concepts into computable metrics, utilizing topological analysis and head/tail breaks to quantify structural beauty."
