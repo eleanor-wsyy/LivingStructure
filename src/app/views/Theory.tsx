@@ -747,7 +747,7 @@ export function Theory() {
                    <ImageWithFallback src="/images/BJ.png" alt="Bin Jiang" className="w-full h-full object-cover" />
                  </div>
                  <div className="text-xs">
-                    <div className="font-bold text-stone-900">Prof. Bin Jiang</div>
+                    <div className="font-bold text-stone-900">Professor Bin Jiang</div>
                     <div className="text-stone-400">Living Structure</div>
                  </div>
               </div>
