@@ -6,7 +6,7 @@ import {
   ChevronDown, ArrowRight, ArrowLeft, Quote, Info, Check, X, 
   Minus, Plus, Search, MapPin, Calendar, Activity, BarChart3,
   Columns, ScanLine, Maximize, MoveHorizontal, Divide,
-  Eye, Layers, ArrowUpRight
+  Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 const langjialiImage = "/images/Boundaries.png";
@@ -24,10 +24,13 @@ const properties = [
       mechZh: "小尺度中心数量远多于大尺度中心，形成层级深度 H。",
       relEn: "Primarily increases H (Hierarchy) by establishing depth.",
       relZh: "通过建立深度主要增加 H（层级）。",
+      natureEn: "An oak tree shows distinct levels: the massive trunk, large branches, smaller boughs, twigs, and finally the leaves and their veins.",
+      natureZh: "一棵橡树展现了清晰的层级：粗壮的树干、大树枝、小树枝、细枝，最后是树叶和叶脉。",
       exampleEn: "The architectural facade in the left image exhibits a rich scaling hierarchy through the use of variably sized windows and brickwork. The fenestration is further subdivided by frames into smaller panes, while the brick surfaces feature subtle textures. This creates a multi-level scalar structure that transitions seamlessly from the overall facade to the windows, subdivisions, bricks, and finally to the micro-textures.In contrast, the facade in the right image lacks such intricate articulation of its windows and wall surfaces. Its overall texture and detailing are relatively monotonous, resulting in a flat scaling hierarchy and a comparatively bland appearance.",
       exampleZh: "左图展示的建筑立面通过不同大小的窗户和墙面砖块体现了丰富的尺度层次。窗户由窗框进一步划分为小的分格，而砖块表面还有细腻的纹理，形成了从立面整体到窗户、分格、砖块，再到纹理的多重尺度层级。右图的建筑立面缺乏窗户和墙面的细致划分，整体纹理和细节也较为单一，导致其尺度层次单薄，显得较为平淡。",
       imgPos: "/images/level of scale.png",
-      imgNeg: "/images/LOSNEG.png"
+      imgNeg: "/images/LOSNEG.png",
+      bookImg: "/images/alexander/scale-nature.jpg" // 替换为《秩序的本质》原著插图
     },
     {
       n: 2, tEn: "Strong Centers", tZh: "强中心",
@@ -37,10 +40,13 @@ const properties = [
       mechZh: "强度取决于关系密度 S。",
       relEn: "Primarily increases S (Strength) by intensifying focus.",
       relZh: "通过强化焦点主要增加 S（强度）。",
+      natureEn: "A sunflower head, or the eye of a hurricane, acting as a powerful focal point that defines everything around it.",
+      natureZh: "向日葵的花盘，或是飓风的风眼，作为强大的焦点定义了周围的一切。",
       exampleEn: "The residence in the left image reinforces its 'strong centers' through its spatial configuration. Within each room, the arrangement of furniture establishes local centers, while the overall architecture unfolds around a central courtyard. The courtyard and the main hall serve as the core spaces, fostering closer human connections. Crucially, this centricity is derived not solely from the courtyard itself, but relies on the holistic organization of the adjacent rooms and furnishings. These elements mutually reinforce one another, collectively enhancing the spatial hierarchy.Conversely, the architecture in the right image lacks definitive centers. Its spatial layout is fragmented, leading to dispersed and isolated human activities devoid of organic connection.",
       exampleZh: "左图的住宅通过空间组织强化了中心性。每个房间内部由家具布局形成局部中心，而整个建筑围绕庭院展开，庭院和大厅成为核心空间，使人们的生活更加紧密联系。这种中心性不仅来自庭院本身，还依赖于周围房间和家具的整体组织，它们相互衬托，共同强化空间的层次感。相比之下，右图的建筑缺乏清晰的中心，空间分散，人们的活动更为松散和孤立，缺少有机的联系。",
       imgPos: "/images/Strong centers.png",
-      imgNeg: "/images/SCNEG.png"
+      imgNeg: "/images/SCNEG.png",
+      bookImg: "/images/alexander/strong-center.jpg"
     },
     {
       n: 3, tEn: "Boundaries", tZh: "边界",
@@ -50,10 +56,13 @@ const properties = [
       mechZh: "层级边界增强空间连续性。",
       relEn: "Increases S (Strength) by containing energy.",
       relZh: "通过包含能量增加 S（强度）。",
+      natureEn: "The membrane of a cell, or the shoreline where a river meets the land.",
+      natureZh: "细胞的细胞膜，或是河流与陆地交界的海岸线。",
       exampleEn: "The left image shows the Gwalior Fort in India. The top-level railing acts as a boundary, highlighting the architectural facade as the center while harmonizing the relationship between the sky and the facade. The right image shows a 20th-century apartment building; due to a lack of boundaries, the architecture appears isolated from its surroundings. Boundaries exist not only on the exterior but also permeate through the various hierarchies within the center. In the Gwalior Fort, boundaries are incorporated across all scales—from railings and columns to wall surfaces. Internally, each boundary is composed of even smaller centers and boundaries, progressing hierarchically to achieve a rich and unified whole.",
       exampleZh: "左图为印度瓜廖尔城堡，顶层的围栏作为边界，凸显了建筑立面这一中心，同时协调了天空与立面的关系。右图为一座20世纪公寓，因缺乏边界，建筑显得孤立于周围环境。边界不仅存在于外部，也贯穿于中心内部的各个等级。在瓜廖尔城堡中，围栏、立柱、墙面等各尺度都包含边界，每个边界内部又由更小的中心和边界组成，层层递进，丰富统一。",
       imgPos: "/images/Boundaries.png",
-      imgNeg: "/images/BN.png"
+      imgNeg: "/images/BN.png",
+      bookImg: "/images/alexander/boundaries.jpg"
     },
     {
       n: 4, tEn: "Alternating Repetition", tZh: "交替重复",
@@ -63,154 +72,27 @@ const properties = [
       mechZh: "特殊的“交替重复”指两种或多种富有活力的中心交替出现，形成独特的韵律，彼此衬托，增强整体的生命力。",
       relEn: "Increases H (Hierarchy) through rhythmic complexity.",
       relZh: "通过节奏复杂性增加 H（层级）。",
+      natureEn: "The alternating pattern of petals and sepals in a flower, or the rhythmic spacing of ripples on water.",
+      natureZh: "花朵中花瓣和萼片的交替图案，或是水面上涟漪的节奏间距。",
       exampleEn: "Designs featuring alternating repetition follow two principles. First, the substructures participating in the alternation must themselves possess vitality.The left image shows Brunelleschi's Hospital (Ospedale degli Innocenti) in Florence, Italy. On its facade, columns, arches, circular medallions, and intercolumnar spaces alternate. Each substructure is imbued with life, generating an overall vitality through alternating repetition. The right image depicts the colonnade of a modern building; although there is an alternation between the columns and the spaces between them, the overall structure lacks vitality because the substructures are monotonous and mechanical.Furthermore, alternating repetition exists within organizations across different scales. Small-scale substructures form large-scale substructures through alternating repetition, and these large-scale structures construct an even larger whole in a similar manner. In the left image, the arched colonnade and the intercolumnar spaces form a large-scale alternating repetition, while each individual arch creates a small-scale alternating repetition through its convex and concave curved lines. This cross-scale recursive organization ensures that the design is full of vitality at every level.",
       exampleZh: "具有“交替重复”的设计遵循两个原则。首先，参与交替的子结构本身需要是有活力的。左图为意大利佛罗伦萨布鲁内莱斯基医院，其立面中柱子、圆拱、圆形符号以及柱间空间交替出现，每个子结构都富有生命力，通过交替重复形成整体的活力。右图为某现代建筑的柱廊，尽管存在柱子与柱间空间的交替，但因子结构单调机械，整体显得缺乏活力。此外，“交替重复”存在于不同尺度的组织中。小尺度的子结构通过交替重复形成大尺度的子结构，而大尺度的结构又以类似方式构成更大的整体。左图中拱形柱廊与柱间空间形成大尺度的交替重复，而每个圆拱本身又通过凸起与凹陷的弧形线条在小尺度形成交替重复。这种跨尺度的递归组织，使设计在每个层级都充满生命力。",
       imgPos: "/images/Alternating repetition.png",
-      imgNeg: "/images/ARNEG.png"
+      imgNeg: "/images/ARNEG.png",
+      bookImg: "/images/alexander/placeholder.jpg"
     },
-    {
-      n: 5, tEn: "Positive Space", tZh: "正空间",
-      quoteEn: "Space is not merely the residue between objects but a distinct entity.",
-      quoteZh: "空间不仅仅是物体之间的残留物，而是一个独立的实体。",
-      mechEn: "The mechanism for creating positive space is enclosure and convexity.",
-      mechZh: "创造正空间的机制是围合和凸性。",
-      relEn: "Increases S (Strength) by shaping the void.",
-      relZh: "通过塑造虚空增加 S（强度）。",
-      exampleEn: "A public square defined by continuous building facades.",
-      exampleZh: "由连续建筑立面定义的公共广场。",
-      imgPos: "/images/Positive space.png",
-      imgNeg: "/images/PSNEG.png"
-    },
-    {
-      n: 6, tEn: "Good Shape", tZh: "良好形状",
-      quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.",
-      quoteZh: "生命结构中的每个元素都应该有一个“良形”——简单且连贯。",
-      mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).",
-      mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。",
-      relEn: "Increases S (Strength) through geometric coherence.",
-      relZh: "通过几何连贯性增加 S（强度）。",
-      exampleEn: "A perfectly proportioned rectangular window or circular arch.",
-      exampleZh: "比例完美的矩形窗或圆拱。",
-      imgPos: "/images/Good shape.png",
-      imgNeg: "/images/GSNEG.png"
-    },
-    {
-      n: 7,tEn: "Local Symmetries", tZh: "局部对称",
-      quoteEn: "Small parts of the structure should be symmetrical within themselves.",
-      quoteZh: "结构的微小部分在自身内部应对称。",
-      mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", 
-      mechZh: "该机制是通过反射创建“子中心”。",
-      relEn: "Increases S (Strength) by binding centers locally.",
-      relZh: "通过局部结合中心增加 S（强度）。",
-      exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.",
-      exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。",
-      imgPos: "/images/Local symmetries.png",
-      imgNeg: "/images/LSNEG.png"
-    },
-    {
-      n: 8,tEn: "Deep interlock and ambiguity", tZh: "深度交织与模糊性",
-      quoteEn: "Elements should not simply sit next to each other; they should interlock.",
-      quoteZh: "元素不应仅仅彼此相邻；它们应该嵌合。",
-      mechEn: "The mechanism uses 'ambiguity of belonging' where material A penetrates material B.",
-      mechZh: "该机制利用“归属的模糊性”，即材料 A 穿透材料 B。",
-      relEn: "Increases S (Strength) by fusing adjacent centers.",
-      relZh: "通过融合相邻中心增加 S（强度）。",
-      exampleEn: "Dove-tail joints in wood or interlocking paving stones.",
-      exampleZh: "木材中的燕尾榫或互锁铺路石。",
-      imgPos: "/images/Deep interlock and ambiguity.png",
-      imgNeg: "/images/DNEG.png"
-    },
-    {
-      n: 9, tEn: "Contrast", tZh: "对比",
-      quoteEn: "Life requires difference. Distinct parts should be visibly different in character.",
-      quoteZh: "生命需要差异。独特部分在特征上应明显不同。",
-      mechEn: "The mechanism is the unification of opposites, enhancing both qualities.",
-      mechZh: "机制是对立面的统一，增强了两种特质。",
-      relEn: "Increases S (Strength) by clarifying distinction.",
-      relZh: "通过阐明区别增加 S（强度）。",
-      exampleEn: "Light against dark, rough stone against smooth plaster.",
-      exampleZh: "明与暗，粗糙石头与光滑灰泥。",
-      imgPos: "/images/Contrast.png",
-      imgNeg: "/images/CNEG.png"
-    },
-    {
-      n: 10, tEn: "Gradients", tZh: "渐变",
-      quoteEn: "A quality should slowly change across space to soften harshness.",
-      quoteZh: "一种特质应该在空间中缓慢变化以柔化严酷。",
-      mechEn: "The mechanism is the serialized progression of properties (A1, A2, A3...).",
-      mechZh: "机制是属性的序列化推进（A1, A2, A3...）。",
-      relEn: "Increases H (Hierarchy) by connecting scales.",
-      relZh: "通过连接尺度增加 H（层级）。",
-      exampleEn: "Steps of a staircase or diminishing sizes of arches.",
-      exampleZh: "楼梯的台阶或逐渐缩小的拱门。",
-      imgPos: "/images/Gradients.png",
-      imgNeg: "/images/GRNEG.png"
-    },
-    {
-      n: 11, tEn: "Roughness", tZh: "粗糙性",
-      quoteEn: "True order is not perfect; it is rough and adaptive to local conditions.",
-      quoteZh: "真正的秩序不是完美的；它是粗糙的且适应局部条件。",
-      mechEn: "The mechanism is local relaxation of the grid to minimize tension.",
-      mechZh: "机制是网格的局部松弛以最小化张力。",
-      relEn: "Increases S (Strength) by adapting to reality.",
-      relZh: "通过适应现实增加 S（强度）。",
-      exampleEn: "Hand-laid brick walls with slight irregularities.",
-      exampleZh: "手工砌筑的略带不规则的砖墙。",
-      imgPos: "/images/Roughness.png",
-      imgNeg: "/images/RNEG.png"
-    },
-    {
-      n: 12, tEn: "Echoes", tZh: "共鸣",
-      quoteEn: "The same structural logic appears at different scales throughout the design.",
-      quoteZh: "相同结构逻辑出现在设计的不同尺度中。",
-      mechEn: "The mechanism is the use of a 'generative seed' or fractal DNA recursively.",
-      mechZh: "机制是递归使用“生成种子”或分形 DNA。",
-      relEn: "Increases H (Hierarchy) through self-similarity.",
-      relZh: "通过自相似性增加 H（层级）。",
-      exampleEn: "The curve of a dome echoed in the arches below it.",
-      exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。",
-      imgPos: "/images/Echoes.png",
-      imgNeg: "/images/ENEG.png"
-    },
-    {
-      n: 13, tEn: "The Void", tZh: "虚空",
-      quoteEn: "In the most intense centers, there is often a moment of pure silence.",
-      quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。",
-      mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.",
-      mechZh: "机制是特意保留一个由结构包围的空中心。",
-      relEn: "Increases S (Strength) by creating a calm center.",
-      relZh: "通过创造平静中心增加 S（强度）。",
-      exampleEn: "An empty altar or a quiet central courtyard.",
-      exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。无论宗教建筑还是其他建筑，中心的虚空空间都至关重要，它能平衡嘈杂与宁静，提升空间的舒适性与体验感。",
-      imgPos: "/images/The void.png",
-      imgNeg: "/images/VNEG.png"
-    },
-    {
-      n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与内在平静",
-      quoteEn: "The form feels calm because everything is exactly where it needs to be.",
-      quoteZh: "形式感觉平静，因为一切都在它应该在的地方。",
-      mechEn: "The mechanism is the removal of structural noise (Occam's Razor).",
-      mechZh: "机制是消除结构噪音（奥卡姆剃刀）。",
-      relEn: "Increases S (Strength) by removing friction.",
-      relZh: "通过消除摩擦增加 S（强度）。",
-      exampleEn: "A Shaker chair or a Zen garden.",
-      exampleZh: "震颤派椅子或禅宗花园。",
-      imgPos: "/images/Simplicity and inner calm.png",
-      imgNeg: "/images/SINEG.png"
-    },
-    {
-      n: 15, tEn: "Not-Separateness", tZh: "非分离性",
-      quoteEn: "A living structure is not separate from its surroundings; it grows out of them.",
-      quoteZh: "生命结构与其周围环境不是分离的；它是从中生长出来的。",
-      mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.",
-      mechZh: "机制是通过相互渗透模糊外边界。",
-      relEn: "Increases H (Hierarchy) by connecting to the largest whole.",
-      relZh: "通过连接到最大整体增加 H（层级）。",
-      exampleEn: "A building that steps down the hillside, merging with the terrain.",
-      exampleZh: "顺山势而下的建筑，与地形融为一体。",
-      imgPos: "/images/Not separateness.png",
-      imgNeg: "/images/NSNEG.png"
-    }
+    // 为保持代码简洁，这里略写 5-15，你只需按照上面 1-4 的格式，补全 natureEn, natureZh 和 bookImg 即可。
+    // 为了让代码不报错，我补充了剩余的基本结构：
+    { n: 5, tEn: "Positive Space", tZh: "正空间", quoteEn: "Space is not merely the residue between objects but a distinct entity.", quoteZh: "空间不仅仅是物体之间的残留物，而是一个独立的实体。", mechEn: "The mechanism for creating positive space is enclosure and convexity.", mechZh: "创造正空间的机制是围合和凸性。", relEn: "Increases S (Strength) by shaping the void.", relZh: "通过塑造虚空增加 S（强度）。", natureEn: "Nature avoids 'leftover' spaces; even the empty space between branches has a distinct shape.", natureZh: "大自然避免“多余”的空间；即使是树枝间的空隙也有清晰的形状。", exampleEn: "A public square defined by continuous building facades.", exampleZh: "由连续建筑立面定义的公共广场。", imgPos: "/images/Positive space.png", imgNeg: "/images/PSNEG.png", bookImg: "" },
+    { n: 6, tEn: "Good Shape", tZh: "良好形状", quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.", quoteZh: "生命结构中的每个元素都应该有一个“良形”——简单且连贯。", mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).", mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。", relEn: "Increases S (Strength) through geometric coherence.", relZh: "通过几何连贯性增加 S（强度）。", natureEn: "A water drop or a river stone, worn into an elemental and harmonious shape.", natureZh: "水滴或河石，被磨成了基本且和谐的形状。", exampleEn: "A perfectly proportioned rectangular window or circular arch.", exampleZh: "比例完美的矩形窗或圆拱。", imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "" },
+    { n: 7, tEn: "Local Symmetries", tZh: "局部对称", quoteEn: "Small parts of the structure should be symmetrical within themselves.", quoteZh: "结构的微小部分在自身内部应对称。", mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", mechZh: "该机制是通过反射创建“子中心”。", relEn: "Increases S (Strength) by binding centers locally.", relZh: "通过局部结合中心增加 S（强度）。", natureEn: "Leaves, crystals, and animal faces possess striking local symmetry despite global variation.", natureZh: "尽管整体有变化，树叶、水晶和动物面部都具有惊人的局部对称性。", exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.", exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。", imgPos: "/images/Local symmetries.png", imgNeg: "/images/LSNEG.png", bookImg: "" },
+    { n: 8, tEn: "Deep Interlock and Ambiguity", tZh: "深度交织与模糊性", quoteEn: "Elements should not simply sit next to each other; they should interlock.", quoteZh: "元素不应仅仅彼此相邻；它们应该嵌合。", mechEn: "The mechanism uses 'ambiguity of belonging' where material A penetrates material B.", mechZh: "该机制利用“归属的模糊性”，即材料 A 穿透材料 B。", relEn: "Increases S (Strength) by fusing adjacent centers.", relZh: "通过融合相邻中心增加 S（强度）。", natureEn: "The jagged interlocking of continental plates or roots winding through rocks.", natureZh: "大陆板块的锯齿状交错，或是盘绕穿过岩石的树根。", exampleEn: "Dove-tail joints in wood or interlocking paving stones.", exampleZh: "木材中的燕尾榫或互锁铺路石。", imgPos: "/images/Deep interlock and ambiguity.png", imgNeg: "/images/DNEG.png", bookImg: "" },
+    { n: 9, tEn: "Contrast", tZh: "对比", quoteEn: "Life requires difference. Distinct parts should be visibly different in character.", quoteZh: "生命需要差异。独特部分在特征上应明显不同。", mechEn: "The mechanism is the unification of opposites, enhancing both qualities.", mechZh: "机制是对立面的统一，增强了两种特质。", relEn: "Increases S (Strength) by clarifying distinction.", relZh: "通过阐明区别增加 S（强度）。", natureEn: "The bright bloom of a flower against dark foliage, or stark shadows on a canyon wall.", natureZh: "深色树叶衬托下明亮的花朵，或峡谷崖壁上鲜明的阴影。", exampleEn: "Light against dark, rough stone against smooth plaster.", exampleZh: "明与暗，粗糙石头与光滑灰泥。", imgPos: "/images/Contrast.png", imgNeg: "/images/CNEG.png", bookImg: "" },
+    { n: 10, tEn: "Gradients", tZh: "渐变", quoteEn: "A quality should slowly change across space to soften harshness.", quoteZh: "一种特质应该在空间中缓慢变化以柔化严酷。", mechEn: "The mechanism is the serialized progression of properties (A1, A2, A3...).", mechZh: "机制是属性的序列化推进（A1, A2, A3...）。", relEn: "Increases H (Hierarchy) by connecting scales.", relZh: "通过连接尺度增加 H（层级）。", natureEn: "The gradual thinning of a mountain atmosphere, or the color shift in a sunset.", natureZh: "高山大气的逐渐稀薄，或是日落时的色彩过渡。", exampleEn: "Steps of a staircase or diminishing sizes of arches.", exampleZh: "楼梯的台阶或逐渐缩小的拱门。", imgPos: "/images/Gradients.png", imgNeg: "/images/GRNEG.png", bookImg: "" },
+    { n: 11, tEn: "Roughness", tZh: "粗糙性", quoteEn: "True order is not perfect; it is rough and adaptive to local conditions.", quoteZh: "真正的秩序不是完美的；它是粗糙的且适应局部条件。", mechEn: "The mechanism is local relaxation of the grid to minimize tension.", mechZh: "机制是网格的局部松弛以最小化张力。", relEn: "Increases S (Strength) by adapting to reality.", relZh: "通过适应现实增加 S（强度）。", natureEn: "Tree bark, mountain ridges, and coastlines derive their beauty from their unpolished, fractal roughness.", natureZh: "树皮、山脊和海岸线的美源于它们未经打磨的分形粗糙感。", exampleEn: "Hand-laid brick walls with slight irregularities.", exampleZh: "手工砌筑的略带不规则的砖墙。", imgPos: "/images/Roughness.png", imgNeg: "/images/RNEG.png", bookImg: "" },
+    { n: 12, tEn: "Echoes", tZh: "共鸣", quoteEn: "The same structural logic appears at different scales throughout the design.", quoteZh: "相同结构逻辑出现在设计的不同尺度中。", mechEn: "The mechanism is the use of a 'generative seed' or fractal DNA recursively.", mechZh: "机制是递归使用“生成种子”或分形 DNA。", relEn: "Increases H (Hierarchy) through self-similarity.", relZh: "通过自相似性增加 H（层级）。", natureEn: "The branching of a river delta echoing the veins in a single leaf.", natureZh: "河流三角洲的分支与单片树叶的叶脉形成呼应。", exampleEn: "The curve of a dome echoed in the arches below it.", exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。", imgPos: "/images/Echoes.png", imgNeg: "/images/ENEG.png", bookImg: "" },
+    { n: 13, tEn: "The Void", tZh: "虚空", quoteEn: "In the most intense centers, there is often a moment of pure silence.", quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。", mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.", mechZh: "机制是特意保留一个由结构包围的空中心。", relEn: "Increases S (Strength) by creating a calm center.", relZh: "通过创造平静中心增加 S（强度）。", natureEn: "A clearing in a dense forest, or a perfectly still alpine lake.", natureZh: "茂密森林中的林间空地，或是一片平静的高山湖泊。", exampleEn: "An empty altar or a quiet central courtyard.", exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。", imgPos: "/images/The void.png", imgNeg: "/images/VNEG.png", bookImg: "" },
+    { n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与内在平静", quoteEn: "The form feels calm because everything is exactly where it needs to be.", quoteZh: "形式感觉平静，因为一切都在它应该在的地方。", mechEn: "The mechanism is the removal of structural noise (Occam's Razor).", mechZh: "机制是消除结构噪音（奥卡姆剃刀）。", relEn: "Increases S (Strength) by removing friction.", relZh: "通过消除摩擦增加 S（强度）。", natureEn: "A smooth expanse of untouched snow, or a clear blue sky.", natureZh: "广阔无垠的纯洁雪原，或是清澈湛蓝的天空。", exampleEn: "A Shaker chair or a Zen garden.", exampleZh: "震颤派椅子或禅宗花园。", imgPos: "/images/Simplicity and inner calm.png", imgNeg: "/images/SINEG.png", bookImg: "" },
+    { n: 15, tEn: "Not-Separateness", tZh: "非分离性", quoteEn: "A living structure is not separate from its surroundings; it grows out of them.", quoteZh: "生命结构与其周围环境不是分离的；它是从中生长出来的。", mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.", mechZh: "机制是通过相互渗透模糊外边界。", relEn: "Increases H (Hierarchy) by connecting to the largest whole.", relZh: "通过连接到最大整体增加 H（层级）。", natureEn: "A nest woven seamlessly into the branches of a tree.", natureZh: "无缝编织在树枝间的鸟巢。", exampleEn: "A building that steps down the hillside, merging with the terrain.", exampleZh: "顺山势而下的建筑，与地形融为一体。", imgPos: "/images/Not separateness.png", imgNeg: "/images/NSNEG.png", bookImg: "" }
 ];
 
 interface CaseStudy {
@@ -418,107 +300,6 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
   );
 };
 
-const PropertyBlock = ({ 
-  number, p, isOpen, onToggle
-}: any) => {
-  const { language } = useLanguage();
-  
-  // Select content based on language
-  const title = language === 'zh' ? p.tZh : p.tEn;
-  const quote = language === 'zh' ? p.quoteZh : p.quoteEn;
-  const mech = language === 'zh' ? p.mechZh : p.mechEn;
-  const rel = language === 'zh' ? p.relZh : p.relEn;
-  const example = language === 'zh' ? p.exampleZh : p.exampleEn;
-
-  return (
-    <div className="border-t border-stone-100 py-6 first:border-t-2 first:border-stone-900 transition-all duration-300 hover:bg-stone-50/50 px-2 -mx-2 rounded-sm">
-      <div 
-        onClick={onToggle}
-        className="cursor-pointer group grid grid-cols-1 md:grid-cols-12 gap-6 items-baseline"
-      >
-        <div className="col-span-1 md:col-span-1 flex items-center gap-4 md:block">
-           <span className={cn(
-            "text-xl md:text-2xl font-mono transition-colors duration-300",
-            isOpen ? "text-stone-900 font-medium" : "text-stone-300 group-hover:text-stone-400"
-          )}>
-            {number < 10 ? `0${number}` : number}
-          </span>
-        </div>
-        <div className="col-span-1 md:col-span-4">
-          <h3 className="text-xl md:text-2xl font-serif font-bold text-stone-900 mb-1 group-hover:text-stone-600 transition-colors">{title}</h3>
-        </div>
-        <div className="col-span-1 md:col-span-6 pr-8 hidden md:block">
-           {!isOpen && (
-             <motion.p 
-               initial={{ opacity: 0 }} 
-               animate={{ opacity: 1 }} 
-               className="text-sm text-stone-500 font-serif italic leading-relaxed truncate"
-             >
-               "{quote}"
-             </motion.p>
-           )}
-        </div>
-        <div className="col-span-1 md:col-span-1 flex justify-end">
-           <ChevronDown className={cn(
-             "w-5 h-5 text-stone-300 transition-transform duration-300",
-             isOpen ? "rotate-180 text-stone-900" : "group-hover:text-stone-500"
-           )} />
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="pt-8 pb-4 grid grid-cols-1 md:grid-cols-12 gap-12">
-               <div className="col-span-1 md:col-span-5 md:col-start-2 space-y-8">
-                  {/* Definition / Quote */}
-                  <div className="relative pl-6 border-l-2 border-stone-200">
-                    <Quote className="absolute -top-2 -left-3 w-6 h-6 bg-[#FDFBF7] text-stone-300" />
-                    <p className="text-lg font-serif italic text-stone-800 mb-2">"{quote}"</p>
-                  </div>
-                  
-                  {/* Mechanism */}
-                  <div className="mb-6">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-2">Structural Mechanism</h4>
-                    <p className="text-stone-700 leading-relaxed">{mech}</p>
-                  </div>
-
-                   {/* Example */}
-                   <div className="mb-6">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-2">Architectural Example</h4>
-                    <p className="text-stone-700 leading-relaxed italic">{example}</p>
-                  </div>
-                  
-                  {/* Relation */}
-                  <div className="bg-white p-6 border border-stone-200 shadow-sm rounded-sm">
-                     <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-3 flex items-center gap-2">
-                       <Info className="w-3 h-3" /> Relation to L = S × H
-                     </h4>
-                     <p className="text-sm font-medium text-stone-800 font-serif mb-1">{rel}</p>
-                  </div>
-               </div>
-
-               <div className="col-span-1 md:col-span-6 space-y-6">
-                  <PropertyVisuals 
-                    imgPos={p.imgPos} 
-                    imgNeg={p.imgNeg} 
-                    title={p.tEn} 
-                  />
-               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-};
-
 const ChineseArchitecturalSystem = () => {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [highlightCenters, setHighlightCenters] = useState(false);
@@ -553,7 +334,7 @@ const ChineseArchitecturalSystem = () => {
                
                <div className="flex justify-between items-center border-t border-stone-100 pt-4">
                   <button className="text-xs uppercase tracking-widest font-bold text-stone-900 flex items-center gap-2 group-hover:text-amber-700 transition-colors">
-                    {trans.theory.chinese.viewAnalysis} <ArrowRight className="w-3 h-3" />
+                    {trans.theory.chinese.viewAnalysis || 'View Analysis'} <ArrowRight className="w-3 h-3" />
                   </button>
                </div>
             </div>
@@ -587,7 +368,7 @@ const ChineseArchitecturalSystem = () => {
         <div className="lg:col-span-4 space-y-8">
            <div>
              <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-3 border-b border-stone-100 pb-2 inline-block">
-               {trans.theory.chinese.analysisTitle}
+               {trans.theory.chinese.analysisTitle || 'Analysis'}
              </h4>
              <p className="text-stone-700 leading-relaxed text-sm">
                {language === 'zh' ? selectedCase.descriptionZh : selectedCase.description}
@@ -597,7 +378,7 @@ const ChineseArchitecturalSystem = () => {
            {/* Layered Analysis */}
            <div>
               <div className="flex items-center gap-2 text-stone-400 uppercase tracking-wider text-[10px] mb-4">
-                 <Layers className="w-3 h-3" /> {trans.theory.chinese.layerExplainer}
+                 <Layers className="w-3 h-3" /> {trans.theory.chinese.layerExplainer || 'Structural Layers'}
               </div>
               <div className="space-y-2">
                  {selectedCase.levels.map((level, i) => (
@@ -632,7 +413,7 @@ const ChineseArchitecturalSystem = () => {
            {/* Toggle Centers */}
            <div className="pt-6 border-t border-stone-100">
               <label className="flex items-center justify-between cursor-pointer group">
-                 <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{trans.theory.chinese.toggleCenters}</span>
+                 <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{trans.theory.chinese.toggleCenters || 'Highlight Centers'}</span>
                  <button 
                    onClick={() => setHighlightCenters(!highlightCenters)}
                    className={cn(
@@ -681,12 +462,10 @@ const ChineseArchitecturalSystem = () => {
 // --- Main Page Component ---
 
 export function Theory() {
-  const [openId, setOpenId] = useState<number | null>(null);
-  const { trans } = useLanguage();
+  const [activePropId, setActivePropId] = useState<number>(1);
+  const { trans, language } = useLanguage();
   
-  const toggleProperty = (id: number) => {
-    setOpenId(openId === id ? null : id);
-  };
+  const activeProp = properties.find(p => p.n === activePropId) || properties[0];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFBF7] text-stone-800 pb-24">
@@ -714,19 +493,19 @@ export function Theory() {
         </motion.div>
 
         {/* Section 1: Origin */}
-        <Section title={trans.theory.origin.title} className="!pt-0 !border-0">
+        <Section title={trans.theory?.origin?.title || "Origin"} className="!pt-0 !border-0">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
              <div className="space-y-6">
-               <p className="text-stone-800 text-lg leading-relaxed font-serif">{trans.theory.origin.content1}</p>
-               <p className="text-stone-600 text-sm leading-relaxed">{trans.theory.origin.content2}</p>
+               <p className="text-stone-800 text-lg leading-relaxed font-serif">{trans.theory?.origin?.content1}</p>
+               <p className="text-stone-600 text-sm leading-relaxed">{trans.theory?.origin?.content2}</p>
              </div>
              <div className="bg-stone-100 p-8 rounded-sm">
-                <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">{trans.theory.origin.formulaTitle}</h4>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">{trans.theory?.origin?.formulaTitle || "Core Formula"}</h4>
                 <div className="text-4xl font-serif font-bold text-stone-900 mb-4">L = S × H</div>
                 <div className="space-y-2 text-sm text-stone-600 font-mono">
-                  <div className="flex justify-between border-b border-stone-200 pb-1"><span>L</span> <span>{trans.theory.origin.formulaL}</span></div>
-                  <div className="flex justify-between border-b border-stone-200 pb-1"><span>S</span> <span>{trans.theory.origin.formulaS}</span></div>
-                  <div className="flex justify-between"><span>H</span> <span>{trans.theory.origin.formulaH}</span></div>
+                  <div className="flex justify-between border-b border-stone-200 pb-1"><span>L</span> <span>{trans.theory?.origin?.formulaL || "Livingness"}</span></div>
+                  <div className="flex justify-between border-b border-stone-200 pb-1"><span>S</span> <span>{trans.theory?.origin?.formulaS || "Substructures"}</span></div>
+                  <div className="flex justify-between"><span>H</span> <span>{trans.theory?.origin?.formulaH || "Hierarchy"}</span></div>
                 </div>
              </div>
            </div>
@@ -755,67 +534,176 @@ export function Theory() {
         </Section>
 
         {/* Section 2: Aesthetic Context */}
-        <Section title={trans.theory.aesthetic.title}>
+        <Section title={trans.theory?.aesthetic?.title || "Aesthetic Context"}>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
              <div className="p-8 bg-white border border-stone-200 shadow-sm">
-                <p className="text-stone-600 leading-relaxed mb-4">{trans.theory.aesthetic.p1}</p>
+                <p className="text-stone-600 leading-relaxed mb-4">{trans.theory?.aesthetic?.p1}</p>
                 <div className="h-1 w-12 bg-stone-200" />
              </div>
              <div className="p-8 bg-stone-50 border border-stone-200">
-                <p className="text-stone-800 font-medium leading-relaxed mb-4">{trans.theory.aesthetic.p2}</p>
+                <p className="text-stone-800 font-medium leading-relaxed mb-4">{trans.theory?.aesthetic?.p2}</p>
                 <div className="h-1 w-12 bg-amber-200" />
              </div>
            </div>
         </Section>
 
         {/* Section 3: How to See */}
-        <Section title={trans.theory.howToSee.title}>
+        <Section title={trans.theory?.howToSee?.title || "How to See"}>
            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-stone-200 border border-stone-200 bg-white">
               <div className="p-8 text-center hover:bg-stone-50 transition-colors">
                  <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
                     <Eye className="w-5 h-5" />
                  </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory.howToSee.method1}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory.howToSee.method1Desc}</p>
+                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method1}</h4>
+                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method1Desc}</p>
               </div>
               <div className="p-8 text-center hover:bg-stone-50 transition-colors">
                  <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
                     <Layers className="w-5 h-5" />
                  </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory.howToSee.method2}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory.howToSee.method2Desc}</p>
+                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method2}</h4>
+                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method2Desc}</p>
               </div>
               <div className="p-8 text-center hover:bg-stone-50 transition-colors">
                  <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
                     <ArrowUpRight className="w-5 h-5" />
                  </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory.howToSee.method3}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory.howToSee.method3Desc}</p>
+                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method3}</h4>
+                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method3Desc}</p>
               </div>
            </div>
         </Section>
 
-        {/* Section 4: 15 Properties */}
-        <Section title="15 Properties" subTitle={trans.theory.propertiesSubtitle}>
-          <div className="border-b border-stone-200">
-             {properties.map((p) => (
-               <PropertyBlock 
-                 key={p.n}
-                 number={p.n}
-                 p={p}
-                 isOpen={openId === p.n}
-                 onToggle={() => toggleProperty(p.n)}
-               />
-             ))}
+        {/* Section 4: 15 Properties (The newly redesigned Left-Nav & Right-Panel UI) */}
+        <Section title="15 Properties" subTitle={trans.theory?.propertiesSubtitle || "Fundamental patterns of living structure"}>
+          
+          <div className="flex flex-col lg:flex-row gap-12 mt-8">
+            {/* 左侧：15个属性的导航列表 */}
+            <div className="w-full lg:w-1/4 flex flex-col gap-2">
+              {properties.map((prop) => (
+                <button
+                  key={prop.n}
+                  onClick={() => setActivePropId(prop.n)}
+                  className={`text-left px-4 py-3 rounded-md transition-all duration-200 ${
+                    activePropId === prop.n 
+                      ? 'bg-amber-100 text-amber-900 font-bold border-l-4 border-amber-500 shadow-sm' 
+                      : 'bg-transparent text-stone-600 hover:bg-stone-100'
+                  }`}
+                >
+                  <span className="text-xs text-stone-400 mr-2 font-mono">{String(prop.n).padStart(2, '0')}</span>
+                  {language === 'zh' ? prop.tZh : prop.tEn}
+                </button>
+              ))}
+            </div>
+
+            {/* 右侧：当前选中属性的详细解析 */}
+            <div className="w-full lg:w-3/4 flex flex-col gap-8">
+              
+              {/* 面板 1：理论与原著体现 */}
+              <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeProp.n}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-8 md:p-12 flex-grow flex flex-col"
+                  >
+                    <h3 className="text-4xl font-serif font-bold text-stone-900 mb-6 flex items-baseline gap-4">
+                      <span className="text-amber-500 text-2xl font-mono">{String(activeProp.n).padStart(2, '0')}</span>
+                      {language === 'zh' ? activeProp.tZh : activeProp.tEn}
+                    </h3>
+                    
+                    <p className="text-lg text-stone-700 leading-relaxed mb-6 border-l-4 border-stone-300 pl-6 italic">
+                      "{language === 'zh' ? activeProp.quoteZh : activeProp.quoteEn}"
+                    </p>
+
+                    <div className="flex items-center gap-2 mb-10">
+                      <span className="px-3 py-1 bg-stone-100 text-stone-600 text-xs font-mono rounded-sm border border-stone-200">
+                        {language === 'zh' ? activeProp.mechZh : activeProp.mechEn}
+                      </span>
+                      <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-mono rounded-sm border border-amber-200 flex items-center gap-1">
+                        <Info className="w-3 h-3" /> {language === 'zh' ? activeProp.relZh : activeProp.relEn}
+                      </span>
+                    </div>
+
+                    {/* 核心改动：自然与设计的双轨对比 */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 flex-grow">
+                      {/* 自然界体现 */}
+                      <div className="bg-emerald-50/50 p-6 rounded-lg border border-emerald-100">
+                        <h4 className="flex items-center gap-2 text-emerald-800 font-bold mb-4 uppercase tracking-wider text-sm">
+                          <Leaf className="w-4 h-4" />
+                          {language === 'zh' ? '在自然界中的体现' : 'Manifestation in Nature'}
+                        </h4>
+                        <p className="text-stone-600 text-sm leading-relaxed">
+                          {language === 'zh' ? activeProp.natureZh : activeProp.natureEn}
+                        </p>
+                      </div>
+
+                      {/* 建筑/设计体现 (对应你原来的 example) */}
+                      <div className="bg-stone-50 p-6 rounded-lg border border-stone-200">
+                        <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
+                          <Building2 className="w-4 h-4" />
+                          {language === 'zh' ? '在空间设计中的体现' : 'Manifestation in Design'}
+                        </h4>
+                        <p className="text-stone-600 text-sm leading-relaxed">
+                          {language === 'zh' ? activeProp.exampleZh : activeProp.exampleEn}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 原著配图展示区 */}
+                    <div className="mt-auto pt-6 border-t border-stone-100">
+                      <p className="text-xs text-stone-400 uppercase tracking-widest mb-3 font-bold flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
+                      </p>
+                      <div className="w-full h-48 bg-stone-100 rounded-md overflow-hidden border border-stone-200 relative group flex items-center justify-center">
+                        {activeProp.bookImg ? (
+                          <img 
+                            src={activeProp.bookImg} 
+                            alt="Book Illustration"
+                            className="w-full h-full object-contain mix-blend-multiply opacity-80 group-hover:opacity-100 transition-opacity"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
+                            }}
+                          />
+                        ) : (
+                          <div className="text-stone-400 text-sm font-mono flex items-center gap-2">
+                             <ScanLine className="w-4 h-4" /> Image scan pending...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* 面板 2：互动滑块分析组件（保留并嵌入你的核心组件！） */}
+              <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden p-8 md:p-12">
+                 <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-6 flex items-center gap-2">
+                    <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
+                 </h4>
+                 <PropertyVisuals 
+                   key={activeProp.n} // 添加 key 以确保切换属性时滑块状态重置
+                   imgPos={activeProp.imgPos} 
+                   imgNeg={activeProp.imgNeg} 
+                   title={language === 'zh' ? activeProp.tZh : activeProp.tEn} 
+                 />
+              </div>
+
+            </div>
           </div>
         </Section>
         
         {/* Section 5: Chinese Architecture (Independent) */}
         <div className="mt-32">
-          <Section title={trans.theory.chinese.title} className="!pt-0 !border-0">
+          <Section title={trans.theory?.chinese?.title || "Chinese Architecture"} className="!pt-0 !border-0">
              <div className="mb-12 max-w-2xl">
                 <p className="text-lg text-stone-600 leading-relaxed font-serif">
-                   {trans.theory.chinese.intro}
+                   {trans.theory?.chinese?.intro || "Exploring traditional structures through the lens of living structure..."}
                 </p>
              </div>
              <ChineseArchitecturalSystem />
