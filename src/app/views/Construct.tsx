@@ -1,550 +1,382 @@
-import React, { useState, useMemo } from "react";
-import { Slider, cn } from "@/app/components/ui";
-import { motion } from "motion/react";
+import React, { useState } from "react";
+import { Card, cn } from "@/app/components/ui";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
-// --- Types ---
+export function Construct() {
+  const { trans, language } = useLanguage();
+  const isEn = language === 'en';
 
-interface StructureParams {
-  depth: number;      // Roof layers / Concentricity
-  center: number;     // Volume Size / Eccentricity
-  boundary: number;   // Wall Thickness / Enclosure
-}
+  const [hierarchy, setHierarchy] = useState(1);
+  const [center, setCenter] = useState(1);
+  const [boundary, setBoundary] = useState(1);
 
-type ElementType = 
-  | 'plan-base'
-  | 'plan-wall-solid'
-  | 'plan-col'
-  | 'plan-stair'
-  | 'plan-roof-eave'
-  | 'plan-roof-ridge'
-  | 'sec-base'
-  | 'sec-wall'
-  | 'sec-col'
-  | 'sec-roof-structure'
-  | 'sec-roof-shadow'
-  | 'sec-stair'
-  | 'sec-light';
-
-interface ArchElement {
-  id: string;
-  type: ElementType;
-  d?: string;        // Path data
-  cx?: number; cy?: number; r?: number; // Circle data
-  strokeWidth: number;
-  opacity: number;
-  filled?: boolean;
-  dashed?: boolean;
-  blur?: boolean;
-}
-
-interface Metrics {
-  S: number; 
-  H: number; 
-  L: number; 
-}
-
-// --- Geometry Helpers ---
-
-const getEllipsePoint = (cx: number, cy: number, rx: number, ry: number, theta: number) => {
-  return {
-    x: cx + rx * Math.cos(theta),
-    y: cy + ry * Math.sin(theta)
-  };
-};
-
-// Generates a closed path for a curved wall segment with thickness
-const getWallSegmentPath = (
-  cx: number, cy: number, 
-  rxOuter: number, ryOuter: number, 
-  rxInner: number, ryInner: number, 
-  startAngle: number, endAngle: number
-) => {
-  const outerStart = getEllipsePoint(cx, cy, rxOuter, ryOuter, startAngle);
-  const outerEnd = getEllipsePoint(cx, cy, rxOuter, ryOuter, endAngle);
-  const innerStart = getEllipsePoint(cx, cy, rxInner, ryInner, startAngle);
-  const innerEnd = getEllipsePoint(cx, cy, rxInner, ryInner, endAngle);
-  
-  const diff = endAngle - startAngle;
-  const largeArcFlag = diff > Math.PI ? 1 : 0;
-  
-  // Path: Outer Arc -> Line to Inner End -> Inner Arc (Reverse) -> Line to Outer Start
-  return `
-    M ${outerStart.x} ${outerStart.y} 
-    A ${rxOuter} ${ryOuter} 0 ${largeArcFlag} 1 ${outerEnd.x} ${outerEnd.y}
-    L ${innerEnd.x} ${innerEnd.y}
-    A ${rxInner} ${ryInner} 0 ${largeArcFlag} 0 ${innerStart.x} ${innerStart.y}
-    Z
-  `;
-};
-
-// --- Logic ---
-
-const generateComposition = (params: StructureParams): ArchElement[] => {
-  const { depth, center, boundary } = params;
-  const elements: ArchElement[] = [];
-  
-  const P_CX = 200; 
-  const P_CY = 200;
-  const S_BASE_Y = 360;
-  
-  // --- 1. GEOMETRY DEFINITION ---
-  
-  const Rx = 60 + (center * 60); 
-  const Ry = 50 + (center * 50); 
-  
-  // Wall Thickness (Physical thickness for double-line)
-  const wallThick = 6 + (boundary * 12);
-  const RxInner = Rx - wallThick;
-  const RyInner = Ry - wallThick;
-  
-  // Openings
-  const doorGap = 0.25 + (center * 0.1); 
-  const windowGap = 0.12 - (boundary * 0.08); 
-  const hasWindows = windowGap > 0.02;
-
-  // --- 2. PLAN VIEW GENERATION ---
-  
-  // A. Base Platform (Elliptical)
-  const baseRx = Rx + 40;
-  const baseRy = Ry + 40;
-  elements.push({
-    id: 'plan-base', type: 'plan-base',
-    d: `M ${P_CX - baseRx} ${P_CY} A ${baseRx} ${baseRy} 0 1 1 ${P_CX + baseRx} ${P_CY} A ${baseRx} ${baseRy} 0 1 1 ${P_CX - baseRx} ${P_CY}`,
-    strokeWidth: 0, opacity: 0.1, filled: true
-  });
-
-  // B. Stairs (Front Concentric Arcs)
-  const numSteps = 3;
-  for(let i=1; i<=numSteps; i++) {
-     const stepRx = baseRx + (i * 6);
-     const stepRy = baseRy + (i * 6);
-     // Arc from somewhat left to somewhat right of south
-     const startA = Math.PI/2 - 0.5;
-     const endA = Math.PI/2 + 0.5;
-     
-     const s = getEllipsePoint(P_CX, P_CY, stepRx, stepRy, startA);
-     const e = getEllipsePoint(P_CX, P_CY, stepRx, stepRy, endA);
-     
-     elements.push({
-         id: `plan-stair-${i}`, type: 'plan-stair',
-         d: `M ${s.x} ${s.y} A ${stepRx} ${stepRy} 0 0 1 ${e.x} ${e.y}`,
-         strokeWidth: 1, opacity: 0.3 - (i*0.05)
-     });
-  }
-
-  // C. Wall Mass (Solid filled shapes)
-  // Segment 1: Right Window to Door Right
-  if (hasWindows) {
-      elements.push({
-          id: 'plan-wall-fr', type: 'plan-wall-solid',
-          d: getWallSegmentPath(P_CX, P_CY, Rx, Ry, RxInner, RyInner, windowGap, Math.PI/2 - doorGap),
-          strokeWidth: 0, opacity: 0.7, filled: true
-      });
-      // Segment 2: Door Left to Left Window
-      elements.push({
-          id: 'plan-wall-fl', type: 'plan-wall-solid',
-          d: getWallSegmentPath(P_CX, P_CY, Rx, Ry, RxInner, RyInner, Math.PI/2 + doorGap, Math.PI - windowGap),
-          strokeWidth: 0, opacity: 0.7, filled: true
-      });
-      // Segment 3: Back Wall
-      elements.push({
-          id: 'plan-wall-back', type: 'plan-wall-solid',
-          d: getWallSegmentPath(P_CX, P_CY, Rx, Ry, RxInner, RyInner, Math.PI + windowGap, 2*Math.PI - windowGap),
-          strokeWidth: 0, opacity: 0.7, filled: true
-      });
-  } else {
-      // Single continuous wall with door gap
-      elements.push({
-          id: 'plan-wall-solid', type: 'plan-wall-solid',
-          d: getWallSegmentPath(P_CX, P_CY, Rx, Ry, RxInner, RyInner, Math.PI/2 + doorGap, 2.5*Math.PI - doorGap),
-          strokeWidth: 0, opacity: 0.7, filled: true
-      });
-  }
-
-  // D. Columns (Detailed)
-  const colRadius = Rx + 12; // Just outside the wall
-  const numCols = 4 + Math.floor(boundary * 4);
-  const arcSpan = Math.PI / 2.5; 
-  
-  for(let i=0; i<=numCols; i++) {
-    const t = (Math.PI/2 - arcSpan/2) + (i * (arcSpan/numCols));
-    const p = getEllipsePoint(P_CX, P_CY, colRadius, colRadius * (Ry/Rx), t);
-    // Column Base (Circle)
-    elements.push({
-      id: `plan-col-base-${i}`, type: 'plan-col',
-      cx: p.x, cy: p.y, r: 4,
-      strokeWidth: 0, opacity: 0.3, filled: true
-    });
-    // Column Shaft (Smaller Circle)
-    elements.push({
-      id: `plan-col-shaft-${i}`, type: 'plan-col',
-      cx: p.x, cy: p.y, r: 2.5,
-      strokeWidth: 0, opacity: 0.8, filled: true
-    });
-  }
-
-  // E. Roof Eaves (Layered)
-  const roofRx = Rx + 30 + (depth * 25);
-  const roofRy = Ry + 30 + (depth * 25);
-  
-  // Shadow
-  elements.push({
-    id: 'plan-roof-shadow', type: 'plan-roof-eave',
-    d: `M ${P_CX - roofRx} ${P_CY} A ${roofRx} ${roofRy} 0 1 1 ${P_CX + roofRx} ${P_CY} A ${roofRx} ${roofRy} 0 1 1 ${P_CX - roofRx} ${P_CY}`,
-    strokeWidth: 4, opacity: 0.1, blur: true
-  });
-  // Main Eave Line
-  elements.push({
-    id: 'plan-roof-outline', type: 'plan-roof-eave',
-    d: `M ${P_CX - roofRx} ${P_CY} A ${roofRx} ${roofRy} 0 1 1 ${P_CX + roofRx} ${P_CY} A ${roofRx} ${roofRy} 0 1 1 ${P_CX - roofRx} ${P_CY}`,
-    strokeWidth: 1.5, opacity: 0.6
-  });
-  // Inner Ridge (Ridge + Rafters)
-  const ridgeLen = Rx * 1.2;
-  elements.push({
-    id: 'plan-ridge', type: 'plan-roof-ridge',
-    d: `M ${P_CX - ridgeLen/2} ${P_CY} L ${P_CX + ridgeLen/2} ${P_CY}`,
-    strokeWidth: 2, opacity: 0.8
-  });
-
-
-  // --- 3. SECTION VIEW GENERATION ---
-  
-  // A. Plinth & Stairs
-  const splinthW = (baseRx * 2);
-  const splinthH = 15;
-  const splinthTop = S_BASE_Y - splinthH;
-  
-  // Main Plinth Mass
-  const sPlinthPath = `
-      M ${P_CX - splinthW/2} ${S_BASE_Y}
-      L ${P_CX + splinthW/2} ${S_BASE_Y}
-      Q ${P_CX + splinthW/2 - 5} ${splinthTop + splinthH/2} ${P_CX + splinthW/2 - 10} ${splinthTop}
-      L ${P_CX - splinthW/2 + 10} ${splinthTop}
-      Q ${P_CX - splinthW/2 + 5} ${splinthTop + splinthH/2} ${P_CX - splinthW/2} ${S_BASE_Y}
-  `;
-  elements.push({ id: 'sec-plinth', type: 'sec-base', d: sPlinthPath, strokeWidth: 0, opacity: 0.15, filled: true });
-  
-  // Front Stairs (Simplified as low steps in front)
-  // Drawn as small rectangles centered at bottom
-  const stairW = 60 + (center * 20);
-  elements.push({
-      id: 'sec-stair-1', type: 'sec-stair',
-      d: `M ${P_CX - stairW/2} ${S_BASE_Y} L ${P_CX + stairW/2} ${S_BASE_Y} L ${P_CX + stairW/2 - 2} ${S_BASE_Y + 4} L ${P_CX - stairW/2 + 2} ${S_BASE_Y + 4} Z`,
-      strokeWidth: 0, opacity: 0.3, filled: true
-  });
-
-  // B. Columns with Capitals/Bases
-  const wallH = 60 + (center * 30);
-  const colTopY = splinthTop - wallH;
-  
-  // Columns positioned at wall line
-  const colX_L = P_CX - Rx;
-  const colX_R = P_CX + Rx;
-  const colW = 5 + (center * 3);
-  
-  const drawColumn = (x: number, id: string) => {
-      // Shaft
-      const shaftPath = `M ${x - colW/2} ${splinthTop - 3} L ${x + colW/2} ${splinthTop - 3} L ${x + colW/2 * 0.8} ${colTopY + 3} L ${x - colW/2 * 0.8} ${colTopY + 3} Z`;
-      elements.push({ id: `${id}-shaft`, type: 'sec-col', d: shaftPath, strokeWidth: 0, opacity: 0.8, filled: true });
-      
-      // Base
-      const basePath = `M ${x - colW} ${S_BASE_Y - splinthH} L ${x + colW} ${S_BASE_Y - splinthH} L ${x + colW*0.8} ${S_BASE_Y - splinthH - 4} L ${x - colW*0.8} ${S_BASE_Y - splinthH - 4} Z`;
-      elements.push({ id: `${id}-base`, type: 'sec-col', d: basePath, strokeWidth: 0, opacity: 0.9, filled: true });
-      
-      // Capital
-      const capPath = `M ${x - colW*0.8} ${colTopY + 3} L ${x + colW*0.8} ${colTopY + 3} L ${x + colW*1.2} ${colTopY} L ${x - colW*1.2} ${colTopY} Z`;
-      elements.push({ id: `${id}-cap`, type: 'sec-col', d: capPath, strokeWidth: 0, opacity: 0.9, filled: true });
-  };
-  
-  drawColumn(colX_L, 'sec-col-L');
-  drawColumn(colX_R, 'sec-col-R');
-
-  // C. Walls (Behind Columns)
-  // Tapered mass
-  const wallTopW = wallThick * 0.8;
-  const wallBaseW = wallThick * 1.2;
-  
-  // Left Wall
-  const wLX = colX_L + 15; // Inset slightly
-  const wallL = `M ${wLX - wallBaseW/2} ${splinthTop} L ${wLX + wallBaseW/2} ${splinthTop} L ${wLX + wallTopW/2} ${colTopY} L ${wLX - wallTopW/2} ${colTopY} Z`;
-  elements.push({ id: 'sec-wall-l', type: 'sec-wall', d: wallL, strokeWidth: 0, opacity: 0.6, filled: true });
-  
-  // Right Wall
-  const wRX = colX_R - 15;
-  const wallR = `M ${wRX - wallBaseW/2} ${splinthTop} L ${wRX + wallBaseW/2} ${splinthTop} L ${wRX + wallTopW/2} ${colTopY} L ${wRX - wallTopW/2} ${colTopY} Z`;
-  elements.push({ id: 'sec-wall-r', type: 'sec-wall', d: wallR, strokeWidth: 0, opacity: 0.6, filled: true });
-
-  // D. Roof Structure (Layered)
-  const roofProj = 35 + (depth * 15);
-  const sRoofW = (Rx * 2) + (roofProj * 2);
-  const ridgeH = 30 + (center * 25);
-  const ridgeY = colTopY - ridgeH;
-  const curveSag = 12 * (1 + center);
-  
-  // 1. Shadow underneath
-  const shadowPath = `
-      M ${P_CX - sRoofW/2} ${colTopY + 8} 
-      Q ${P_CX - sRoofW/4} ${colTopY + curveSag + 8} ${P_CX} ${ridgeY + 12}
-      Q ${P_CX + sRoofW/4} ${colTopY + curveSag + 8} ${P_CX + sRoofW/2} ${colTopY + 8}
-      L ${P_CX + sRoofW/2 - 10} ${colTopY + 20}
-      Q ${P_CX} ${colTopY + curveSag + 20} ${P_CX - sRoofW/2 + 10} ${colTopY + 20}
-      Z
-  `;
-  elements.push({ id: 'sec-roof-shadow', type: 'sec-roof-shadow', d: shadowPath, strokeWidth: 0, opacity: 0.2, filled: true, blur: true });
-
-  // 2. Main Structure (Underside)
-  const roofUnder = `
-      M ${P_CX - sRoofW/2} ${colTopY} 
-      Q ${P_CX - sRoofW/4} ${colTopY + curveSag} ${P_CX} ${ridgeY}
-      Q ${P_CX + sRoofW/4} ${colTopY + curveSag} ${P_CX + sRoofW/2} ${colTopY}
-      L ${P_CX + sRoofW/2 - 5} ${colTopY + 6}
-      Q ${P_CX} ${ridgeY + 6} ${P_CX - sRoofW/2 + 5} ${colTopY + 6}
-      Z
-  `;
-  elements.push({ id: 'sec-roof-struct', type: 'sec-roof-structure', d: roofUnder, strokeWidth: 0, opacity: 0.8, filled: true });
-  
-  // 3. Roof Surface (Top Layer)
-  const roofTop = `
-      M ${P_CX - sRoofW/2 - 2} ${colTopY - 2} 
-      Q ${P_CX - sRoofW/4} ${colTopY + curveSag - 4} ${P_CX} ${ridgeY - 4}
-      Q ${P_CX + sRoofW/4} ${colTopY + curveSag - 4} ${P_CX + sRoofW/2 + 2} ${colTopY - 2}
-  `;
-  elements.push({ id: 'sec-roof-surf', type: 'sec-roof-structure', d: roofTop, strokeWidth: 2, opacity: 1.0 });
-
-  // 4. Secondary Tier (if Depth)
-  if (depth > 0.3) {
-      const tierY = colTopY + (wallH * 0.4);
-      const tierW = sRoofW + 50;
-      
-      // Tier Structure
-      const tierStructL = `M ${P_CX - tierW/2} ${tierY} Q ${P_CX - tierW/4} ${tierY + curveSag} ${P_CX - Rx} ${tierY - 10} L ${P_CX - Rx} ${tierY - 5} Q ${P_CX - tierW/4} ${tierY + curveSag + 5} ${P_CX - tierW/2 + 5} ${tierY + 5} Z`;
-      const tierStructR = `M ${P_CX + tierW/2} ${tierY} Q ${P_CX + tierW/4} ${tierY + curveSag} ${P_CX + Rx} ${tierY - 10} L ${P_CX + Rx} ${tierY - 5} Q ${P_CX + tierW/4} ${tierY + curveSag + 5} ${P_CX + tierW/2 - 5} ${tierY + 5} Z`;
-      
-      elements.push({ id: 'sec-tier-l', type: 'sec-roof-structure', d: tierStructL, strokeWidth: 0, opacity: 0.7, filled: true });
-      elements.push({ id: 'sec-tier-r', type: 'sec-roof-structure', d: tierStructR, strokeWidth: 0, opacity: 0.7, filled: true });
-  }
-
-  // E. Living Center Light
-  elements.push({
-      id: 'sec-light', type: 'sec-light',
-      cx: P_CX, cy: colTopY + (wallH/2), r: 0,
-      strokeWidth: 0, opacity: center
-  });
-
-  return elements;
-};
-
-const calculateMetrics = (params: StructureParams): Metrics => {
-  const S = (params.center * 60) + (params.boundary * 30);
-  const H = 1 + (params.depth * 3);
-  const L = S * H * 1.5;
-  return { S, H, L };
-};
-
-const Canvas = ({ elements, label, isEmerging, metrics }: { elements: ArchElement[], label: string, isEmerging?: boolean, metrics?: Metrics }) => {
-  const vitality = metrics ? Math.min(1, metrics.L / 150) : 0;
-  
-  const breatheOpacity = {
-     animate: {
-        opacity: [0.6, 0.8 + (vitality * 0.2), 0.6],
-        transition: { duration: 4, ease: "easeInOut", repeat: Infinity }
-     }
-  };
-  
-  const breatheLight = {
-    animate: {
-       opacity: [0.1 * vitality, 0.5 * vitality, 0.1 * vitality],
-       scale: [0.8, 1.2, 0.8],
-       transition: { duration: 4, ease: "easeInOut", repeat: Infinity }
-    }
-  };
+  // 📐 严谨对齐 L = S x H 的活力值公式
+  const S = Math.floor(30 + (hierarchy * 40) + (boundary * 30) + (center * 20) + (hierarchy * boundary * 4));
+  const H = hierarchy + (center >= 3 ? 1 : 0) + (boundary >= 3 ? 1 : 0); // 最大层级为 7
+  const L = S * H;
 
   return (
-    <div className="flex flex-col h-full">
-      <h3 className="mb-4 text-xs font-serif font-bold text-stone-500 tracking-[0.2em] uppercase">{label}</h3>
-      <div className={cn(
-        "relative flex-1 rounded-sm border overflow-hidden flex items-center justify-center transition-all duration-1000 bg-[#FDFBF7]",
-        isEmerging ? "border-stone-300 shadow-sm" : "border-stone-200 grayscale opacity-60"
-      )}>
-        <svg viewBox="0 0 400 400" className="w-full h-full max-w-[400px] max-h-[400px] p-6 overflow-visible">
-          <defs>
-             <radialGradient id="lightGlow">
-                 <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.6" />
-                 <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
-             </radialGradient>
-             <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
-                 <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
-             </filter>
-          </defs>
+    <div className="min-h-screen bg-[#fafaf9] py-12 px-4 font-sans">
+      <div className="mx-auto max-w-7xl space-y-8">
+        
+        <div>
+          <h1 className="text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
+          <p className="mt-3 text-stone-600 max-w-2xl">
+            {isEn 
+              ? "Observe how a grand classical building evolves. Real vitality comes from mathematically strict yet organically nested proportions." 
+              : "观察一座宏伟古典建筑的演化。真正的生命力源于严谨的建筑比例与不可分割的层级嵌套。拖动滑块，感受秩序的涌现。"}
+          </p>
+        </div>
 
-          {/* Labels */}
-          <text x="0" y="20" className="text-[9px] uppercase tracking-widest fill-stone-400 font-mono opacity-50">Plan: Elliptical Hall</text>
-          <text x="0" y="380" className="text-[9px] uppercase tracking-widest fill-stone-400 font-mono opacity-50">Section: Layered Mass</text>
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
+          
+          {/* 左侧：建筑可视化区 */}
+          <div className="lg:col-span-8 grid grid-cols-2 gap-6">
+            
+            {/* 初始状态参照 */}
+            <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
+              <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+                {isEn ? "Initial State" : "初始状态"} (H:1, C:1, B:1)
+              </div>
+              <div className="flex-1 flex items-center justify-center w-full h-full">
+                <ParametricBuilding h={1} c={1} b={1} />
+              </div>
+              <div className="text-center text-xs font-mono text-stone-400 tracking-widest pb-4">
+                PRIMITIVE MASS
+              </div>
+            </Card>
 
-          {elements.map((el) => {
-             // 1. Circles
-             if (el.cx !== undefined && el.cy !== undefined) {
-                 if (el.type === 'sec-light') {
-                     return (
-                        <motion.circle
-                           key={el.id} cx={el.cx} cy={el.cy} r={40}
-                           fill="url(#lightGlow)"
-                           initial={{ opacity: 0 }}
-                           animate={isEmerging ? breatheLight.animate : { opacity: 0 }}
-                        />
-                     );
-                 }
-                 return (
-                    <motion.circle
-                       key={el.id} cx={el.cx} cy={el.cy} r={el.r}
-                       initial={{ opacity: 0 }}
-                       animate={{ opacity: el.opacity }}
-                       transition={{ duration: 1 }}
-                       fill={el.filled ? "currentColor" : "none"}
-                       className="text-stone-800"
-                    />
-                 );
-             }
+            {/* 涌现秩序 (动态交互) */}
+            <Card className="bg-white p-0 h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden">
+              <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                {isEn ? "Living Structure" : "生命力结构"}
+              </div>
+              
+              {/* 高级图纸背景底纹 */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafaf9_1px,transparent_1px),linear-gradient(to_bottom,#fafaf9_1px,transparent_1px)] bg-[size:1rem_1rem] opacity-40" />
+              
+              <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-4 pt-12">
+                <ParametricBuilding h={hierarchy} c={center} b={boundary} />
+              </div>
+              
+              <div className="text-center text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-6">
+                EMERGENT ORDER
+              </div>
+            </Card>
+          </div>
 
-             // 2. Paths
-             if (el.d) {
-                const isRoof = el.type.includes('roof');
-                const isWall = el.type.includes('wall');
+          {/* 右侧：控制面板 */}
+          <div className="lg:col-span-4 space-y-6">
+            
+            {/* 核心公式展示板 */}
+            <Card className="bg-stone-100 border-none p-8 text-center relative overflow-hidden shadow-inner">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
+              <div className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">
+                {isEn ? "Livingness Formula" : "生命力计算公式"}
+              </div>
+              
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <div className="text-2xl font-mono font-bold text-stone-400 tracking-widest">
+                  L = S × H
+                </div>
                 
-                return (
-                   <motion.path
-                      key={el.id} d={el.d}
-                      initial={{ opacity: 0, pathLength: el.filled ? 1 : 0 }}
-                      animate={isEmerging && (isRoof || isWall) ? breatheOpacity.animate : { opacity: el.opacity, pathLength: 1 }}
-                      transition={{ duration: 1.5 }}
-                      fill={el.filled ? "currentColor" : "none"}
-                      stroke={el.filled ? "none" : "currentColor"}
-                      strokeWidth={el.strokeWidth}
-                      filter={el.blur ? "url(#blur)" : undefined}
-                      className={cn(
-                        "transition-colors",
-                        isRoof ? "text-stone-700" : "text-stone-400",
-                        isWall && "text-stone-600",
-                        el.type.includes('base') && "text-stone-200",
-                        el.type.includes('col') && "text-stone-800"
-                      )}
-                   />
-                );
-             }
-             return null;
-          })}
-        </svg>
+                <div className="flex items-center justify-center gap-4 text-4xl font-mono text-stone-700">
+                  <motion.span 
+                    key={`L-${L}`}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
+                  >
+                    {L}
+                  </motion.span>
+                  <span className="text-stone-300">=</span>
+                  <motion.span key={`S-${S}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">{S}</motion.span>
+                  <span className="text-stone-300">×</span>
+                  <motion.span key={`H-${H}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">{H}</motion.span>
+                </div>
+              </div>
+
+              <div className="mt-8 text-xs text-stone-500 font-medium flex justify-center gap-6">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-stone-300"></span> S: 子结构总数</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-teal-400"></span> H: 嵌套层级</span>
+              </div>
+            </Card>
+
+            <Card className="bg-white p-6 space-y-10 shadow-sm border-stone-200">
+              <SliderControl 
+                label={isEn ? "Hierarchy (Scale)" : "层级深度 (Hierarchy)"}
+                value={hierarchy} setValue={setHierarchy}
+                desc={isEn ? "Deepens the foundation steps and articulates column details." : "深化比例：向下扎根生成多层阶梯，细化柱头与屋檐嵌套。"}
+              />
+              <SliderControl 
+                label={isEn ? "Center (Focus)" : "强中心 (Center)"}
+                value={center} setValue={setCenter}
+                desc={isEn ? "Raises the grand dome and shapes the majestic arched portal." : "确立焦点：升起万神殿穹顶，演化出罗马拱券主入口。"}
+              />
+              <SliderControl 
+                label={isEn ? "Boundary (Wings)" : "边界 (Boundary)"}
+                value={boundary} setValue={setBoundary}
+                desc={isEn ? "Extends elegant colonnaded wings to define spatial territory." : "延伸领域：向两侧平稳张开带严谨开窗与列柱的侧翼连廊。"}
+              />
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+}
 
-export function Construct() {
-  const { trans } = useLanguage();
+function SliderControl({ label, value, setValue, desc }: { label: string, value: number, setValue: (v: number) => void, desc: string }) {
+  return (
+    <div className="space-y-3 group">
+      <div className="flex justify-between items-end">
+        <label className="text-sm font-bold text-stone-800 tracking-wide transition-colors group-hover:text-teal-700">{label}</label>
+        <span className="font-mono text-lg font-black text-teal-600">{value}</span>
+      </div>
+      <input 
+        type="range" 
+        min="1" max="5" step="1"
+        value={value}
+        onChange={(e) => setValue(Number(e.target.value))}
+        className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
+      />
+      <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase">
+        <span>Low</span>
+        <span>High</span>
+      </div>
+      <p className="text-xs text-stone-500 leading-snug">{desc}</p>
+    </div>
+  );
+}
+
+// ============================================================================
+// 🏛️ 绝对纯净的古典引擎 (Zero-Ghost Engine)
+// 确保所有坐标严格基于绝对锚点 floorY，无任何多余的渲染循环
+// ============================================================================
+function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
   
-  const initialParams: StructureParams = { depth: 0.1, center: 0.1, boundary: 0.1 };
-  const [params, setParams] = useState<StructureParams>({ depth: 0.5, center: 0.5, boundary: 0.5 });
+  // 1. 绝对地平线锚定 (建筑向上，台阶向下，绝不脱离)
+  const floorY = 700;      
+  const mainRoofY = 280;   
+  const porticoH = floorY - mainRoofY; 
 
-  const initialElements = useMemo(() => generateComposition(initialParams), []);
-  const liveElements = useMemo(() => generateComposition(params), [params]);
-  const metrics = useMemo(() => calculateMetrics(params), [params]);
+  const transition = { type: "tween", ease: "easeInOut", duration: 0.5 };
+
+  // 2. 水平维度
+  const porticoW = 460; 
+  const wingW = (b - 1) * 200; 
+  const wingH = porticoH * 0.65; 
+  const wingRoofY = floorY - wingH;
+  
+  const buildingTotalW = porticoW + 2 * wingW; 
+
+  // 3. 基座维度
+  const stepCount = h * 2 + 1; 
+  const stepHeight = 12; 
+  
+  // 4. 自适应视口，始终居中
+  const viewBoxW = Math.max(1200, buildingTotalW + 300); 
+  const viewBoxH = 950;
+
+  const showDome = c >= 3;
+  const domeHeight = 80 + c * 15;
+  const doorW = 80 + c * 20;
+  const doorH = 160 + c * 30;
 
   return (
-    <div className="flex h-[calc(100vh-theme(spacing.14))] bg-stone-50 overflow-hidden font-sans">
-      <div className="flex-1 flex flex-col p-12 overflow-hidden">
-        <div className="mb-10">
-           <h1 className="text-3xl font-serif text-stone-900 mb-2">{trans.construct.title}</h1>
-           <p className="text-stone-500 text-sm max-w-lg">
-             {trans.construct.subtitle}
-           </p>
-        </div>
+    <motion.svg 
+      viewBox={`${-viewBoxW/2} 0 ${viewBoxW} ${viewBoxH}`} 
+      className="w-full h-full overflow-visible drop-shadow-md"
+      animate={{ viewBox: `${-viewBoxW/2} 0 ${viewBoxW} ${viewBoxH}` }} 
+      transition={transition}
+    >
+      <defs>
+        <linearGradient id="wallLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#f5f5f4" />
+        </linearGradient>
+        <linearGradient id="wallDark" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#e7e5e4" />
+          <stop offset="100%" stopColor="#d6d3d1" />
+        </linearGradient>
+        <linearGradient id="dome" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#0d9488" />
+          <stop offset="100%" stopColor="#0f766e" />
+        </linearGradient>
+        <linearGradient id="glass" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#292524" />
+          <stop offset="100%" stopColor="#1c1917" />
+        </linearGradient>
+        <radialGradient id="centerGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(20, 184, 166, 0.2)" />
+          <stop offset="100%" stopColor="rgba(20, 184, 166, 0)" />
+        </radialGradient>
+      </defs>
 
-        <div className="grid grid-cols-2 gap-12 flex-1 max-w-6xl w-full mx-auto h-[550px]">
-          <Canvas 
-            elements={initialElements} 
-            label={trans.construct.initialState}
+      {/* --- 中心圣光 --- */}
+      <motion.circle
+        cx={0} cy={mainRoofY + 120} r={c * 80 + 80}
+        fill="url(#centerGlow)"
+        animate={{ r: c * 100 + 100, opacity: c >= 3 ? 1 : 0 }}
+        transition={transition}
+      />
+
+      {/* ================= 远景层：万神殿穹顶 ================= */}
+      <AnimatePresence>
+        {showDome && (
+          <motion.g
+            initial={{ opacity: 0, y: 80 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 80 }}
+            transition={transition}
+          >
+            <rect x={-140} y={mainRoofY - 200} width={280} height={80} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2.5" />
+            <rect x={-150} y={mainRoofY - 210} width={300} height={10} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" />
+            <path d={`M -140 ${mainRoofY - 210} A 140 ${domeHeight} 0 0 1 140 ${mainRoofY - 210} Z`} fill="url(#dome)" stroke="#115e59" strokeWidth="3" />
+            <path d={`M -70 ${mainRoofY - 210} Q 0 ${mainRoofY - 210 - domeHeight*1.3} 70 ${mainRoofY - 210}`} fill="none" stroke="#134e4a" strokeWidth="2.5" opacity="0.6" />
+            <path d={`M 0 ${mainRoofY - 210} L 0 ${mainRoofY - 210 - domeHeight}`} fill="none" stroke="#134e4a" strokeWidth="2.5" opacity="0.6" />
+
+            {h > 2 && (
+              <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                <rect x={-25} y={mainRoofY - 210 - domeHeight - 40} width={50} height={40} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2.5" />
+                <polygon points={`-35,${mainRoofY - 210 - domeHeight - 40} 35,${mainRoofY - 210 - domeHeight - 40} 0,${mainRoofY - 210 - domeHeight - 80}`} fill="url(#dome)" stroke="#115e59" strokeWidth="2.5" />
+              </motion.g>
+            )}
+          </motion.g>
+        )}
+      </AnimatePresence>
+
+      {/* ================= 中景层：侧翼副楼 ================= */}
+      <motion.g animate={{ opacity: b > 1 ? 1 : 0 }} transition={transition}>
+        <motion.rect y={wingRoofY} height={wingH} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2.5" initial={{ x: -porticoW/2, width: 0 }} animate={{ x: -porticoW/2 - wingW, width: wingW }} transition={transition} />
+        <motion.rect y={wingRoofY} height={wingH} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2.5" initial={{ x: porticoW/2, width: 0 }} animate={{ x: porticoW/2, width: wingW }} transition={transition} />
+        <motion.rect y={wingRoofY - 14} height={14} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" initial={{ x: -porticoW/2, width: 0 }} animate={{ x: -porticoW/2 - wingW - 10, width: wingW + 10 }} transition={transition} />
+        <motion.rect y={wingRoofY - 14} height={14} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" initial={{ x: porticoW/2, width: 0 }} animate={{ x: porticoW/2, width: wingW + 10 }} transition={transition} />
+
+        {b > 1 && Array.from({ length: b - 1 }).map((_, i) => {
+          const bayW = 200; 
+          const targetLeftX = (-porticoW/2 - wingW) + i * bayW + bayW/2;
+          const targetRightX = (porticoW/2) + i * bayW + bayW/2;
+          const winW = 46;
+          const winH = 92;
+          const winY = floorY - wingH/2 - winH/2 + 20;
+
+          return (
+            <React.Fragment key={`wing-detail-${i}`}>
+              <motion.g initial={{ opacity: 0, x: targetLeftX + 200 }} animate={{ opacity: 1, x: targetLeftX }} transition={transition}>
+                <rect x={-winW/2} y={winY} width={winW} height={winH} fill="url(#glass)" stroke="#57534e" strokeWidth="2.5" />
+                <line x1={0} y1={winY} x2={0} y2={winY + winH} stroke="#78716c" strokeWidth="2" />
+                <line x1={-winW/2} y1={winY + winH/2} x2={winW/2} y2={winY + winH/2} stroke="#78716c" strokeWidth="2" />
+                {h > 1 && <rect x={-winW/2 - 6} y={winY - 12} width={winW + 12} height={12} fill="#e7e5e4" stroke="#78716c" strokeWidth="2" />}
+              </motion.g>
+
+              <motion.g initial={{ opacity: 0, x: targetRightX - 200 }} animate={{ opacity: 1, x: targetRightX }} transition={transition}>
+                <rect x={-winW/2} y={winY} width={winW} height={winH} fill="url(#glass)" stroke="#57534e" strokeWidth="2.5" />
+                <line x1={0} y1={winY} x2={0} y2={winY + winH} stroke="#78716c" strokeWidth="2" />
+                <line x1={-winW/2} y1={winY + winH/2} x2={winW/2} y2={winY + winH/2} stroke="#78716c" strokeWidth="2" />
+                {h > 1 && <rect x={-winW/2 - 6} y={winY - 12} width={winW + 12} height={12} fill="#e7e5e4" stroke="#78716c" strokeWidth="2" />}
+              </motion.g>
+
+              {i < b - 2 && (
+                <>
+                  <motion.rect y={wingRoofY} width={18} height={wingH} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2.5" initial={{ opacity: 0, x: targetLeftX + bayW/2 - 9 + 200 }} animate={{ opacity: 1, x: targetLeftX + bayW/2 - 9 }} transition={transition} />
+                  <motion.rect y={wingRoofY} width={18} height={wingH} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2.5" initial={{ opacity: 0, x: targetRightX + bayW/2 - 9 - 200 }} animate={{ opacity: 1, x: targetRightX + bayW/2 - 9 }} transition={transition} />
+                </>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </motion.g>
+
+      {/* ================= 前景层：中央神庙 ================= */}
+      <rect x={-porticoW/2} y={mainRoofY} width={porticoW} height={porticoH} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" />
+
+      <motion.g>
+        <motion.path
+          d={
+            c >= 3 
+            ? `M ${-doorW/2} ${floorY} L ${-doorW/2} ${floorY - doorH + doorW/2} A ${doorW/2} ${doorW/2} 0 0 1 ${doorW/2} ${floorY - doorH + doorW/2} L ${doorW/2} ${floorY} Z`
+            : `M ${-doorW/2} ${floorY} L ${-doorW/2} ${floorY - doorH} L ${doorW/2} ${floorY - doorH} L ${doorW/2} ${floorY} Z`
+          }
+          fill="url(#glass)" stroke="#1c1917" strokeWidth="4"
+          animate={{
+            d: c >= 3 
+            ? `M ${-doorW/2} ${floorY} L ${-doorW/2} ${floorY - doorH + doorW/2} A ${doorW/2} ${doorW/2} 0 0 1 ${doorW/2} ${floorY - doorH + doorW/2} L ${doorW/2} ${floorY} Z`
+            : `M ${-doorW/2} ${floorY} L ${-doorW/2} ${floorY - doorH} L ${doorW/2} ${floorY - doorH} L ${doorW/2} ${floorY} Z`
+          }}
+          transition={transition}
+        />
+        {h > 1 && (
+          <motion.path
+            d={
+              c >= 3 
+              ? `M ${-doorW/2 - 14} ${floorY} L ${-doorW/2 - 14} ${floorY - doorH + doorW/2} A ${doorW/2 + 14} ${doorW/2 + 14} 0 0 1 ${doorW/2 + 14} ${floorY - doorH + doorW/2} L ${doorW/2 + 14} ${floorY} Z`
+              : `M ${-doorW/2 - 14} ${floorY} L ${-doorW/2 - 14} ${floorY - doorH - 14} L ${doorW/2 + 14} ${floorY - doorH - 14} L ${doorW/2 + 14} ${floorY} Z`
+            }
+            fill="none" stroke="#78716c" strokeWidth="3"
+            transition={transition}
           />
-          <Canvas 
-            elements={liveElements} 
-            label={trans.construct.emergingOrder}
-            isEmerging={true}
-            metrics={metrics}
-          />
-        </div>
+        )}
+      </motion.g>
 
-        <div className="mt-6 text-center">
-          <p className="text-stone-400 font-serif italic text-lg opacity-80">
-            {trans.construct.footerPrompt}
-          </p>
-        </div>
-      </div>
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        const colW = 28; 
+        const spacing = (porticoW - colW) / 7;
+        const px = -porticoW/2 + (spacing * i);
 
-      <div className="w-96 border-l border-stone-200 bg-white p-10 flex flex-col z-10 shadow-xl shadow-stone-200/50">
-        <div className="mb-12 text-center">
-           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-6">{trans.construct.vitality}</h2>
-           
-           <div className="relative py-8 px-4 bg-stone-50 rounded-lg border border-stone-100 mb-4 transition-colors duration-1000"
-                style={{ backgroundColor: `rgba(231, 229, 228, ${metrics.L / 200})` }}
-           >
-              <div className="text-5xl font-serif text-stone-800 font-medium mb-2 transition-all duration-1000"
-                   style={{ 
-                     textShadow: `0 0 ${metrics.L / 10}px rgba(168, 162, 158, 0.5)`
-                   }}
-              >
-                L = {metrics.L.toFixed(0)}
-              </div>
-              <div className="text-xs font-mono text-stone-500 flex justify-center gap-4">
-                 <span>S: {metrics.S.toFixed(0)}</span>
-                 <span>×</span>
-                 <span>H: {metrics.H.toFixed(0)}</span>
-              </div>
-           </div>
-           
-           <p className="text-xs text-stone-400 leading-relaxed">
-             {trans.construct.insight} <br/>{trans.construct.insightSub}
-           </p>
-        </div>
+        return (
+          <motion.g key={`main-col-${i}`}>
+            <rect x={px} y={mainRoofY} width={colW} height={porticoH} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2" />
+            <rect x={px - 6} y={floorY - 14} width={colW + 12} height={14} fill="#e7e5e4" stroke="#78716c" strokeWidth="2" />
+            <rect x={px - 6} y={mainRoofY} width={colW + 12} height={18} fill="#e7e5e4" stroke="#78716c" strokeWidth="2" />
+            {h > 2 && <rect x={px - 8} y={mainRoofY + 18} width={colW + 16} height={8} fill="#d6d3d1" stroke="#78716c" strokeWidth="2" />}
+            {h > 3 && (
+              <>
+                <line x1={px + 8} y1={mainRoofY + 26} x2={px + 8} y2={floorY - 14} stroke="#d6d3d1" strokeWidth="2.5" />
+                <line x1={px + 20} y1={mainRoofY + 26} x2={px + 20} y2={floorY - 14} stroke="#d6d3d1" strokeWidth="2.5" />
+              </>
+            )}
+          </motion.g>
+        );
+      })}
 
-        <div className="space-y-10">
-           <div className="space-y-4">
-             <div className="flex justify-between text-xs uppercase tracking-wider text-stone-500 font-medium">
-               <label>{trans.construct.controls.depth}</label>
-             </div>
-             <Slider 
-               value={[params.depth]} 
-               min={0} max={1} step={0.05}
-               onValueChange={(v) => setParams(p => ({ ...p, depth: v[0] }))}
-               className="py-1"
-             />
-           </div>
+      <g>
+        <rect x={-porticoW/2 - 16} y={mainRoofY - 34} width={porticoW + 32} height={34} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2.5" />
+        <rect x={-porticoW/2 - 24} y={mainRoofY - 56} width={porticoW + 48} height={22} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" />
+        <motion.polygon points={`${-porticoW/2 - 36},${mainRoofY - 56} ${porticoW/2 + 36},${mainRoofY - 56} 0,${mainRoofY - 200}`} fill="url(#wallLight)" stroke="#78716c" strokeWidth="2.5" animate={{ points: `${-porticoW/2 - 36},${mainRoofY - 56} ${porticoW/2 + 36},${mainRoofY - 56} 0,${mainRoofY - 200 - c*8}` }} transition={transition} />
+        {h > 1 && <motion.polygon points={`${-porticoW/2 + 24},${mainRoofY - 74} ${porticoW/2 - 24},${mainRoofY - 74} 0,${mainRoofY - 165}`} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2" animate={{ points: `${-porticoW/2 + 24},${mainRoofY - 74} ${porticoW/2 - 24},${mainRoofY - 74} 0,${mainRoofY - 165 - c*8}` }} transition={transition} />}
+        {h >= 4 && (
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+            <circle cx={0} cy={mainRoofY - 225 - c*8} r={12} fill="#a8a29e" />
+            <path d={`M -10 ${mainRoofY - 200 - c*8} L 0 ${mainRoofY - 240 - c*8} L 10 ${mainRoofY - 200 - c*8} Z`} fill="#a8a29e" />
+            <circle cx={-porticoW/2 - 36} cy={mainRoofY - 75} r={10} fill="#a8a29e" />
+            <circle cx={porticoW/2 + 36} cy={mainRoofY - 75} r={10} fill="#a8a29e" />
+          </motion.g>
+        )}
+      </g>
 
-           <div className="space-y-4">
-             <div className="flex justify-between text-xs uppercase tracking-wider text-stone-500 font-medium">
-               <label>{trans.construct.controls.center}</label>
-             </div>
-             <Slider 
-               value={[params.center]} 
-               min={0} max={1} step={0.05}
-               onValueChange={(v) => setParams(p => ({ ...p, center: v[0] }))}
-               className="py-1"
-             />
-           </div>
-
-           <div className="space-y-4">
-             <div className="flex justify-between text-xs uppercase tracking-wider text-stone-500 font-medium">
-               <label>{trans.construct.controls.boundary}</label>
-             </div>
-             <Slider 
-               value={[params.boundary]} 
-               min={0} max={1} step={0.05}
-               onValueChange={(v) => setParams(p => ({ ...p, boundary: v[0] }))}
-               className="py-1"
-             />
-           </div>
-        </div>
-      </div>
-    </div>
+      {/* ================= 纯净的唯一底层基座 ================= */}
+      {/* 代码里只有这一个 <g> 渲染台阶，请确保完全覆盖文件！ */}
+      <g>
+        {Array.from({ length: stepCount }).map((_, i) => {
+          const stepW = buildingTotalW + 100 + i * 40;
+          const stepY = floorY + i * stepHeight; 
+          return (
+            <motion.rect
+              key={`step-layer-${i}`}
+              y={stepY} height={stepHeight}
+              fill={i % 2 === 0 ? "url(#wallLight)" : "url(#wallDark)"} 
+              stroke="#78716c" strokeWidth="2"
+              initial={{ opacity: 0, x: -stepW / 2, width: stepW }} 
+              animate={{ opacity: 1, x: -stepW / 2, width: stepW }}
+              transition={{ ...transition, delay: i * 0.02 }} 
+            />
+          );
+        })}
+      </g>
+    </motion.svg>
   );
 }
