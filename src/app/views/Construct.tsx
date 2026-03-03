@@ -17,45 +17,87 @@ export function Construct() {
   const L = S * H;
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] py-4 md:py-12 px-3 md:px-4 font-sans flex flex-col items-center">
-      <div className="mx-auto max-w-7xl space-y-4 md:space-y-8 w-full flex-1 flex flex-col">
+    <div className="min-h-screen bg-[#fafaf9] py-8 md:py-12 px-4 font-sans">
+      <div className="mx-auto max-w-7xl space-y-6 md:space-y-8 w-full">
         
         <div>
-          <h1 className="text-xl md:text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
-          <p className="mt-1.5 md:mt-3 text-[13px] md:text-base text-stone-600 max-w-2xl leading-snug">
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
+          <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-2xl leading-snug">
             {isEn 
               ? "Observe how a grand classical building evolves. Real vitality comes from mathematically strict yet organically nested proportions." 
               : "观察一座宏伟古典建筑的演化。真正的生命力源于严谨的建筑比例与不可分割的层级嵌套。拖动滑块，感受秩序的涌现。"}
           </p>
         </div>
 
-        {/* 核心修改：DOM 结构重排 */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 md:gap-8 items-start w-full flex-1">
+        {/* 核心布局引擎：电脑端使用 12 列网格，手机端使用上下堆叠 */}
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8 items-start w-full">
           
           {/* ============================== */}
-          {/* 右侧：控制面板 (DOM 第一部分) */}
-          {/* 核心修改：手机端顶置，再次缩小尺寸以适配一屏 */}
+          {/* 左侧区域：建筑可视化 */}
+          {/* 魔法指令：lg:order-1 (电脑端排第1，即左侧) | order-2 (手机端排第2，即下面) */}
           {/* ============================== */}
-          <div className="lg:col-span-4 space-y-3 md:space-y-6 w-full lg:sticky lg:top-8">
+          <div className="order-2 lg:order-1 lg:col-span-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
             
-            {/* 核心公式展示板：极致缩小手机端尺寸 */}
-            <Card className="bg-stone-100 border-none p-4 md:p-8 text-center relative overflow-hidden shadow-inner flex flex-col items-center">
+            {/* 初始状态参照 */}
+            {/* 魔法指令：hidden lg:block (手机端绝对隐藏，释放空间；仅在电脑大屏显示) */}
+            <div className="hidden lg:block w-full">
+              <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
+                <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+                  {isEn ? "Initial State" : "初始状态"} (H:1, C:1, B:1)
+                </div>
+                <div className="flex-1 flex items-center justify-center w-full h-full">
+                  <ParametricBuilding h={1} c={1} b={1} />
+                </div>
+                <div className="text-center text-xs font-mono text-stone-400 tracking-widest pb-4">
+                  PRIMITIVE MASS
+                </div>
+              </Card>
+            </div>
+
+            {/* 涌现秩序 (动态交互) */}
+            <Card className="bg-white p-0 h-[420px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden w-full">
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                {isEn ? "Living Structure" : "生命力结构"}
+              </div>
+              
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafaf9_1px,transparent_1px),linear-gradient(to_bottom,#fafaf9_1px,transparent_1px)] bg-[size:1rem_1rem] opacity-40" />
+              
+              <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-2 md:p-4 pt-10 md:pt-12">
+                <ParametricBuilding h={hierarchy} c={center} b={boundary} />
+              </div>
+              
+              <div className="text-center text-[10px] md:text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-4 md:pb-6">
+                EMERGENT ORDER
+              </div>
+            </Card>
+
+          </div>
+
+          {/* ============================== */}
+          {/* 右侧区域：控制面板 */}
+          {/* 魔法指令：lg:order-2 (电脑端排第2，即右侧) | order-1 (手机端排第1，即最顶端插队) */}
+          {/* ============================== */}
+          <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full lg:sticky lg:top-8">
+            
+            <Card className="bg-stone-100 border-none p-5 md:p-8 text-center relative overflow-hidden shadow-inner">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
-              <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-2 md:mb-6">
+              <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 md:mb-6">
                 {isEn ? "Livingness Formula" : "生命力计算公式"}
               </div>
               
-              <div className="flex flex-col items-center justify-center space-y-1.5 md:space-y-4">
-                <div className="text-lg md:text-2xl font-mono font-bold text-stone-400 tracking-widest">
+              <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4">
+                <div className="text-xl md:text-2xl font-mono font-bold text-stone-400 tracking-widest">
                   L = S × H
                 </div>
                 
-                <div className="flex items-center justify-center gap-1.5 md:gap-4 text-2xl md:text-4xl font-mono text-stone-700">
+                <div className="flex items-center justify-center gap-2 md:gap-4 text-3xl md:text-4xl font-mono text-stone-700">
                   <motion.span 
                     key={`L-${L}`}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-5xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
+                    className="text-6xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
                   >
                     {L}
                   </motion.span>
@@ -66,14 +108,13 @@ export function Construct() {
                 </div>
               </div>
 
-              <div className="mt-3 md:mt-8 text-[10px] md:text-xs text-stone-500 font-medium flex justify-center gap-2.5 md:gap-6">
+              <div className="mt-4 md:mt-8 text-[10px] md:text-xs text-stone-500 font-medium flex justify-center gap-4 md:gap-6">
                 <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-stone-300"></span> S: 子结构总数</span>
                 <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-teal-400"></span> H: 嵌套层级</span>
               </div>
             </Card>
 
-            {/* 控制面板：再次缩小手机端内边距和滑块尺寸 */}
-            <Card className="bg-white p-3 md:p-6 space-y-3.5 md:space-y-10 shadow-sm border-stone-200">
+            <Card className="bg-white p-4 md:p-6 space-y-6 md:space-y-10 shadow-sm border-stone-200">
               <SliderControl 
                 label={isEn ? "Hierarchy (Scale)" : "层级深度 (Hierarchy)"}
                 value={hierarchy} setValue={setHierarchy}
@@ -92,46 +133,6 @@ export function Construct() {
             </Card>
           </div>
 
-          {/* ============================== */}
-          {/* 左侧：建筑可视化区 (DOM 第二部分) */}
-          {/* 核心修改：手机端彻底隐藏静态图，图形高度再次适应适配 */}
-          {/* ============================== */}
-          <div className="lg:col-span-8 flex flex-col gap-4 md:gap-6 w-full flex-1">
-            
-            {/* 涌现秩序 (动态交互) */}
-            {/* 核心修改：手机端高度改为适应适配，确保一屏内可见，高度从 450px 再次缩小 */}
-            <Card className="bg-white p-0 h-[380px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden">
-              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
-                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                {isEn ? "Living Structure" : "生命力结构"}
-              </div>
-              
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafaf9_1px,transparent_1px),linear-gradient(to_bottom,#fafaf9_1px,transparent_1px)] bg-[size:1rem_1rem] opacity-40" />
-              
-              <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-2 md:p-4 pt-8 md:pt-12">
-                <ParametricBuilding h={hierarchy} c={center} b={boundary} />
-              </div>
-              
-              <div className="text-center text-[10px] md:text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-3 md:pb-6">
-                EMERGENT ORDER
-              </div>
-            </Card>
-
-            {/* 初始状态参照 */}
-            {/* 核心修改：在手机端通过 `hidden md:flex` 隐藏此静态参照图，以释放出一屏空间给动态图和滑块。 */}
-            <Card className="hidden md:flex bg-white md:p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
-              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
-                {isEn ? "Initial State" : "初始状态"} (H:1, C:1, B:1)
-              </div>
-              <div className="flex-1 flex items-center justify-center w-full h-full">
-                <ParametricBuilding h={1} c={1} b={1} />
-              </div>
-              <div className="text-center text-[10px] md:text-xs font-mono text-stone-400 tracking-widest pb-2 md:pb-4">
-                PRIMITIVE MASS
-              </div>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
@@ -140,7 +141,7 @@ export function Construct() {
 
 function SliderControl({ label, value, setValue, desc }: { label: string, value: number, setValue: (v: number) => void, desc: string }) {
   return (
-    <div className="space-y-1.5 group">
+    <div className="space-y-2 group">
       <div className="flex justify-between items-end">
         <label className="text-[13px] md:text-sm font-bold text-stone-800 tracking-wide transition-colors group-hover:text-teal-700">{label}</label>
         <span className="font-mono text-lg md:text-xl font-black text-teal-600">{value}</span>
@@ -150,7 +151,7 @@ function SliderControl({ label, value, setValue, desc }: { label: string, value:
         min="1" max="5" step="1"
         value={value}
         onChange={(e) => setValue(Number(e.target.value))}
-        className="w-full h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
+        className="w-full h-1.5 md:h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
       />
       <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase">
         <span>Low</span>
@@ -163,18 +164,14 @@ function SliderControl({ label, value, setValue, desc }: { label: string, value:
 
 // ============================================================================
 // 🏛️ 绝对纯净的古典引擎 (Zero-Ghost Engine)
-// 确保所有坐标严格基于绝对锚点 floorY，无任何多余的渲染循环
 // ============================================================================
 function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
-  
-  // 1. 绝对地平线锚定 (建筑向上，台阶向下，绝不脱离)
   const floorY = 700;      
   const mainRoofY = 280;   
   const porticoH = floorY - mainRoofY; 
 
   const transition = { type: "tween", ease: "easeInOut", duration: 0.5 };
 
-  // 2. 水平维度
   const porticoW = 460; 
   const wingW = (b - 1) * 200; 
   const wingH = porticoH * 0.65; 
@@ -182,11 +179,10 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
   
   const buildingTotalW = porticoW + 2 * wingW; 
 
-  // 3. 基座维度
   const stepCount = h * 2 + 1; 
   const stepHeight = 12; 
   
-  // 4. 自适应视口，始终居中
+  // 巧妙的缩放逻辑：当建筑变宽时，内部 viewBox 自动变大，从而让建筑整体等比缩小以适应屏幕，绝不会被切掉
   const viewBoxW = Math.max(1200, buildingTotalW + 300); 
   const viewBoxH = 950;
 
@@ -196,10 +192,9 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
   const doorH = 160 + c * 30;
 
   return (
-    // 核心修改：在最外层 SVG 容器上设置 `overflow-x-auto` 或 `overflow-visible`，从而允许建筑随着侧翼连廊（Boundary (Wings)）的延伸而自动产生滚动条，而不被切掉。同时，viewBox 的计算逻辑已经基于建筑宽度，这是一个很好的基础。
     <motion.svg 
       viewBox={`${-viewBoxW/2} 0 ${viewBoxW} ${viewBoxH}`} 
-      className="w-full h-full overflow-x-auto overflow-y-hidden drop-shadow-md"
+      className="w-full h-full drop-shadow-md overflow-visible"
       animate={{ viewBox: `${-viewBoxW/2} 0 ${viewBoxW} ${viewBoxH}` }} 
       transition={transition}
     >
@@ -226,7 +221,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
         </radialGradient>
       </defs>
 
-      {/* --- 中心圣光 --- */}
       <motion.circle
         cx={0} cy={mainRoofY + 120} r={c * 80 + 80}
         fill="url(#centerGlow)"
@@ -234,7 +228,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
         transition={transition}
       />
 
-      {/* ================= 远景层：万神殿穹顶 ================= */}
       <AnimatePresence>
         {showDome && (
           <motion.g
@@ -259,7 +252,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
         )}
       </AnimatePresence>
 
-      {/* ================= 中景层：侧翼副楼 ================= */}
       <motion.g animate={{ opacity: b > 1 ? 1 : 0 }} transition={transition}>
         <motion.rect y={wingRoofY} height={wingH} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2.5" initial={{ x: -porticoW/2, width: 0 }} animate={{ x: -porticoW/2 - wingW, width: wingW }} transition={transition} />
         <motion.rect y={wingRoofY} height={wingH} fill="url(#wallDark)" stroke="#78716c" strokeWidth="2.5" initial={{ x: porticoW/2, width: 0 }} animate={{ x: porticoW/2, width: wingW }} transition={transition} />
@@ -301,7 +293,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
         })}
       </motion.g>
 
-      {/* ================= 前景层：中央神庙 ================= */}
       <rect x={-porticoW/2} y={mainRoofY} width={porticoW} height={porticoH} fill="#d6d3d1" stroke="#78716c" strokeWidth="2.5" />
 
       <motion.g>
@@ -368,7 +359,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
         )}
       </g>
 
-      {/* ================= 纯净的唯一底层基座 ================= */}
       <g>
         {Array.from({ length: stepCount }).map((_, i) => {
           const stepW = buildingTotalW + 100 + i * 40;
