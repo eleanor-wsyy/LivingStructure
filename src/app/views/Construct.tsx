@@ -17,39 +17,44 @@ export function Construct() {
   const L = S * H;
 
   return (
-    <div className="min-h-screen bg-[#fafaf9] py-12 px-4 font-sans">
-      <div className="mx-auto max-w-7xl space-y-8">
+    // 增加 md:py-12 让手机端上下留白少一点
+    <div className="min-h-screen bg-[#fafaf9] py-6 md:py-12 px-4 font-sans">
+      <div className="mx-auto max-w-7xl space-y-6 md:space-y-8">
         
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
-          <p className="mt-3 text-stone-600 max-w-2xl">
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
+          <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-2xl">
             {isEn 
               ? "Observe how a grand classical building evolves. Real vitality comes from mathematically strict yet organically nested proportions." 
               : "观察一座宏伟古典建筑的演化。真正的生命力源于严谨的建筑比例与不可分割的层级嵌套。拖动滑块，感受秩序的涌现。"}
           </p>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-12 items-start">
+        {/* 主体网格区：手机端单列，大屏12列 */}
+        <div className="grid gap-6 md:gap-8 lg:grid-cols-12 items-start">
           
           {/* 左侧：建筑可视化区 */}
-          <div className="lg:col-span-8 grid grid-cols-2 gap-6">
+          {/* 核心修复：手机端 grid-cols-1，大屏 lg:grid-cols-2 */}
+          <div className="lg:col-span-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             
             {/* 初始状态参照 */}
-            <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
-              <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
+            {/* 核心修复：手机端高度改为 h-[350px]，大屏保持 lg:h-[700px] */}
+            <Card className="bg-white p-4 md:p-6 h-[350px] lg:h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
                 {isEn ? "Initial State" : "初始状态"} (H:1, C:1, B:1)
               </div>
               <div className="flex-1 flex items-center justify-center w-full h-full">
                 <ParametricBuilding h={1} c={1} b={1} />
               </div>
-              <div className="text-center text-xs font-mono text-stone-400 tracking-widest pb-4">
+              <div className="text-center text-[10px] md:text-xs font-mono text-stone-400 tracking-widest pb-2 md:pb-4">
                 PRIMITIVE MASS
               </div>
             </Card>
 
             {/* 涌现秩序 (动态交互) */}
-            <Card className="bg-white p-0 h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden">
-              <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
+            {/* 核心修复：手机端高度改为 h-[450px]（主图给大点空间），大屏 lg:h-[700px] */}
+            <Card className="bg-white p-0 h-[450px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden">
+              <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
                 {isEn ? "Living Structure" : "生命力结构"}
               </div>
@@ -58,37 +63,37 @@ export function Construct() {
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#fafaf9_1px,transparent_1px),linear-gradient(to_bottom,#fafaf9_1px,transparent_1px)] bg-[size:1rem_1rem] opacity-40" />
               
-              <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-4 pt-12">
+              <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-2 md:p-4 pt-8 md:pt-12">
                 <ParametricBuilding h={hierarchy} c={center} b={boundary} />
               </div>
               
-              <div className="text-center text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-6">
+              <div className="text-center text-[10px] md:text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-4 md:pb-6">
                 EMERGENT ORDER
               </div>
             </Card>
           </div>
 
           {/* 右侧：控制面板 */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-4 md:space-y-6">
             
             {/* 核心公式展示板 */}
-            <Card className="bg-stone-100 border-none p-8 text-center relative overflow-hidden shadow-inner">
+            <Card className="bg-stone-100 border-none p-6 md:p-8 text-center relative overflow-hidden shadow-inner">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
-              <div className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-6">
+              <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-4 md:mb-6">
                 {isEn ? "Livingness Formula" : "生命力计算公式"}
               </div>
               
-              <div className="flex flex-col items-center justify-center space-y-4">
-                <div className="text-2xl font-mono font-bold text-stone-400 tracking-widest">
+              <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4">
+                <div className="text-xl md:text-2xl font-mono font-bold text-stone-400 tracking-widest">
                   L = S × H
                 </div>
                 
-                <div className="flex items-center justify-center gap-4 text-4xl font-mono text-stone-700">
+                <div className="flex items-center justify-center gap-2 md:gap-4 text-3xl md:text-4xl font-mono text-stone-700">
                   <motion.span 
                     key={`L-${L}`}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
+                    className="text-5xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
                   >
                     {L}
                   </motion.span>
@@ -99,13 +104,13 @@ export function Construct() {
                 </div>
               </div>
 
-              <div className="mt-8 text-xs text-stone-500 font-medium flex justify-center gap-6">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-stone-300"></span> S: 子结构总数</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-teal-400"></span> H: 嵌套层级</span>
+              <div className="mt-6 md:mt-8 text-[10px] md:text-xs text-stone-500 font-medium flex justify-center gap-4 md:gap-6">
+                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-stone-300"></span> S: 子结构总数</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-teal-400"></span> H: 嵌套层级</span>
               </div>
             </Card>
 
-            <Card className="bg-white p-6 space-y-10 shadow-sm border-stone-200">
+            <Card className="bg-white p-5 md:p-6 space-y-8 md:space-y-10 shadow-sm border-stone-200">
               <SliderControl 
                 label={isEn ? "Hierarchy (Scale)" : "层级深度 (Hierarchy)"}
                 value={hierarchy} setValue={setHierarchy}
@@ -128,6 +133,8 @@ export function Construct() {
     </div>
   );
 }
+
+// ... 下面保留你原本的 SliderControl 和 ParametricBuilding 函数即可 ...
 
 function SliderControl({ label, value, setValue, desc }: { label: string, value: number, setValue: (v: number) => void, desc: string }) {
   return (
