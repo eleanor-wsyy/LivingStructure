@@ -26,7 +26,6 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
     { id: "library", label: trans.nav.library, icon: LibraryIcon },
-    
   ];
 
   const appTitle = language === 'zh' ? "活力结构" : "Living Structure";
@@ -37,7 +36,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
   }, [studioTitle]);
 
   return (
-    <div className="flex h-screen bg-[#FDFBF7] font-sans text-stone-900 selection:bg-stone-200 overflow-hidden relative">
+    // 修改 1：使用 h-[100dvh] 完美适配手机浏览器的高度（避开上下工具栏），增加 w-full
+    <div className="flex h-[100dvh] w-full bg-[#FDFBF7] font-sans text-stone-900 selection:bg-stone-200 overflow-hidden relative">
       
       {/* Texture Overlay */}
       <div 
@@ -178,7 +178,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
         </AnimatePresence>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden relative">
+        {/* 修改 2：增加 flex 和 flex-col 让主区域能纵向伸展 */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden relative flex flex-col">
            {/* Top Search Bar (Desktop only essentially, but keeping clean) */}
            <div className="hidden md:flex h-14 items-center justify-between border-b border-stone-200/50 bg-white/40 backdrop-blur px-8 sticky top-0 z-10">
               <div className="flex items-center text-xs text-stone-400 gap-2">
@@ -195,7 +196,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
               </div>
            </div>
            
-           <div className="h-full relative z-0">
+           {/* 修改 3：将 h-full 改为 min-h-full w-full flex-1 让内部容器自适应高度 */}
+           <div className="min-h-full w-full flex-1 relative z-0 flex flex-col">
              {children}
            </div>
         </main>
