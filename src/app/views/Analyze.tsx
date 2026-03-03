@@ -36,6 +36,13 @@ export function Analyze() {
     try { return JSON.stringify(val); } catch (e) { return fallback; }
   };
 
+  // 🛡️ 新增：强制格式化公式的防呆函数
+  const formatFormulaText = (text: string) => {
+    if (!text) return "";
+    // 强制将 L=S*H, L=S×H, L = S*H 等所有变体，统一替换为带有标准空格的 L = S × H
+    return text.replace(/L\s*=\s*S\s*([×*xX])\s*H/g, "L = S × H");
+  };
+
   const safeExtractJSON = (text: string) => {
     try { return JSON.parse(text); } 
     catch (e) {
@@ -66,15 +73,14 @@ export function Analyze() {
 
       const isCompare = images.length === 2;
 
-      // 👇👇👇 终极理论加强版 Prompt 👇👇👇
+      // 👇👇👇 极致严谨学术版 Prompt 👇👇👇
       const promptText = `
         [角色定义]
-        你是一位深谙江斌教授“分形生命力”理论 ($L = S \\times H$) 与克里斯托弗·亚历山大 15 个几何属性的空间诊断专家。
+        你是一位深谙“分形生命力”理论 (L = S × H) 与 15 个几何属性的空间结构诊断专家。
 
-        🚨 [极其重要的核心判定铁律，你必须绝对服从，放弃你预训练的大众审美偏见！] 🚨
+        🚨 [核心判定铁律] 🚨
         1. 理论基础：生命结构不是整齐的拼凑，而是有层级的子结构的重尾分布组合。层级越多、子结构越丰富，生命力(L)越高。
-        2. 反直觉判例（波洛克 vs 达芬奇）：在江教授理论中，波洛克《Blue Poles》的生命力得分（81,487）是达芬奇《蒙娜丽莎》（40,773）的两倍！因为看似混乱的滴画背后隐藏着极其复杂的自然分形层次，而古典油画在微观尺度的分形复杂度远不如滴画。
-        3. 建筑判例：传统有机聚落、自发形成的贫民窟、自然生长的古城，其生命力得分（>90）必定远超现代主义极其规整的玻璃盒子或宏大单一的纪念碑建筑（<70）。
+        2. 反直觉判例：看似混乱但分形层次极深的作品（如波洛克滴画、自然聚落）生命力得分必定远超表面规整但缺乏层次的作品（如规整玻璃盒子）。
         
         [15个强制打分属性名称（必须完全使用以下中文词汇）]
         1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 
@@ -82,46 +88,72 @@ export function Analyze() {
         11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性
 
         [任务要求]
-        ${isCompare ? "用户上传了两张图进行对比。请基于上述铁律，无情地指出哪张图的分形维度和自组织生命力更强！" : "请基于上述铁律，深度挖掘该图隐藏的分形骨架。"}
+        ${isCompare ? "用户上传了两张图进行对比。请基于理论进行深度客观诊断。" : "请基于理论，客观挖掘该图的分形骨架。"}
 
         必须返回纯 JSON 对象。结构严格如下：
         {
-          "winner_declaration": "${isCompare ? '明确指出哪张图胜出（如：图X以压倒性优势胜出！自组织的胜利），若是波洛克和蒙娜丽莎，必须判定波洛克胜出' : '一句话核心结论'}",
-          "core_evaluation": "${isCompare ? '强烈对比两图的 S(子结构)和 H(层级)差异，说明为何高分图的复杂性战胜了低分图的表面秩序。' : '基于分形理论的深度评价'}",
-          "expert_footnote": "专家注脚：引用江教授的‘重尾分布’、‘反直觉的生命力测算’等观点进行解释。",
+          "winner_declaration": "${isCompare ? '客观指出哪张图生命力得分更高（例：图1的生命力显著高于图2）。保持学术严谨，禁止使用任何主观夸张、中二的名词' : '客观严谨的一句话核心结论'}",
+          "core_evaluation": "${isCompare ? '对比两图的 S(子结构)和 H(层级)差异，说明得分差异的客观原因。' : '基于分形理论的深度评价'}",
+          "expert_footnote": "专家注脚：引用‘重尾分布’、‘不可分离性’等概念进行学术解释。",
           "visual_decoding": "视觉与层级解码...",
-          "formula_analysis": "结合 L=S×H 的公式验证...",
-          "personal_perspective": "生活体验视角的散文短评...",
+          "formula_analysis": "结合 L = S × H 的公式推演。注意：字母和符号之间必须有空格（必须写成 L = S × H）。${isCompare ? '图1和图2的分析必须分两段书写，两段之间留出一个空行换行。' : ''}",
+          "personal_perspective": "空间体验视角的简评...",
           "action_advice_urban": "宏观织补策略...",
           "action_advice_personal": "微观空间优化建议...",
-          "summary": "一句充满哲理的总结升华。",
+          "summary": "一句简明的学术总结。",
           "image_stats": [
             {
-              "vitality_score": ${isCompare ? "图1的分数(1-100)，必须严格基于 L=S×H 原则打分" : "该图分数"},
-              "top_attributes": [
-                {"name": "尺度层次", "score": 9.5, "desc": "${isCompare ? "图1的具体表现" : "具体表现"}"},
-                {"name": "深度交织与模糊性", "score": 8.0, "desc": "..."}
+              "vitality_score": ${isCompare ? "图1的分数(1-100)" : "该图分数"},
+              "all_attributes": [
+                {"name": "尺度层次", "score": 9.5, "desc": "客观描述..."},
+                {"name": "强中心", "score": 8.0, "desc": "客观描述..."},
+                {"name": "边界", "score": 7.5, "desc": "客观描述..."},
+                {"name": "交替重复", "score": 7.0, "desc": "客观描述..."},
+                {"name": "正空间", "score": 8.5, "desc": "客观描述..."},
+                {"name": "良好形状", "score": 6.0, "desc": "客观描述..."},
+                {"name": "局部对称", "score": 7.5, "desc": "客观描述..."},
+                {"name": "深度交织与模糊性", "score": 8.0, "desc": "客观描述..."},
+                {"name": "对比", "score": 9.0, "desc": "客观描述..."},
+                {"name": "渐变", "score": 7.5, "desc": "客观描述..."},
+                {"name": "粗糙性", "score": 8.5, "desc": "客观描述..."},
+                {"name": "共鸣", "score": 9.0, "desc": "客观描述..."},
+                {"name": "虚空", "score": 7.0, "desc": "客观描述..."},
+                {"name": "简洁与内在平静", "score": 6.5, "desc": "客观描述..."},
+                {"name": "非分离性", "score": 8.5, "desc": "客观描述..."}
               ]
             }${isCompare ? `,
             {
               "vitality_score": 图2的分数(1-100),
-              "top_attributes": [
-                {"name": "强中心", "score": 2.5, "desc": "图2的具体表现"},
-                {"name": "粗糙性", "score": 9.0, "desc": "..."}
+              "all_attributes": [
+                {"name": "尺度层次", "score": 7.0, "desc": "客观描述..."},
+                {"name": "强中心", "score": 6.0, "desc": "客观描述..."},
+                {"name": "边界", "score": 5.5, "desc": "客观描述..."},
+                {"name": "交替重复", "score": 6.0, "desc": "客观描述..."},
+                {"name": "正空间", "score": 5.0, "desc": "客观描述..."},
+                {"name": "良好形状", "score": 8.0, "desc": "客观描述..."},
+                {"name": "局部对称", "score": 8.5, "desc": "客观描述..."},
+                {"name": "深度交织与模糊性", "score": 4.0, "desc": "客观描述..."},
+                {"name": "对比", "score": 5.0, "desc": "客观描述..."},
+                {"name": "渐变", "score": 6.5, "desc": "客观描述..."},
+                {"name": "粗糙性", "score": 3.0, "desc": "客观描述..."},
+                {"name": "共鸣", "score": 4.0, "desc": "客观描述..."},
+                {"name": "虚空", "score": 8.0, "desc": "客观描述..."},
+                {"name": "简洁与内在平静", "score": 8.5, "desc": "客观描述..."},
+                {"name": "非分离性", "score": 4.5, "desc": "客观描述..."}
               ]
             }
             ` : ""}
           ]
         }
       `;
-      // 👆👆👆 终极理论加强版结束 👆👆👆
+      // 👆👆👆 严谨加强版结束 👆👆👆
 
       const response = await openai.chat.completions.create({
         model: "qwen-vl-max", 
         messages: [
           {
             role: "system",
-            content: "你是一位精通分形几何与江斌教授‘活力结构’理论的专家。你完全抛弃了世俗对美的刻板印象，唯以结构的复杂性和层级深度来衡量生命力。"
+            content: "你是一位精通分形几何与‘活力结构’理论的学术专家。你的语言必须绝对客观、严谨，剔除任何情绪化或网络流行语表达。必须严格按照提供的 JSON 格式模板输出，不允许省略任何一个属性数组。"
           },
           {
             role: "user",
@@ -152,11 +184,9 @@ export function Analyze() {
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
 
   return (
-    // 增加 md:py-12 使手机端内边距更舒适
     <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
       <div className="mx-auto max-w-7xl">
         
-        {/* 顶部进度条：适配手机端的小号间距和缩小的连接线 */}
         <div className="mb-8 md:mb-12 flex justify-center">
           <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
              <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
@@ -219,13 +249,10 @@ export function Analyze() {
             )}
 
             {step === "results" && analysisResult && (
-              // 核心修复 1：手机端 flex-col 允许 order 排序，大屏幕恢复网格
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col lg:grid gap-6 md:gap-10 lg:grid-cols-12">
                 
-                {/* 核心修复 2：将报告区域在手机端设为次要展示（order-2），大屏幕为主要（order-1） */}
                 <div className="order-2 lg:order-1 lg:col-span-8 space-y-6 md:space-y-8 w-full">
                   
-                  {/* 图片展示卡片：手机高度自适应缩小，防止占满全屏 */}
                   <motion.div 
                     initial={{ scale: 0.98, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -286,8 +313,9 @@ export function Analyze() {
                         <h4 className="font-mono font-bold text-teal-400 mb-2 md:mb-3 text-xs md:text-sm tracking-wider flex items-center gap-2">
                           <BarChart3 className="w-4 h-4" /> L = S × H 公式推演
                         </h4>
+                        {/* 🛡️ 这里调用了防呆函数，强制规范公式格式并保留 AI 输出的换行符 */}
                         <p className="text-stone-300 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(analysisResult.formula_analysis)}
+                          {formatFormulaText(safeText(analysisResult.formula_analysis))}
                         </p>
                       </div>
                     </div>
@@ -326,7 +354,6 @@ export function Analyze() {
                   </div>
                 </div>
 
-                {/* 核心修复 3：分数卡片手机端置顶 (order-1)，让用户第一眼看到诊断得分！ */}
                 <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full">
                   <AnimatePresence mode="popLayout">
                     <motion.div
@@ -348,18 +375,19 @@ export function Analyze() {
                           )}
                           <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-1 md:mb-2 mt-4 md:mt-4">Livingness Index</div>
                           <div className="flex items-baseline justify-center text-teal-600">
-                            {/* 动态适配 100 分超大文字在手机端可能导致的换行 */}
                             <span className="text-6xl md:text-8xl font-black tracking-tighter">{safeText(currentStats?.vitality_score, "--")}</span>
                             <span className="text-lg md:text-2xl text-stone-400 font-medium ml-1">/100</span>
                           </div>
                         </div>
                         
-                        <div className="p-4 md:p-6 space-y-4 md:space-y-5 bg-white min-h-[300px] md:min-h-[400px]">
+                        {/* 调整了高度，以适应 15 个属性带来的滚动条展示 */}
+                        <div className="p-4 md:p-6 space-y-4 md:space-y-5 bg-white min-h-[400px] max-h-[600px] overflow-y-auto custom-scrollbar">
                           <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 md:mb-4 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 图 {selectedIndex + 1} 属性表现
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性表现
                           </h4>
-                          {Array.isArray(currentStats?.top_attributes) ? (
-                            currentStats.top_attributes.map((attr: any, idx: number) => (
+                          {/* 映射新版的 all_attributes 数组 */}
+                          {Array.isArray(currentStats?.all_attributes) ? (
+                            currentStats.all_attributes.map((attr: any, idx: number) => (
                               <div key={idx} className="space-y-1 md:space-y-2 group">
                                 <ScoreRow label={safeText(attr.name, "未知属性")} score={attr.score} />
                                 <p className="text-[10px] md:text-xs text-stone-500 leading-relaxed pl-1 group-hover:text-stone-800 transition-colors">
@@ -368,7 +396,7 @@ export function Analyze() {
                               </div>
                             ))
                           ) : (
-                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载详细属性...</p>
+                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载 15 项详细属性...</p>
                           )}
                         </div>
                         
@@ -398,14 +426,12 @@ function StepItem({ current, target, number, label }: { current: string, target:
       <div className={cn("flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-full text-[10px] md:text-xs font-extrabold transition-all", isActive ? "bg-stone-950 text-white md:scale-110 shadow-md" : "bg-stone-200 text-stone-500")}>
         {number}
       </div>
-      {/* 手机端隐藏部分文字或保持极简，避免过长 */}
       <span className="font-semibold text-[10px] md:text-sm hidden sm:inline-block">{label}</span>
       <span className="font-semibold text-[10px] sm:hidden">{label.slice(0, 2)}</span>
     </div>
   );
 }
 
-// 核心修复 4：ScoreRow 在极窄屏幕的截断和自适应
 function ScoreRow({ label, score }: { label: string, score: any }) {
   const safeScore = Number(score) || 0;
   return (
