@@ -152,27 +152,30 @@ export function Analyze() {
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    // 增加 md:py-12 使手机端内边距更舒适
+    <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-12 flex justify-center">
-          <div className="flex items-center gap-4 text-sm font-medium">
+        
+        {/* 顶部进度条：适配手机端的小号间距和缩小的连接线 */}
+        <div className="mb-8 md:mb-12 flex justify-center">
+          <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
              <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
-             <div className="h-px w-12 bg-stone-300" />
+             <div className="h-px w-4 md:w-12 bg-stone-300" />
              <StepItem current={step} target="processing" number={2} label={trans.analyze.step2} />
-             <div className="h-px w-12 bg-stone-300" />
+             <div className="h-px w-4 md:w-12 bg-stone-300" />
              <StepItem current={step} target="results" number={3} label={trans.analyze.step3} />
           </div>
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div key={step} className="min-h-[600px]">
+          <motion.div key={step} className="min-h-[500px]">
             {step === "upload" && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                <div className="text-center mb-8">
-                  <h2 className="text-3xl font-bold text-stone-900 tracking-tight">{trans.analyze.uploadTitle}</h2>
-                  <p className="mt-3 text-stone-600 max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8">
+                <div className="text-center mb-6 md:mb-8">
+                  <h2 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">{trans.analyze.uploadTitle}</h2>
+                  <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
                   {[0, 1].map((index) => (
                     <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-stone-50/50 bg-white")}>
                       {images[index] ? (
@@ -181,11 +184,11 @@ export function Analyze() {
                           <button onClick={() => removeImage(index)} className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 backdrop-blur-sm transition-all"><X className="h-4 w-4" /></button>
                         </>
                       ) : (
-                        <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-8 text-center">
-                          <div className="mb-5 rounded-full bg-stone-100 p-5 shadow-inner">
-                            {index === 0 ? <Upload className="h-9 w-9 text-stone-400" /> : <Plus className="h-9 w-9 text-stone-400" />}
+                        <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-6 md:p-8 text-center">
+                          <div className="mb-4 md:mb-5 rounded-full bg-stone-100 p-4 md:p-5 shadow-inner">
+                            {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-stone-400" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-stone-400" />}
                           </div>
-                          <span className="text-stone-700 font-semibold tracking-wide">
+                          <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
                             {index === 0 ? "上传主场景" : "上传对比场景 (可选)"}
                           </span>
                           <span className="text-xs text-stone-500 mt-1">支持 JPG, PNG</span>
@@ -195,8 +198,8 @@ export function Analyze() {
                     </div>
                   ))}
                 </div>
-                <div className="flex justify-center mt-12">
-                  <Button className="bg-stone-900 px-16 py-7 text-xl rounded-full shadow-lg hover:scale-105 transition-transform" onClick={startAnalysis} disabled={images.length === 0}>
+                <div className="flex justify-center mt-8 md:mt-12">
+                  <Button className="bg-stone-900 px-8 py-6 md:px-16 md:py-7 text-base md:text-xl rounded-full shadow-lg hover:scale-105 transition-transform w-full md:w-auto mx-4 md:mx-0" onClick={startAnalysis} disabled={images.length === 0}>
                     {images.length === 2 ? "开始深度对比诊断" : "开始基于活力结构的诊断"}
                   </Button>
                 </div>
@@ -204,25 +207,30 @@ export function Analyze() {
             )}
 
             {step === "processing" && (
-              <div className="flex h-[550px] flex-col items-center justify-center text-center">
-                <div className="relative mb-10 h-28 w-28">
+              <div className="flex h-[400px] md:h-[550px] flex-col items-center justify-center text-center px-4">
+                <div className="relative mb-8 md:mb-10 h-24 w-24 md:h-28 md:w-28">
                    <div className="absolute inset-0 rounded-full border-4 border-stone-200" />
                    <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
-                   <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-10 w-10 text-teal-600 animate-pulse" /></div>
+                   <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
                 </div>
-                <h2 className="text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的生命力...</h2>
-                <p className="mt-3 text-stone-600">运用 L = S × H 理论，探寻隐藏在表象下的深层分形结构...</p>
+                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的生命力...</h2>
+                <p className="mt-3 text-sm md:text-base text-stone-600">运用 L = S × H 理论，探寻隐藏在表象下的深层分形结构...</p>
               </div>
             )}
 
             {step === "results" && analysisResult && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid gap-10 lg:grid-cols-12">
-                <div className="lg:col-span-8 space-y-8">
+              // 核心修复 1：手机端 flex-col 允许 order 排序，大屏幕恢复网格
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col lg:grid gap-6 md:gap-10 lg:grid-cols-12">
+                
+                {/* 核心修复 2：将报告区域在手机端设为次要展示（order-2），大屏幕为主要（order-1） */}
+                <div className="order-2 lg:order-1 lg:col-span-8 space-y-6 md:space-y-8 w-full">
+                  
+                  {/* 图片展示卡片：手机高度自适应缩小，防止占满全屏 */}
                   <motion.div 
                     initial={{ scale: 0.98, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
-                    className="bg-white rounded-3xl p-3 shadow-md flex gap-3 h-[360px]"
+                    className="bg-white rounded-3xl p-2 md:p-3 shadow-md flex gap-2 md:gap-3 h-[240px] md:h-[360px] w-full"
                   >
                     {images.map((img, idx) => (
                       <div 
@@ -239,86 +247,87 @@ export function Analyze() {
                         <img src={img} alt={`场景 ${idx + 1}`} className="w-full h-full object-cover" />
                         {images.length === 2 && (
                           <div className={cn(
-                            "absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold transition-colors",
+                            "absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold transition-colors",
                             selectedIndex === idx ? "bg-teal-500 text-white" : "bg-black/50 text-white backdrop-blur-md"
                           )}>
-                            图 {idx + 1} {selectedIndex === idx && " (当前查看)"}
+                            图 {idx + 1} {selectedIndex === idx && " (当前)"}
                           </div>
                         )}
                       </div>
                     ))}
                   </motion.div>
                   
-                  <div className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-2 h-full bg-teal-500"></div>
-                    <h2 className="text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
+                  <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-stone-100 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
+                    <h2 className="text-xl md:text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
                       🏆 {safeText(analysisResult.winner_declaration, "生命力诊断完成")}
                     </h2>
-                    <p className="text-lg text-stone-700 font-medium leading-relaxed mt-4">
+                    <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
                       {safeText(analysisResult.core_evaluation)}
                     </p>
-                    <div className="mt-6 p-5 bg-stone-50 rounded-2xl border border-stone-100 text-stone-600 text-sm leading-relaxed italic flex gap-4">
-                      <BookOpen className="w-6 h-6 text-stone-400 shrink-0" />
+                    <div className="mt-4 md:mt-6 p-4 md:p-5 bg-stone-50 rounded-2xl border border-stone-100 text-stone-600 text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
+                      <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-stone-400 shrink-0" />
                       <span>{safeText(analysisResult.expert_footnote)}</span>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-3">
+                  <div className="space-y-4 md:space-y-6">
+                    <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
                       🔍 深度多维诊断报告
                     </h3>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="bg-stone-50 rounded-2xl p-6 border border-stone-100">
-                        <h4 className="font-bold text-stone-800 mb-3 text-sm tracking-wider">👀 视觉与层级解码</h4>
-                        <p className="text-stone-600 text-sm leading-relaxed whitespace-pre-line">
+                    <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                      <div className="bg-stone-50 rounded-2xl p-5 md:p-6 border border-stone-100">
+                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 视觉与层级解码</h4>
+                        <p className="text-stone-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.visual_decoding)}
                         </p>
                       </div>
-                      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 shadow-lg">
-                        <h4 className="font-mono font-bold text-teal-400 mb-3 text-sm tracking-wider flex items-center gap-2">
+                      <div className="bg-stone-900 text-stone-100 rounded-2xl p-5 md:p-6 shadow-lg">
+                        <h4 className="font-mono font-bold text-teal-400 mb-2 md:mb-3 text-xs md:text-sm tracking-wider flex items-center gap-2">
                           <BarChart3 className="w-4 h-4" /> L = S × H 公式推演
                         </h4>
-                        <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-line">
+                        <p className="text-stone-300 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.formula_analysis)}
                         </p>
                       </div>
                     </div>
-                    <div className="bg-amber-50/50 rounded-2xl p-6 border border-amber-100/50">
-                      <h4 className="font-bold text-amber-900 mb-3 text-sm tracking-wider">🎨 情绪与体验视角</h4>
-                      <p className="text-amber-800/90 text-sm leading-relaxed whitespace-pre-line">
+                    <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
+                      <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 情绪与体验视角</h4>
+                      <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                         {safeText(analysisResult.personal_perspective)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="space-y-6 pt-4">
-                    <h3 className="text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-3">
+                  <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
+                    <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
                       🛠️ 行动与干预指南
                     </h3>
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
-                        <h4 className="font-bold text-blue-900 mb-3 text-sm">🏙️ 宏观城建策略</h4>
-                        <p className="text-blue-800 text-sm leading-relaxed whitespace-pre-line">
+                    <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                      <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
+                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ 宏观城建策略</h4>
+                        <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_urban)}
                         </p>
                       </div>
-                      <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100">
-                        <h4 className="font-bold text-emerald-900 mb-3 text-sm">🏠 微观空间优化</h4>
-                        <p className="text-emerald-800 text-sm leading-relaxed whitespace-pre-line">
+                      <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
+                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 微观空间优化</h4>
+                        <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_personal)}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="text-center pt-8 pb-4">
-                    <p className="text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
+                  <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
+                    <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
                       "{safeText(analysisResult.summary, "复杂性孕育生命力。")}"
                     </p>
                   </div>
                 </div>
 
-                <div className="lg:col-span-4 space-y-6">
+                {/* 核心修复 3：分数卡片手机端置顶 (order-1)，让用户第一眼看到诊断得分！ */}
+                <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full">
                   <AnimatePresence mode="popLayout">
                     <motion.div
                       key={selectedIndex}
@@ -327,43 +336,44 @@ export function Analyze() {
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Card className="bg-white border-stone-200 shadow-lg rounded-3xl overflow-hidden sticky top-8">
-                        <div className="p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative">
+                      <Card className="bg-white border-stone-200 shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
+                        <div className="p-6 md:p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative">
                           {images.length === 2 && (
-                            <div className="absolute top-4 left-0 w-full flex justify-center">
-                              <span className="bg-stone-100 text-stone-500 text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
+                            <div className="absolute top-3 left-0 w-full flex justify-center">
+                              <span className="bg-stone-100 text-stone-500 text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
                                 <ImageIcon className="w-3 h-3" />
                                 正在查看图 {selectedIndex + 1} 数据
                               </span>
                             </div>
                           )}
-                          <div className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-2 mt-4">Livingness Index</div>
+                          <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-1 md:mb-2 mt-4 md:mt-4">Livingness Index</div>
                           <div className="flex items-baseline justify-center text-teal-600">
-                            <span className="text-8xl font-black tracking-tighter">{safeText(currentStats?.vitality_score, "--")}</span>
-                            <span className="text-2xl text-stone-400 font-medium ml-1">/100</span>
+                            {/* 动态适配 100 分超大文字在手机端可能导致的换行 */}
+                            <span className="text-6xl md:text-8xl font-black tracking-tighter">{safeText(currentStats?.vitality_score, "--")}</span>
+                            <span className="text-lg md:text-2xl text-stone-400 font-medium ml-1">/100</span>
                           </div>
                         </div>
                         
-                        <div className="p-6 space-y-5 bg-white min-h-[400px]">
-                          <h4 className="text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <Sparkles className="w-4 h-4" /> 图 {selectedIndex + 1} 属性表现
+                        <div className="p-4 md:p-6 space-y-4 md:space-y-5 bg-white min-h-[300px] md:min-h-[400px]">
+                          <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 md:mb-4 flex items-center gap-2">
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 图 {selectedIndex + 1} 属性表现
                           </h4>
                           {Array.isArray(currentStats?.top_attributes) ? (
                             currentStats.top_attributes.map((attr: any, idx: number) => (
-                              <div key={idx} className="space-y-2 group">
+                              <div key={idx} className="space-y-1 md:space-y-2 group">
                                 <ScoreRow label={safeText(attr.name, "未知属性")} score={attr.score} />
-                                <p className="text-xs text-stone-500 leading-relaxed pl-1 group-hover:text-stone-800 transition-colors">
+                                <p className="text-[10px] md:text-xs text-stone-500 leading-relaxed pl-1 group-hover:text-stone-800 transition-colors">
                                   {safeText(attr.desc, "")}
                                 </p>
                               </div>
                             ))
                           ) : (
-                            <p className="text-sm text-stone-400 text-center py-10">正在为您加载详细属性...</p>
+                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载详细属性...</p>
                           )}
                         </div>
                         
-                        <div className="p-4 bg-stone-50 border-t border-stone-100">
-                          <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-6 font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); }}>
+                        <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
+                          <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); }}>
                             重新分析下一个空间
                           </Button>
                         </div>
@@ -384,22 +394,25 @@ export function Analyze() {
 function StepItem({ current, target, number, label }: { current: string, target: string, number: number, label: string }) {
   const isActive = current === target;
   return (
-    <div className={cn("flex items-center gap-2.5 transition-colors", isActive ? "text-stone-950" : "text-stone-400")}>
-      <div className={cn("flex h-7 w-7 items-center justify-center rounded-full text-xs font-extrabold transition-all", isActive ? "bg-stone-950 text-white scale-110 shadow-md" : "bg-stone-200 text-stone-500")}>
+    <div className={cn("flex items-center gap-1.5 md:gap-2.5 transition-colors", isActive ? "text-stone-950" : "text-stone-400")}>
+      <div className={cn("flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-full text-[10px] md:text-xs font-extrabold transition-all", isActive ? "bg-stone-950 text-white md:scale-110 shadow-md" : "bg-stone-200 text-stone-500")}>
         {number}
       </div>
-      <span className="font-semibold">{label}</span>
+      {/* 手机端隐藏部分文字或保持极简，避免过长 */}
+      <span className="font-semibold text-[10px] md:text-sm hidden sm:inline-block">{label}</span>
+      <span className="font-semibold text-[10px] sm:hidden">{label.slice(0, 2)}</span>
     </div>
   );
 }
 
+// 核心修复 4：ScoreRow 在极窄屏幕的截断和自适应
 function ScoreRow({ label, score }: { label: string, score: any }) {
   const safeScore = Number(score) || 0;
   return (
-    <div className="flex items-center justify-between text-sm gap-4">
-      <span className="text-stone-800 font-bold truncate max-w-[120px]" title={label}>{label}</span>
-      <div className="flex items-center gap-3.5 flex-1 justify-end">
-        <div className="h-2 w-full max-w-[100px] rounded-full bg-stone-100 overflow-hidden shadow-inner">
+    <div className="flex items-center justify-between text-xs md:text-sm gap-2 md:gap-4 w-full">
+      <span className="text-stone-800 font-bold truncate flex-shrink-0 w-20 md:w-auto md:max-w-[120px]" title={label}>{label}</span>
+      <div className="flex items-center gap-2 md:gap-3.5 flex-1 justify-end min-w-0">
+        <div className="h-1.5 md:h-2 w-full max-w-[60px] md:max-w-[100px] rounded-full bg-stone-100 overflow-hidden shadow-inner flex-shrink">
           <motion.div 
             className="h-full bg-teal-500 rounded-full" 
             initial={{ width: 0 }}
@@ -407,7 +420,7 @@ function ScoreRow({ label, score }: { label: string, score: any }) {
             transition={{ duration: 1, delay: 0.2 }}
           />
         </div>
-        <span className="font-mono font-black text-stone-900 w-8 text-right text-base">{safeScore.toFixed(1)}</span>
+        <span className="font-mono font-black text-stone-900 w-6 md:w-8 text-right text-sm md:text-base flex-shrink-0">{safeScore.toFixed(1)}</span>
       </div>
     </div>
   );
