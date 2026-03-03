@@ -29,17 +29,15 @@ export function Construct() {
           </p>
         </div>
 
-        {/* 核心修改 1：使用 flex-col 允许手机端自由重排顺序，大屏恢复 grid */}
+        {/* 核心修改：使用 flex-col 允许手机端自由重排顺序，大屏恢复 grid */}
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8 items-start w-full">
           
           {/* ============================== */}
           {/* 左侧：建筑可视化区 (DOM 第一部分) */}
-          {/* 核心修改 2：手机端设为 order-2 (排在面板下面)，大屏设为 order-1 (恢复左侧) */}
           {/* ============================== */}
           <div className="order-2 lg:order-1 lg:col-span-8 flex flex-col lg:grid lg:grid-cols-2 gap-4 md:gap-6 w-full">
             
-            {/* 初始状态参照 */}
-            {/* 核心修改 3：手机端设为 order-2 (排在动态图下面垫底)，大屏设为 order-1 (左侧) */}
+            {/* 初始状态参照 (手机端垫底，大屏左侧) */}
             <Card className="order-2 lg:order-1 bg-white p-4 md:p-6 h-[300px] lg:h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
               <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
                 {isEn ? "Initial State" : "初始状态"} (H:1, C:1, B:1)
@@ -52,8 +50,7 @@ export function Construct() {
               </div>
             </Card>
 
-            {/* 涌现秩序 (动态交互) */}
-            {/* 核心修改 4：手机端设为 order-1 (紧贴着控制面板)，高度微调为 400px，大屏设为 order-2 (右侧) */}
+            {/* 涌现秩序 (动态交互) (手机端贴紧滑块，大屏右侧) */}
             <Card className="order-1 lg:order-2 bg-white p-0 h-[400px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden">
               <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
@@ -75,7 +72,7 @@ export function Construct() {
 
           {/* ============================== */}
           {/* 右侧：控制面板 (DOM 第二部分) */}
-          {/* 核心修改 5：手机端设为 order-1 (顶置最上方)，大屏设为 order-2 (恢复右侧) */}
+          {/* 核心修改：手机端置顶，大屏恢复右侧 */}
           {/* ============================== */}
           <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full">
             
@@ -132,6 +129,29 @@ export function Construct() {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SliderControl({ label, value, setValue, desc }: { label: string, value: number, setValue: (v: number) => void, desc: string }) {
+  return (
+    <div className="space-y-3 group">
+      <div className="flex justify-between items-end">
+        <label className="text-sm font-bold text-stone-800 tracking-wide transition-colors group-hover:text-teal-700">{label}</label>
+        <span className="font-mono text-lg font-black text-teal-600">{value}</span>
+      </div>
+      <input 
+        type="range" 
+        min="1" max="5" step="1"
+        value={value}
+        onChange={(e) => setValue(Number(e.target.value))}
+        className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
+      />
+      <div className="flex justify-between text-[10px] font-bold text-stone-400 uppercase">
+        <span>Low</span>
+        <span>High</span>
+      </div>
+      <p className="text-xs text-stone-500 leading-snug">{desc}</p>
     </div>
   );
 }
@@ -343,7 +363,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
       </g>
 
       {/* ================= 纯净的唯一底层基座 ================= */}
-      {/* 代码里只有这一个 <g> 渲染台阶，请确保完全覆盖文件！ */}
       <g>
         {Array.from({ length: stepCount }).map((_, i) => {
           const stepW = buildingTotalW + 100 + i * 40;
