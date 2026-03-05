@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
-import { Upload, Loader2, Plus, X, BarChart3, BookOpen, Sparkles, Image as ImageIcon } from "lucide-react";
+import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import OpenAI from "openai";
@@ -8,6 +8,7 @@ import OpenAI from "openai";
 export function Analyze() {
   const [step, setStep] = useState<"upload" | "processing" | "results">("upload");
   const [images, setImages] = useState<string[]>([]); 
+  const [userIntent, setUserIntent] = useState<string>(""); 
   const [analysisResult, setAnalysisResult] = useState<any>(null); 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const { trans } = useLanguage();
@@ -30,17 +31,37 @@ export function Analyze() {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  // 💡 一键加载本地默认图库功能
+  const loadDefaultExamples = async () => {
+    try {
+      const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"]; 
+      
+      const base64Images = await Promise.all(DEFAULT_URLS.map(async url => {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
+        });
+      }));
+      
+      setImages(base64Images);
+      setUserIntent("请帮我对比这两张图，哪一张更符合生命力与美感的标准？");
+    } catch (error) {
+      console.warn("未找到默认图片，等待用户自行上传。");
+    }
+  };
+
+  // 🌟 新增：页面初次渲染时自动执行一次加载默认图片的操作
+  useEffect(() => {
+    loadDefaultExamples();
+  }, []); // 这里的空数组 [] 表示只在页面初次打开时执行一次
+
   const safeText = (val: any, fallback = "暂无数据...") => {
     if (val === undefined || val === null) return fallback;
     if (typeof val === 'string' || typeof val === 'number') return String(val);
     try { return JSON.stringify(val); } catch (e) { return fallback; }
-  };
-
-  // 🛡️ 新增：强制格式化公式的防呆函数
-  const formatFormulaText = (text: string) => {
-    if (!text) return "";
-    // 强制将 L=S*H, L=S×H, L = S*H 等所有变体，统一替换为带有标准空格的 L = S × H
-    return text.replace(/L\s*=\s*S\s*([×*xX])\s*H/g, "L = S × H");
   };
 
   const safeExtractJSON = (text: string) => {
@@ -73,87 +94,66 @@ export function Analyze() {
 
       const isCompare = images.length === 2;
 
-      // 👇👇👇 极致严谨学术版 Prompt 👇👇👇
       const promptText = `
         [角色定义]
-        你是一位深谙“分形生命力”理论 (L = S × H) 与 15 个几何属性的空间结构诊断专家。
+        你是一位深谙克里斯托弗·亚历山大“15个几何属性”与空间“美度 (Degree of Beauty)”理论的诊断专家。
 
         🚨 [核心判定铁律] 🚨
-        1. 理论基础：生命结构不是整齐的拼凑，而是有层级的子结构的重尾分布组合。层级越多、子结构越丰富，生命力(L)越高。
-        2. 反直觉判例：看似混乱但分形层次极深的作品（如波洛克滴画、自然聚落）生命力得分必定远超表面规整但缺乏层次的作品（如规整玻璃盒子）。
+        1. 空间的“美度” (B) 取决于其包含15个几何属性的数量。
+        2. 对于每个属性，采用绝对二元判定：具备（积1分），不具备（积0分）。不存在中间分！
+        3. 总分最高15分。
         
         [15个强制打分属性名称（必须完全使用以下中文词汇）]
         1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 
         6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 
         11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性
 
+        [用户特定意图/提问]
+        用户的提问是：“${userIntent || '无特定提问，请进行标准客观分析'}”。
+        你必须在“核心评估结论”中直接且明确地回答用户的这个疑问！
+
         [任务要求]
-        ${isCompare ? "用户上传了两张图进行对比。请基于理论进行深度客观诊断。" : "请基于理论，客观挖掘该图的分形骨架。"}
+        ${isCompare ? "用户上传了两张图进行对比。请基于上述二元判定理论，分别判断每张图具备哪几个属性，并对比它们的美度差异！" : "请客观挖掘该图具备的属性并得出美度总分。"}
 
         必须返回纯 JSON 对象。结构严格如下：
         {
-          "winner_declaration": "${isCompare ? '客观指出哪张图生命力得分更高（例：图1的生命力显著高于图2）。保持学术严谨，禁止使用任何主观夸张、中二的名词' : '客观严谨的一句话核心结论'}",
-          "core_evaluation": "${isCompare ? '对比两图的 S(子结构)和 H(层级)差异，说明得分差异的客观原因。' : '基于分形理论的深度评价'}",
-          "expert_footnote": "专家注脚：引用‘重尾分布’、‘不可分离性’等概念进行学术解释。",
-          "visual_decoding": "视觉与层级解码...",
-          "formula_analysis": "结合 L = S × H 的公式推演。注意：字母和符号之间必须有空格（必须写成 L = S × H）。${isCompare ? '图1和图2的分析必须分两段书写，两段之间留出一个空行换行。' : ''}",
-          "personal_perspective": "空间体验视角的简评...",
-          "action_advice_urban": "宏观织补策略...",
+          "winner_declaration": "${isCompare ? '直面用户提问，指出哪张图美度更高，直接给出客观结论。' : '直面用户提问，给出核心判定结论。'}",
+          "core_evaluation": "结合用户的提问，对比或分析产生这种美度差异的核心原因。",
+          "expert_footnote": "专家注脚：引用亚历山大的“客观美”或“15种结构保持转换”概念进行解释。",
+          "visual_decoding": "视觉特征与结构解码...",
+          "personal_perspective": "空间情绪与疗愈体验...",
+          "action_advice_urban": "宏观改善策略...",
           "action_advice_personal": "微观空间优化建议...",
           "summary": "一句简明的学术总结。",
           "image_stats": [
             {
-              "vitality_score": ${isCompare ? "图1的分数(1-100)" : "该图分数"},
+              "beauty_score": ${isCompare ? "图1的总得分(0-15之间的整数)" : "该图总得分"},
               "all_attributes": [
-                {"name": "尺度层次", "score": 9.5, "desc": "客观描述..."},
-                {"name": "强中心", "score": 8.0, "desc": "客观描述..."},
-                {"name": "边界", "score": 7.5, "desc": "客观描述..."},
-                {"name": "交替重复", "score": 7.0, "desc": "客观描述..."},
-                {"name": "正空间", "score": 8.5, "desc": "客观描述..."},
-                {"name": "良好形状", "score": 6.0, "desc": "客观描述..."},
-                {"name": "局部对称", "score": 7.5, "desc": "客观描述..."},
-                {"name": "深度交织与模糊性", "score": 8.0, "desc": "客观描述..."},
-                {"name": "对比", "score": 9.0, "desc": "客观描述..."},
-                {"name": "渐变", "score": 7.5, "desc": "客观描述..."},
-                {"name": "粗糙性", "score": 8.5, "desc": "客观描述..."},
-                {"name": "共鸣", "score": 9.0, "desc": "客观描述..."},
-                {"name": "虚空", "score": 7.0, "desc": "客观描述..."},
-                {"name": "简洁与内在平静", "score": 6.5, "desc": "客观描述..."},
-                {"name": "非分离性", "score": 8.5, "desc": "客观描述..."}
+                {"name": "尺度层次", "score": 1, "desc": "1表示具备。简述其体现..."},
+                {"name": "强中心", "score": 0, "desc": "0表示不具备。简述为何缺失..."},
+                {"name": "边界", "score": 1, "desc": "..."}
+                // ... 必须严格输出完整的 15 个属性，score 只能是 0 或 1
               ]
             }${isCompare ? `,
             {
-              "vitality_score": 图2的分数(1-100),
+              "beauty_score": 图2的总得分(0-15之间的整数),
               "all_attributes": [
-                {"name": "尺度层次", "score": 7.0, "desc": "客观描述..."},
-                {"name": "强中心", "score": 6.0, "desc": "客观描述..."},
-                {"name": "边界", "score": 5.5, "desc": "客观描述..."},
-                {"name": "交替重复", "score": 6.0, "desc": "客观描述..."},
-                {"name": "正空间", "score": 5.0, "desc": "客观描述..."},
-                {"name": "良好形状", "score": 8.0, "desc": "客观描述..."},
-                {"name": "局部对称", "score": 8.5, "desc": "客观描述..."},
-                {"name": "深度交织与模糊性", "score": 4.0, "desc": "客观描述..."},
-                {"name": "对比", "score": 5.0, "desc": "客观描述..."},
-                {"name": "渐变", "score": 6.5, "desc": "客观描述..."},
-                {"name": "粗糙性", "score": 3.0, "desc": "客观描述..."},
-                {"name": "共鸣", "score": 4.0, "desc": "客观描述..."},
-                {"name": "虚空", "score": 8.0, "desc": "客观描述..."},
-                {"name": "简洁与内在平静", "score": 8.5, "desc": "客观描述..."},
-                {"name": "非分离性", "score": 4.5, "desc": "客观描述..."}
+                {"name": "尺度层次", "score": 0, "desc": "..."},
+                {"name": "强中心", "score": 1, "desc": "..."}
+                // ... 必须严格输出完整的 15 个属性，score 只能是 0 或 1
               ]
             }
             ` : ""}
           ]
         }
       `;
-      // 👆👆👆 严谨加强版结束 👆👆👆
 
       const response = await openai.chat.completions.create({
         model: "qwen-vl-max", 
         messages: [
           {
             role: "system",
-            content: "你是一位精通分形几何与‘活力结构’理论的学术专家。你的语言必须绝对客观、严谨，剔除任何情绪化或网络流行语表达。必须严格按照提供的 JSON 格式模板输出，不允许省略任何一个属性数组。"
+            content: "你是一位精通分形几何与‘美度’评价体系的学术专家。必须严格进行 0 或 1 的二元打分。必须严格按照提供的 JSON 格式模板输出，不允许省略任何一个属性数组。"
           },
           {
             role: "user",
@@ -170,7 +170,6 @@ export function Analyze() {
       
       if (!parsedData) throw new Error("AI 数据格式错乱");
 
-      console.log("理论对齐分析结果:", parsedData);
       setAnalysisResult(parsedData);
       setStep("results");
 
@@ -182,6 +181,8 @@ export function Analyze() {
   };
 
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
+  
+  const beautyScore = Number(currentStats?.beauty_score) || 0;
 
   return (
     <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
@@ -200,12 +201,25 @@ export function Analyze() {
         <AnimatePresence mode="wait">
           <motion.div key={step} className="min-h-[500px]">
             {step === "upload" && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8 max-w-4xl mx-auto">
                 <div className="text-center mb-6 md:mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">{trans.analyze.uploadTitle}</h2>
                   <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+
+                <div className="bg-white rounded-3xl p-4 shadow-sm border border-stone-200 focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
+                  <div className="flex items-start gap-3">
+                    <MessageSquare className="w-5 h-5 text-teal-600 mt-1 shrink-0" />
+                    <textarea 
+                      value={userIntent}
+                      onChange={(e) => setUserIntent(e.target.value)}
+                      placeholder="告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具生命力？）"
+                      className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-stone-400 text-sm md:text-base h-16"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   {[0, 1].map((index) => (
                     <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-stone-50/50 bg-white")}>
                       {images[index] ? (
@@ -228,9 +242,19 @@ export function Analyze() {
                     </div>
                   ))}
                 </div>
+
+                {/* 既然一进页面就自动加载了，如果用户把两张图都清空了，依然可以通过这个按钮重新载入 */}
+                {images.length === 0 && (
+                  <div className="text-center mt-4">
+                    <button onClick={loadDefaultExamples} className="text-xs md:text-sm text-teal-600 font-medium hover:text-teal-800 transition-colors border-b border-teal-600/30 hover:border-teal-800 border-dashed pb-0.5">
+                      没有图片？点击一键载入《秩序的本质》正反面对比图演示
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex justify-center mt-8 md:mt-12">
                   <Button className="bg-stone-900 px-8 py-6 md:px-16 md:py-7 text-base md:text-xl rounded-full shadow-lg hover:scale-105 transition-transform w-full md:w-auto mx-4 md:mx-0" onClick={startAnalysis} disabled={images.length === 0}>
-                    {images.length === 2 ? "开始深度对比诊断" : "开始基于活力结构的诊断"}
+                    {images.length === 2 ? "开始深度对比诊断" : "开始美度提取与诊断"}
                   </Button>
                 </div>
               </motion.div>
@@ -243,8 +267,8 @@ export function Analyze() {
                    <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
                    <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的生命力...</h2>
-                <p className="mt-3 text-sm md:text-base text-stone-600">运用 L = S × H 理论，探寻隐藏在表象下的深层分形结构...</p>
+                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的 15 个几何属性...</h2>
+                <p className="mt-3 text-sm md:text-base text-stone-600">计算美度 (Degree of Beauty) 及其生命力指标...</p>
               </div>
             )}
 
@@ -286,8 +310,11 @@ export function Analyze() {
                   
                   <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-stone-100 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
+                    <div className="mb-4 inline-block bg-stone-100 px-3 py-1 rounded-md text-xs text-stone-500 font-medium">
+                      🎯 针对您的问题：{userIntent || "整体评估"}
+                    </div>
                     <h2 className="text-xl md:text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
-                      🏆 {safeText(analysisResult.winner_declaration, "生命力诊断完成")}
+                      🏆 {safeText(analysisResult.winner_declaration, "美度提取完成")}
                     </h2>
                     <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
                       {safeText(analysisResult.core_evaluation)}
@@ -304,42 +331,33 @@ export function Analyze() {
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                       <div className="bg-stone-50 rounded-2xl p-5 md:p-6 border border-stone-100">
-                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 视觉与层级解码</h4>
+                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 视觉与结构解码</h4>
                         <p className="text-stone-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.visual_decoding)}
                         </p>
                       </div>
-                      <div className="bg-stone-900 text-stone-100 rounded-2xl p-5 md:p-6 shadow-lg">
-                        <h4 className="font-mono font-bold text-teal-400 mb-2 md:mb-3 text-xs md:text-sm tracking-wider flex items-center gap-2">
-                          <BarChart3 className="w-4 h-4" /> L = S × H 公式推演
-                        </h4>
-                        {/* 🛡️ 这里调用了防呆函数，强制规范公式格式并保留 AI 输出的换行符 */}
-                        <p className="text-stone-300 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {formatFormulaText(safeText(analysisResult.formula_analysis))}
+                      <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
+                        <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 情绪与疗愈体验</h4>
+                        <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                          {safeText(analysisResult.personal_perspective)}
                         </p>
                       </div>
-                    </div>
-                    <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
-                      <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 情绪与体验视角</h4>
-                      <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                        {safeText(analysisResult.personal_perspective)}
-                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
                     <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
-                      🛠️ 行动与干预指南
+                      🛠️ 结构改进指南
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                       <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
-                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ 宏观城建策略</h4>
+                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ 宏观尺度策略</h4>
                         <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_urban)}
                         </p>
                       </div>
                       <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
-                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 微观空间优化</h4>
+                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 微观尺度优化</h4>
                         <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_personal)}
                         </p>
@@ -349,7 +367,7 @@ export function Analyze() {
 
                   <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
                     <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
-                      "{safeText(analysisResult.summary, "复杂性孕育生命力。")}"
+                      "{safeText(analysisResult.summary, "15个属性共同塑造了空间的生命感。")}"
                     </p>
                   </div>
                 </div>
@@ -373,24 +391,21 @@ export function Analyze() {
                               </span>
                             </div>
                           )}
-                          <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-1 md:mb-2 mt-4 md:mt-4">Livingness Index</div>
-                          <div className="flex items-baseline justify-center text-teal-600">
-                            <span className="text-6xl md:text-8xl font-black tracking-tighter">{safeText(currentStats?.vitality_score, "--")}</span>
-                            <span className="text-lg md:text-2xl text-stone-400 font-medium ml-1">/100</span>
+                          
+                          <div className="pt-6">
+                            <BeautyGauge n={beautyScore} />
                           </div>
                         </div>
                         
-                        {/* 调整了高度，以适应 15 个属性带来的滚动条展示 */}
                         <div className="p-4 md:p-6 space-y-4 md:space-y-5 bg-white min-h-[400px] max-h-[600px] overflow-y-auto custom-scrollbar">
                           <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 md:mb-4 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性表现
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性鉴定
                           </h4>
-                          {/* 映射新版的 all_attributes 数组 */}
                           {Array.isArray(currentStats?.all_attributes) ? (
                             currentStats.all_attributes.map((attr: any, idx: number) => (
-                              <div key={idx} className="space-y-1 md:space-y-2 group">
+                              <div key={idx} className="space-y-2 md:space-y-3 group p-3 rounded-xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100">
                                 <ScoreRow label={safeText(attr.name, "未知属性")} score={attr.score} />
-                                <p className="text-[10px] md:text-xs text-stone-500 leading-relaxed pl-1 group-hover:text-stone-800 transition-colors">
+                                <p className="text-[10px] md:text-xs text-stone-500 leading-relaxed transition-colors">
                                   {safeText(attr.desc, "")}
                                 </p>
                               </div>
@@ -401,7 +416,7 @@ export function Analyze() {
                         </div>
                         
                         <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
-                          <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); }}>
+                          <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
                             重新分析下一个空间
                           </Button>
                         </div>
@@ -419,6 +434,78 @@ export function Analyze() {
   );
 }
 
+function BeautyGauge({ n }: { n: number }) {
+  const percentage = n / 15;
+  const rotation = percentage * 180 - 90;
+
+  return (
+    <div className="relative w-full max-w-[220px] mx-auto flex flex-col items-center">
+      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
+        Degree of Beauty (B)
+      </div>
+      
+      <div className="relative w-full h-[110px] overflow-hidden">
+        <svg viewBox="0 0 200 120" className="w-full h-full drop-shadow-sm">
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#e7e5e4" />
+              <stop offset="50%" stopColor="#5eead4" />
+              <stop offset="100%" stopColor="#0d9488" />
+            </linearGradient>
+          </defs>
+
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" />
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" />
+          
+          <text x="15" y="115" fontSize="12" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
+          <text x="185" y="115" fontSize="12" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
+
+          <motion.g
+            initial={{ rotate: -90 }}
+            animate={{ rotate: rotation }}
+            transition={{ type: "spring", stiffness: 45, damping: 15, delay: 0.4 }}
+            style={{ transformOrigin: "100px 100px" }}
+          >
+            <polygon points="96,100 104,100 100,28" fill="#292524" />
+            <circle cx="100" cy="100" r="8" fill="#292524" />
+            <circle cx="100" cy="100" r="3" fill="#ffffff" />
+          </motion.g>
+        </svg>
+
+        <div className="absolute bottom-1 left-0 w-full flex flex-col items-center">
+          <div className="text-3xl font-black text-stone-800 font-mono tracking-tighter leading-none">
+            {n}
+            <span className="text-sm text-stone-400 font-medium tracking-normal ml-0.5">/15</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreRow({ label, score }: { label: string, score: any }) {
+  const isPresent = Number(score) === 1;
+  
+  return (
+    <div className="flex items-center justify-between text-xs md:text-sm w-full">
+      <span className={cn("font-bold truncate flex-shrink-0 max-w-[120px]", isPresent ? "text-stone-800" : "text-stone-400 line-through")} title={label}>
+        {label}
+      </span>
+      <div className="flex items-center justify-end">
+        {isPresent ? (
+          <div className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] md:text-xs font-black tracking-wider shadow-inner">
+            具备 (1)
+          </div>
+        ) : (
+          <div className="px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-400 text-[10px] md:text-xs font-bold tracking-wider">
+            缺失 (0)
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function StepItem({ current, target, number, label }: { current: string, target: string, number: number, label: string }) {
   const isActive = current === target;
   return (
@@ -428,26 +515,6 @@ function StepItem({ current, target, number, label }: { current: string, target:
       </div>
       <span className="font-semibold text-[10px] md:text-sm hidden sm:inline-block">{label}</span>
       <span className="font-semibold text-[10px] sm:hidden">{label.slice(0, 2)}</span>
-    </div>
-  );
-}
-
-function ScoreRow({ label, score }: { label: string, score: any }) {
-  const safeScore = Number(score) || 0;
-  return (
-    <div className="flex items-center justify-between text-xs md:text-sm gap-2 md:gap-4 w-full">
-      <span className="text-stone-800 font-bold truncate flex-shrink-0 w-20 md:w-auto md:max-w-[120px]" title={label}>{label}</span>
-      <div className="flex items-center gap-2 md:gap-3.5 flex-1 justify-end min-w-0">
-        <div className="h-1.5 md:h-2 w-full max-w-[60px] md:max-w-[100px] rounded-full bg-stone-100 overflow-hidden shadow-inner flex-shrink">
-          <motion.div 
-            className="h-full bg-teal-500 rounded-full" 
-            initial={{ width: 0 }}
-            animate={{ width: `${safeScore * 10}%` }}
-            transition={{ duration: 1, delay: 0.2 }}
-          />
-        </div>
-        <span className="font-mono font-black text-stone-900 w-6 md:w-8 text-right text-sm md:text-base flex-shrink-0">{safeScore.toFixed(1)}</span>
-      </div>
     </div>
   );
 }
