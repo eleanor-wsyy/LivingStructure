@@ -56,7 +56,7 @@ export function Analyze() {
   // 🌟 新增：页面初次渲染时自动执行一次加载默认图片的操作
   useEffect(() => {
     loadDefaultExamples();
-  }, []); // 这里的空数组 [] 表示只在页面初次打开时执行一次
+  }, []); 
 
   const safeText = (val: any, fallback = "暂无数据...") => {
     if (val === undefined || val === null) return fallback;
@@ -243,7 +243,6 @@ export function Analyze() {
                   ))}
                 </div>
 
-                {/* 既然一进页面就自动加载了，如果用户把两张图都清空了，依然可以通过这个按钮重新载入 */}
                 {images.length === 0 && (
                   <div className="text-center mt-4">
                     <button onClick={loadDefaultExamples} className="text-xs md:text-sm text-teal-600 font-medium hover:text-teal-800 transition-colors border-b border-teal-600/30 hover:border-teal-800 border-dashed pb-0.5">
@@ -382,6 +381,8 @@ export function Analyze() {
                       transition={{ duration: 0.3 }}
                     >
                       <Card className="bg-white border-stone-200 shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
+                        
+                        {/* 顶部：美度仪表盘 */}
                         <div className="p-6 md:p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative">
                           {images.length === 2 && (
                             <div className="absolute top-3 left-0 w-full flex justify-center">
@@ -392,34 +393,63 @@ export function Analyze() {
                             </div>
                           )}
                           
-                          <div className="pt-6">
+                          {/* 完美的图文分离仪表盘组件 */}
+                          <div className="pt-4">
                             <BeautyGauge n={beautyScore} />
                           </div>
                         </div>
                         
-                        <div className="p-4 md:p-6 space-y-4 md:space-y-5 bg-white min-h-[400px] max-h-[600px] overflow-y-auto custom-scrollbar">
-                          <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-3 md:mb-4 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性鉴定
+                        {/* 中部：15属性 3x5 矩阵 */}
+                        <div className="p-4 md:p-6 bg-white">
+                          <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性鉴定矩阵
                           </h4>
+                          
                           {Array.isArray(currentStats?.all_attributes) ? (
-                            currentStats.all_attributes.map((attr: any, idx: number) => (
-                              <div key={idx} className="space-y-2 md:space-y-3 group p-3 rounded-xl hover:bg-stone-50 transition-colors border border-transparent hover:border-stone-100">
-                                <ScoreRow label={safeText(attr.name, "未知属性")} score={attr.score} />
-                                <p className="text-[10px] md:text-xs text-stone-500 leading-relaxed transition-colors">
-                                  {safeText(attr.desc, "")}
-                                </p>
-                              </div>
-                            ))
+                            <div className="grid grid-cols-3 gap-2 md:gap-3">
+                              {currentStats.all_attributes.map((attr: any, idx: number) => {
+                                const isPresent = Number(attr.score) === 1;
+                                return (
+                                  <div 
+                                    key={idx} 
+                                    title={safeText(attr.desc, "无详细描述")} 
+                                    className={cn(
+                                      "flex flex-col items-center justify-center p-2.5 md:p-3 rounded-xl border transition-all cursor-help",
+                                      isPresent 
+                                        ? "bg-teal-50/50 border-teal-200 hover:bg-teal-100" 
+                                        : "bg-stone-50 border-transparent opacity-50 grayscale hover:opacity-80"
+                                    )}
+                                  >
+                                    <span className={cn(
+                                      "text-[10px] md:text-xs font-bold text-center leading-tight truncate w-full",
+                                      isPresent ? "text-teal-800" : "text-stone-500 line-through"
+                                    )}>
+                                      {safeText(attr.name, "未知")}
+                                    </span>
+                                    
+                                    <div className={cn(
+                                      "mt-2 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black font-mono shadow-inner",
+                                      isPresent ? "bg-teal-500 text-white" : "bg-stone-200 text-stone-400"
+                                    )}>
+                                      {isPresent ? "1" : "0"}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           ) : (
-                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载 15 项详细属性...</p>
+                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载矩阵数据...</p>
                           )}
+                          <p className="text-center text-[10px] text-stone-400 mt-4 italic">💡 提示：将鼠标悬停在方块上可查看判定原因</p>
                         </div>
                         
+                        {/* 底部：操作按钮 */}
                         <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
                           <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
                             重新分析下一个空间
                           </Button>
                         </div>
+
                       </Card>
                     </motion.div>
                   </AnimatePresence>
@@ -434,18 +464,24 @@ export function Analyze() {
   );
 }
 
+// ----------------------------------------------------------------------
+// 🏆 终极版：SVG 美度计仪表盘 (Beauty Gauge)
+// 彻底分离了图形与数字容器，避免任何交叉遮挡现象
+// ----------------------------------------------------------------------
 function BeautyGauge({ n }: { n: number }) {
   const percentage = n / 15;
   const rotation = percentage * 180 - 90;
 
   return (
-    <div className="relative w-full max-w-[220px] mx-auto flex flex-col items-center">
-      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
-        Beauty (B)
+    <div className="relative w-full max-w-[240px] mx-auto flex flex-col items-center">
+      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+        Degree of Beauty (B)
       </div>
       
-      <div className="relative w-full h-[110px] overflow-hidden">
-        <svg viewBox="0 0 200 120" className="w-full h-full drop-shadow-sm">
+      {/* 仪表盘图区：仅包含 SVG */}
+      <div className="w-full relative px-2">
+        {/* 设置 overflow-visible 确保即使旋转到底部也不会被裁切 */}
+        <svg viewBox="0 0 200 110" className="w-full drop-shadow-sm overflow-visible">
           <defs>
             <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#e7e5e4" />
@@ -454,58 +490,42 @@ function BeautyGauge({ n }: { n: number }) {
             </linearGradient>
           </defs>
 
+          {/* 圆弧轨道 */}
           <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" />
           <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" />
           
-          <text x="15" y="115" fontSize="12" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
-          <text x="185" y="115" fontSize="12" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
+          {/* 刻度值 0 和 15 */}
+          <text x="15" y="120" fontSize="13" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
+          <text x="185" y="120" fontSize="13" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
 
+          {/* 带物理阻尼弹簧效果的指针 */}
           <motion.g
             initial={{ rotate: -90 }}
             animate={{ rotate: rotation }}
             transition={{ type: "spring", stiffness: 45, damping: 15, delay: 0.4 }}
             style={{ transformOrigin: "100px 100px" }}
           >
-            <polygon points="96,100 104,100 100,28" fill="#292524" />
-            <circle cx="100" cy="100" r="8" fill="#292524" />
+            <polygon points="96,100 104,100 100,20" fill="#292524" />
+            <circle cx="100" cy="100" r="9" fill="#292524" />
             <circle cx="100" cy="100" r="3" fill="#ffffff" />
           </motion.g>
         </svg>
+      </div>
 
-        <div className="absolute bottom-1 left-0 w-full flex flex-col items-center">
-          <div className="text-3xl font-black text-stone-800 font-mono tracking-tighter leading-none">
-            {n}
-            <span className="text-sm text-stone-400 font-medium tracking-normal ml-0.5">/15</span>
-          </div>
-        </div>
+      {/* 数字分值区：紧贴在 SVG 下方，绝对不会发生重叠 */}
+      <div className="mt-4 flex items-baseline justify-center">
+        <span className="text-5xl md:text-6xl font-black text-stone-800 font-mono tracking-tighter leading-none">
+          {n}
+        </span>
+        <span className="text-lg md:text-xl text-stone-400 font-medium tracking-normal ml-1">/15</span>
       </div>
     </div>
   );
 }
 
-function ScoreRow({ label, score }: { label: string, score: any }) {
-  const isPresent = Number(score) === 1;
-  
-  return (
-    <div className="flex items-center justify-between text-xs md:text-sm w-full">
-      <span className={cn("font-bold truncate flex-shrink-0 max-w-[120px]", isPresent ? "text-stone-800" : "text-stone-400 line-through")} title={label}>
-        {label}
-      </span>
-      <div className="flex items-center justify-end">
-        {isPresent ? (
-          <div className="px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] md:text-xs font-black tracking-wider shadow-inner">
-            具备 (1)
-          </div>
-        ) : (
-          <div className="px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-400 text-[10px] md:text-xs font-bold tracking-wider">
-            缺失 (0)
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
+// ----------------------------------------------------------------------
+// 底部步骤条组件
+// ----------------------------------------------------------------------
 function StepItem({ current, target, number, label }: { current: string, target: string, number: number, label: string }) {
   const isActive = current === target;
   return (
