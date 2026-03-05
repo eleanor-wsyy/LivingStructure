@@ -30,6 +30,11 @@ export function Construct() {
   // 计算：截取从第1项到第H项的数组，然后求和
   const sumS = S_SEQUENCE.slice(0, H).reduce((acc, curr) => acc + curr, 0);
   const L = sumS * H; 
+  
+  // 添加千位分隔符 (如 21427 变成 21,427)
+  const formattedL = L.toLocaleString('en-US');
+  const formattedSumS = sumS.toLocaleString('en-US');
+  const sumString = S_SEQUENCE.slice(0, H).map(n => n.toLocaleString('en-US')).join(" + ");
   // ============================================================================
 
   return (
@@ -117,32 +122,37 @@ export function Construct() {
                   L = ΣS × H
                 </div>
                 
-                <div className="flex items-center justify-center gap-2 md:gap-4 text-3xl md:text-4xl font-mono text-stone-700">
+                {/* 修复点 1：使用 items-baseline 保证底部对齐，加入 flex-wrap 防止小屏溢出，并动态缩放字号 */}
+                <div className="flex flex-wrap items-baseline justify-center gap-x-2 md:gap-x-4 text-xl sm:text-2xl md:text-4xl font-mono text-stone-700">
                   <motion.span 
                     key={`L-${L}`}
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-6xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
+                    className="text-[2.5rem] leading-none sm:text-6xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
                   >
-                    {L}
+                    {formattedL}
                   </motion.span>
-                  <span className="text-stone-300">=</span>
-                  <motion.span key={`S-${sumS}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">{sumS}</motion.span>
-                  <span className="text-stone-300">×</span>
-                  <motion.span key={`H-${H}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">{H}</motion.span>
+                  <span className="text-stone-300 font-normal">=</span>
+                  <motion.span key={`S-${sumS}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
+                    {formattedSumS}
+                  </motion.span>
+                  <span className="text-stone-300 font-normal">×</span>
+                  <motion.span key={`H-${H}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
+                    {H}
+                  </motion.span>
                 </div>
 
-                {/* 动态展示累加过程的公式分解 */}
-                <div className="h-6 mt-1 flex items-center justify-center">
+                {/* 修复点 2：为累加公式的区域添加自适应高度和换行机制 */}
+                <div className="h-auto min-h-[1.5rem] mt-1 flex items-center justify-center px-2">
                   <AnimatePresence mode="wait">
                     {H > 1 && (
                       <motion.div 
                         key={`sum-${H}`}
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-[10px] md:text-xs text-stone-400 font-mono leading-relaxed"
+                        className="text-[10px] md:text-xs text-stone-400 font-mono leading-relaxed text-center"
                       >
-                        ΣS = {S_SEQUENCE.slice(0, H).join(" + ")}
+                        ΣS = {sumString}
                       </motion.div>
                     )}
                   </AnimatePresence>
