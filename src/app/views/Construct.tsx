@@ -11,10 +11,62 @@ export function Construct() {
   const [center, setCenter] = useState(1);
   const [boundary, setBoundary] = useState(1);
 
-  // 📐 严谨对齐 L = S x H 的活力值公式
-  const S = Math.floor(30 + (hierarchy * 40) + (boundary * 30) + (center * 20) + (hierarchy * boundary * 4));
-  const H = hierarchy + (center >= 3 ? 1 : 0) + (boundary >= 3 ? 1 : 0); // 最大层级为 7
-  const L = S * H;
+  // ============================================================================
+  // 📐 严谨对齐江斌教授《基于骨架与外皮一体化的空间设计方法》专利文献
+  // 彻底抛弃虚假的数学拟合，采用“所见即所算”的几何节点精确统计法
+  // ============================================================================
+  let S = 0; // S: 子结构总数 (Number of Substructures)
+  let H = 2; // H: 尺度层次 (Scale Hierarchy)，初始具备主体轮廓与主柱廊2个绝对层级
+
+  // --- 1. 基础神庙骨架 ---
+  S += 1;  // 基础大门
+  S += 24; // 8根主柱的3个基础部件 (8 * 3)
+  S += 3;  // 基础屋顶山花
+  S += 1;  // 中心圣光环境
+  H += 1;  // 台阶系统构成第3个自然尺度层级
+
+  // --- 2. 尺度层级(Hierarchy)带来的精细化分形迭代 ---
+  S += (hierarchy * 2 + 1); // 动态生成的台阶数量，严格随迭代递增
+  if (hierarchy > 1) { 
+    S += 2; // 大门与屋顶次级嵌套 
+    H += 1; // 衍生出“次级建筑细节”层级
+  } 
+  if (hierarchy > 2) { 
+    S += 8; // 8个柱头/柱础细分 
+    H += 1; // 衍生出“构件细节”层级
+  } 
+  if (hierarchy > 3) { 
+    S += 16; // 8根柱身的凹槽线条(Fluting) 
+    H += 1;  // 衍生出“微观纹理”层级
+  } 
+  if (hierarchy >= 4) { 
+    S += 4; // 屋顶徽章与雕塑 
+    H += 1; // 衍生出“极微观装饰”层级
+  }
+
+  // --- 3. 强中心(Center)带来的空间焦点 ---
+  if (center >= 3) {
+    S += 5; // 穹顶基础部件
+    if (hierarchy > 2) S += 2; // 穹顶顶部高阶嵌套
+    H += 1; // 穹顶构成巨大的“城市焦点”宏观层级
+  }
+
+  // --- 4. 边界(Boundary)带来的侧翼延伸 ---
+  if (boundary > 1) {
+    S += 4; // 侧翼基础墙体
+    let wingDetails = 6; // 每跨的窗户及窗框
+    if (hierarchy > 1) wingDetails += 2; // 窗户次级嵌套
+    S += (boundary - 1) * wingDetails; // 动态衍生的窗户组
+    
+    if (boundary > 2) {
+      S += (boundary - 2) * 2; // 侧翼列柱
+    }
+    H += 1; // 侧翼构成“中观街道”层级
+  }
+
+  // 严格执行 L = S × H 理论计算
+  const L = S * H; 
+  // ============================================================================
 
   return (
     <div className="min-h-screen bg-[#fafaf9] py-8 md:py-12 px-4 font-sans">
@@ -29,17 +81,10 @@ export function Construct() {
           </p>
         </div>
 
-        {/* 核心布局引擎：电脑端使用 12 列网格，手机端使用上下堆叠 */}
         <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-8 items-start w-full">
           
-          {/* ============================== */}
-          {/* 左侧区域：建筑可视化 */}
-          {/* 魔法指令：lg:order-1 (电脑端排第1，即左侧) | order-2 (手机端排第2，即下面) */}
-          {/* ============================== */}
           <div className="order-2 lg:order-1 lg:col-span-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
             
-            {/* 初始状态参照 */}
-            {/* 魔法指令：hidden lg:block (手机端绝对隐藏，释放空间；仅在电脑大屏显示) */}
             <div className="hidden lg:block w-full">
               <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
                 <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase">
@@ -54,7 +99,6 @@ export function Construct() {
               </Card>
             </div>
 
-            {/* 涌现秩序 (动态交互) */}
             <Card className="bg-white p-0 h-[420px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden w-full">
               <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
@@ -75,10 +119,6 @@ export function Construct() {
 
           </div>
 
-          {/* ============================== */}
-          {/* 右侧区域：控制面板 */}
-          {/* 魔法指令：lg:order-2 (电脑端排第2，即右侧) | order-1 (手机端排第1，即最顶端插队) */}
-          {/* ============================== */}
           <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full lg:sticky lg:top-8">
             
             <Card className="bg-stone-100 border-none p-5 md:p-8 text-center relative overflow-hidden shadow-inner">
@@ -109,8 +149,8 @@ export function Construct() {
               </div>
 
               <div className="mt-4 md:mt-8 text-[10px] md:text-xs text-stone-500 font-medium flex justify-center gap-4 md:gap-6">
-                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-stone-300"></span> S: 子结构总数</span>
-                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-teal-400"></span> H: 嵌套层级</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-stone-300"></span> S: 子结构实体数</span>
+                <span className="flex items-center gap-1.5"><span className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-sm bg-teal-400"></span> H: 跨尺度层级数</span>
               </div>
             </Card>
 
@@ -164,6 +204,7 @@ function SliderControl({ label, value, setValue, desc }: { label: string, value:
 
 // ============================================================================
 // 🏛️ 绝对纯净的古典引擎 (Zero-Ghost Engine)
+// 保证此处渲染逻辑与上方的 AST 精确统计绝对一一对应！
 // ============================================================================
 function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
   const floorY = 700;      
@@ -182,7 +223,6 @@ function ParametricBuilding({ h, c, b }: { h: number, c: number, b: number }) {
   const stepCount = h * 2 + 1; 
   const stepHeight = 12; 
   
-  // 巧妙的缩放逻辑：当建筑变宽时，内部 viewBox 自动变大，从而让建筑整体等比缩小以适应屏幕，绝不会被切掉
   const viewBoxW = Math.max(1200, buildingTotalW + 300); 
   const viewBoxH = 950;
 
