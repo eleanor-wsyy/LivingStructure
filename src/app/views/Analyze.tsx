@@ -268,7 +268,7 @@ export function Analyze() {
                    <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的 15 个几何属性...</h2>
-                <p className="mt-3 text-sm md:text-base text-stone-600">计算美度 (Degree of Beauty) 及其生命力指标...</p>
+                <p className="mt-3 text-sm md:text-base text-stone-600">计算美度 (Beauty) 及其生命力指标...</p>
               </div>
             )}
 
@@ -441,7 +441,7 @@ function BeautyGauge({ n }: { n: number }) {
   return (
     <div className="relative w-full max-w-[220px] mx-auto flex flex-col items-center">
       <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
-        Degree of Beauty (B)
+        Beauty (B)
       </div>
       
       <div className="relative w-full h-[110px] overflow-hidden">
