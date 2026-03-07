@@ -1,18 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { cn } from "@/app/components/ui";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronDown, ArrowRight, ArrowLeft, Quote, Info, Check, X, 
   Minus, Plus, Search, MapPin, Calendar, Activity, BarChart3,
   Columns, ScanLine, Maximize, MoveHorizontal, Divide,
-  Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen
+  Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen, Sparkles
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 const langjialiImage = "/images/Boundaries.png";
 
 // --- Data ---
-
 const genericNegative = "https://images.unsplash.com/photo-1572533541497-ed8f48f2e7e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm5pc3QlMjBnbGFzcyUyMGN1cnRhaW4lMjB3YWxsJTIwc2t5c2NyYXBlciUyMGRldGFpbHxlbnwxfHx8fDE3NzE2NDk5NTF8MA&ixlib=rb-4.1.0&q=80&w=1080";
 
 const properties = [
@@ -30,7 +29,7 @@ const properties = [
       exampleZh: "左图展示的建筑立面通过不同大小的窗户和墙面砖块体现了丰富的尺度层次。窗户由窗框进一步划分为小的分格，而砖块表面还有细腻的纹理，形成了从立面整体到窗户、分格、砖块，再到纹理的多重尺度层级。右图的建筑立面缺乏窗户和墙面的细致划分，整体纹理和细节也较为单一，导致其尺度层次单薄，显得较为平淡。",
       imgPos: "/images/level of scale.png",
       imgNeg: "/images/LOSNEG.png",
-      bookImg: "/images/alexander/scale-nature.jpg" // 替换为《秩序的本质》原著插图
+      bookImg: "/images/alexander/scale-nature.jpg" 
     },
     {
       n: 2, tEn: "Strong Centers", tZh: "强中心",
@@ -80,8 +79,6 @@ const properties = [
       imgNeg: "/images/ARNEG.png",
       bookImg: "/images/alexander/placeholder.jpg"
     },
-    // 为保持代码简洁，这里略写 5-15，你只需按照上面 1-4 的格式，补全 natureEn, natureZh 和 bookImg 即可。
-    // 为了让代码不报错，我补充了剩余的基本结构：
     { n: 5, tEn: "Positive Space", tZh: "正空间", quoteEn: "Space is not merely the residue between objects but a distinct entity.", quoteZh: "空间不仅仅是物体之间的残留物，而是一个独立的实体。", mechEn: "The mechanism for creating positive space is enclosure and convexity.", mechZh: "创造正空间的机制是围合和凸性。", relEn: "Increases S (Strength) by shaping the void.", relZh: "通过塑造虚空增加 S（强度）。", natureEn: "Nature avoids 'leftover' spaces; even the empty space between branches has a distinct shape.", natureZh: "大自然避免“多余”的空间；即使是树枝间的空隙也有清晰的形状。", exampleEn: "A public square defined by continuous building facades.", exampleZh: "由连续建筑立面定义的公共广场。", imgPos: "/images/Positive space.png", imgNeg: "/images/PSNEG.png", bookImg: "" },
     { n: 6, tEn: "Good Shape", tZh: "良好形状", quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.", quoteZh: "生命结构中的每个元素都应该有一个“良形”——简单且连贯。", mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).", mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。", relEn: "Increases S (Strength) through geometric coherence.", relZh: "通过几何连贯性增加 S（强度）。", natureEn: "A water drop or a river stone, worn into an elemental and harmonious shape.", natureZh: "水滴或河石，被磨成了基本且和谐的形状。", exampleEn: "A perfectly proportioned rectangular window or circular arch.", exampleZh: "比例完美的矩形窗或圆拱。", imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "" },
     { n: 7, tEn: "Local Symmetries", tZh: "局部对称", quoteEn: "Small parts of the structure should be symmetrical within themselves.", quoteZh: "结构的微小部分在自身内部应对称。", mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", mechZh: "该机制是通过反射创建“子中心”。", relEn: "Increases S (Strength) by binding centers locally.", relZh: "通过局部结合中心增加 S（强度）。", natureEn: "Leaves, crystals, and animal faces possess striking local symmetry despite global variation.", natureZh: "尽管整体有变化，树叶、水晶和动物面部都具有惊人的局部对称性。", exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.", exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。", imgPos: "/images/Local symmetries.png", imgNeg: "/images/LSNEG.png", bookImg: "" },
@@ -277,8 +274,8 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
                 </div>
              </div>
              <div 
-               className="absolute inset-0 overflow-hidden"
-               style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+                className="absolute inset-0 overflow-hidden"
+                style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
              >
                 <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover" />
                 <div className="absolute top-4 left-4 bg-stone-900/90 text-white text-[10px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 backdrop-blur-sm pointer-events-none">
@@ -286,8 +283,8 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
                 </div>
              </div>
              <div 
-               className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
-               style={{ left: `${sliderPos}%` }}
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
+                style={{ left: `${sliderPos}%` }}
              >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center border border-stone-200 text-stone-600">
                    <MoveHorizontal className="w-4 h-4" />
@@ -307,7 +304,6 @@ const ChineseArchitecturalSystem = () => {
 
   const selectedCase = cases.find(c => c.id === selectedCaseId);
 
-  // Gallery View
   if (!selectedCase) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -334,7 +330,7 @@ const ChineseArchitecturalSystem = () => {
                
                <div className="flex justify-between items-center border-t border-stone-100 pt-4">
                   <button className="text-xs uppercase tracking-widest font-bold text-stone-900 flex items-center gap-2 group-hover:text-amber-700 transition-colors">
-                    {trans.theory.chinese.viewAnalysis || 'View Analysis'} <ArrowRight className="w-3 h-3" />
+                    {trans.theory?.chinese?.viewAnalysis || 'View Analysis'} <ArrowRight className="w-3 h-3" />
                   </button>
                </div>
             </div>
@@ -344,7 +340,6 @@ const ChineseArchitecturalSystem = () => {
     );
   }
 
-  // Detail View
   return (
     <div className="bg-white border border-stone-200 rounded-sm shadow-sm">
       <div className="border-b border-stone-100 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-stone-50/50">
@@ -363,22 +358,19 @@ const ChineseArchitecturalSystem = () => {
       </div>
 
       <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
-        {/* Left Column: Analysis */}
         <div className="lg:col-span-4 space-y-8">
            <div>
              <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-3 border-b border-stone-100 pb-2 inline-block">
-               {trans.theory.chinese.analysisTitle || 'Analysis'}
+               {trans.theory?.chinese?.analysisTitle || 'Analysis'}
              </h4>
              <p className="text-stone-700 leading-relaxed text-sm">
                {language === 'zh' ? selectedCase.descriptionZh : selectedCase.description}
              </p>
            </div>
            
-           {/* Layered Analysis */}
            <div>
               <div className="flex items-center gap-2 text-stone-400 uppercase tracking-wider text-[10px] mb-4">
-                 <Layers className="w-3 h-3" /> {trans.theory.chinese.layerExplainer || 'Structural Layers'}
+                 <Layers className="w-3 h-3" /> {trans.theory?.chinese?.layerExplainer || 'Structural Layers'}
               </div>
               <div className="space-y-2">
                  {selectedCase.levels.map((level, i) => (
@@ -393,7 +385,6 @@ const ChineseArchitecturalSystem = () => {
               </div>
            </div>
 
-           {/* Related Properties */}
            <div>
               <div className="flex items-center gap-2 text-stone-400 uppercase tracking-wider text-[10px] mb-4">
                  <Check className="w-3 h-3" /> Related Properties
@@ -410,10 +401,9 @@ const ChineseArchitecturalSystem = () => {
               </div>
            </div>
 
-           {/* Toggle Centers */}
            <div className="pt-6 border-t border-stone-100">
               <label className="flex items-center justify-between cursor-pointer group">
-                 <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{trans.theory.chinese.toggleCenters || 'Highlight Centers'}</span>
+                 <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{trans.theory?.chinese?.toggleCenters || 'Highlight Centers'}</span>
                  <button 
                    onClick={() => setHighlightCenters(!highlightCenters)}
                    className={cn(
@@ -430,7 +420,6 @@ const ChineseArchitecturalSystem = () => {
            </div>
         </div>
 
-        {/* Right Column: Visual Analysis */}
         <div className="lg:col-span-8 grid grid-cols-1 gap-6">
            <div className="bg-white border border-stone-100 p-1 rounded-sm shadow-sm group relative">
               <div className="relative aspect-[16/9] overflow-hidden bg-stone-50 flex items-center justify-center">
@@ -444,7 +433,6 @@ const ChineseArchitecturalSystem = () => {
                  />
                  {highlightCenters && (
                    <div className="absolute inset-0 pointer-events-none">
-                      {/* Simulated highlighted centers overlay */}
                       <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 animate-pulse" />
                       <div className="absolute top-1/2 left-1/4 w-16 h-16 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
                       <div className="absolute top-1/2 right-1/4 w-16 h-16 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
@@ -463,37 +451,170 @@ const ChineseArchitecturalSystem = () => {
 
 export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
+  const [iframeLoaded, setIframeLoaded] = useState(false); 
+  const [activeHowTo, setActiveHowTo] = useState<number | null>(null); // 控制三小块的交互状态
   const { trans, language } = useLanguage();
+  const isEn = language === 'en';
   
   const activeProp = properties.find(p => p.n === activePropId) || properties[0];
+
+  // 为三小块准备的具体展开内容（遵循原著的方法论）
+  const howToData = [
+    {
+      id: 1,
+      icon: Eye,
+      title: isEn ? "Observe Wholeness" : "感知整体",
+      shortDesc: isEn ? "Use the squint test to blur details." : "用眯眼法则模糊表层细节。",
+      fullDesc: isEn 
+        ? "To see the living structure, you must first ignore the functional labels or decorative styles. Squint your eyes until the image blurs. What remains are the true underlying 'centers' of gravity. Does the blurred structure still feel whole, or does it fall apart into chaotic fragments?" 
+        : "要看清生命结构，必须先抛弃功能标签或装饰风格。眯起你的眼睛，直到画面变得模糊。剩下的那些较暗或较亮的体块，就是底层真实的‘重心（Centers）’。在模糊状态下，它依然是一个统一的整体，还是碎裂成了混乱的碎片？"
+    },
+    {
+      id: 2,
+      icon: Layers,
+      title: isEn ? "Map the Hierarchy" : "映射层级",
+      shortDesc: isEn ? "Find structures within structures." : "寻找结构中的嵌套结构。",
+      fullDesc: isEn 
+        ? "Look for scaling hierarchies. A living environment is never just one massive scale. It jumps by factors of 2 to 6. Can you point out the macro-skeleton, the meso-boundaries, and the micro-ornaments? If there is a huge jump from the building scale directly to the window scale with nothing in between, the hierarchy is broken." 
+        : "寻找跨尺度的层级嵌套。充满生命力的环境绝不仅有单一的巨大尺度，它总是以 2 到 6 倍的比例跃升。你能指出它的宏观骨架、中观边界和微观细节吗？如果从巨大的建筑体块直接跳崖式地过渡到微小的窗户，中间缺乏过渡，那么它的层级就是断裂的。"
+    },
+    {
+      id: 3,
+      icon: ArrowUpRight,
+      title: isEn ? "Trace Connections" : "追踪联结",
+      shortDesc: isEn ? "Identify how centers support each other." : "识别中心间如何互相支撑。",
+      fullDesc: isEn 
+        ? "No center lives in isolation. Choose any prominent feature in the space. Does its existence strengthen the space next to it? Do the boundaries interlock deeply, or are they cleanly severed? Living structures share DNA across scales, creating echoes that resonate throughout the entire system." 
+        : "没有哪个中心可以孤立存在。选定空间中任意一个突出的特征，问问自己：它的存在是否强化了它旁边的空间？它们的边界是深度交织的，还是被生硬切断的？生命力结构在不同尺度间共享着几何DNA，在整个系统中形成持续的共鸣。"
+    }
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFBF7] text-stone-800 pb-24">
       
       <div className="w-full max-w-7xl mx-auto p-8 md:p-16 pb-0">
+
+        {/* ========================================================================= */}
+        {/* Section 0: Intuition Test (第一眼看到的破冰区) */}
+        {/* ========================================================================= */}
+        <div className="mb-32">
+          
+          <div className="max-w-4xl mx-auto mb-16 text-center px-4 pt-4 md:pt-8">
+             <Quote className="w-8 h-8 md:w-12 md:h-12 text-stone-200 mx-auto mb-6" />
+             <p className="text-lg md:text-2xl font-serif text-stone-700 leading-relaxed mb-6 italic">
+               "{isEn 
+                 ? "Liking something from the heart means that it makes us more whole in ourselves. It has a healing effect on us. It makes us more human." 
+                 : "发自内心的喜爱，意味着它让我们在内在变得更加完整。它对我们有疗愈的作用，让我们更具人性。"}"
+             </p>
+             <p className="text-sm md:text-base text-stone-500 font-medium">
+               — Christopher Alexander, The Nature of Order
+             </p>
+          </div>
+
+          <Section title={isEn ? "Intuition Test" : "直觉测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：结构美测试"} className="!pt-0 !border-0">
+            <div className="bg-white rounded-3xl p-4 md:p-10 shadow-sm border border-stone-200">
+              
+              <div className="mb-10 text-center max-w-3xl mx-auto space-y-6">
+                <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-900">
+                   {isEn ? "Which one is a better picture of your true self?" : "哪一个，更像你内心深处真实的自己？"}
+                </h3>
+                
+                <div className="text-stone-600 text-sm md:text-base leading-loose space-y-4 text-left md:text-center">
+                   <p>
+                     {isEn 
+                       ? "For three hundred years our mechanistic world view has disconnected us from our selves. We have a picture of the universe that is powerful and apparently accurate, but which leaves us out." 
+                       : "三百年来，机械的现代世界观切断了我们与『自我（Self）』的联系。我们拥有了一幅看似安全、强大且客观的现实图景，但这幅图景里唯独没有『我』的存在。"}
+                   </p>
+                   <p>
+                     {isEn
+                       ? "Before diving into the cold mathematical equations of the 15 geometric properties, let's take a 1-minute intuition test. When looking at the pairs of images below, do not ask 'which is prettier'. Ask: which comes closer to a true picture of you in all your weakness and humanity; of the love in you, and the hate; of your past, present, and future?"
+                       : "在进入冰冷的数学公式与 15 个几何属性之前，不妨先花 1 分钟进行一场直觉测试。当您凝视测试中的两张图片时，请不要问『哪个更好看』，而是问：哪一个更接近你全部的弱点与人性？哪一个包容了你的爱与恨，你的过去、现在与未来？"}
+                   </p>
+                </div>
+              </div>
+              
+              <div className="relative rounded-2xl overflow-hidden border border-stone-200/60 h-[750px] md:h-[800px] w-full flex flex-col bg-stone-50">
+                <div className="h-10 bg-stone-100 border-b border-stone-200 flex items-center px-4 gap-2 shrink-0">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
+                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
+                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
+                  </div>
+                  <div className="mx-auto bg-white px-3 py-1 rounded-md text-[10px] text-stone-400 font-mono shadow-sm flex items-center gap-1">
+                    🔒 livablecitylab.hkust-gz.edu.cn/beautyofarchitecture
+                  </div>
+                </div>
+
+                {!iframeLoaded && (
+                  <div className="absolute inset-0 top-10 flex flex-col items-center justify-center bg-stone-50 z-10">
+                    <div className="w-10 h-10 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
+                    <p className="text-sm font-medium text-stone-500 animate-pulse">
+                      {isEn ? "Loading official test terminal..." : "正在连接实验室官方测试终端..."}
+                    </p>
+                  </div>
+                )}
+
+                <iframe
+                  src="https://livablecitylab.hkust-gz.edu.cn/beautyofarchitecture"
+                  className="w-full h-full border-none flex-1"
+                  onLoad={() => setIframeLoaded(true)}
+                  allow="fullscreen"
+                  title="LivableCityLAB Beauty of Architecture Test"
+                />
+              </div>
+              
+              <div className="mt-8 text-center px-4">
+                 <p className="text-sm md:text-base font-serif font-medium text-stone-500 italic">
+                   {isEn 
+                     ? "At each instant, as we go through the world, our humanity is expanding and diminishing all the time... Scroll down to discover the mathematical laws behind your intuition." 
+                     : "每一个瞬间，当我们在世界上穿行时，我们的人性都在因周遭的空间而不断地扩张与收缩……继续向下滑动，揭开您的直觉背后，那关于生命力与自然秩序的数学真相。"}
+                 </p>
+                 <div className="w-px h-16 md:h-24 bg-stone-300 mx-auto mt-8 relative">
+                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-stone-400 animate-bounce"></div>
+                 </div>
+              </div>
+
+            </div>
+          </Section>
+        </div>
+
+
+        {/* ========================================================================= */}
+        {/* 核心过渡：巨幅大标题（被移到了这里） */}
+        {/* ========================================================================= */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="mb-20 text-center"
+          className="mb-24 text-center mt-12"
         >
-          <div className="border-b border-stone-200 pb-12 mb-12">
-             <div className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-6">Theoretical Framework</div>
-             <div className="space-y-3 font-serif text-lg text-stone-600 leading-relaxed">
-               <p>Living Structure originates from structural wholeness.</p>
-               <p>Vitality emerges from hierarchical coherence.</p>
-               <p className="font-bold text-stone-900 mt-4">L = S × H</p>
+          <div className="border-b border-stone-200 pb-12 mb-12 max-w-2xl mx-auto">
+             <div className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-6">
+                {isEn ? "Theoretical Framework" : "理论框架提取"}
+             </div>
+             <div className="space-y-3 font-serif text-lg md:text-xl text-stone-600 leading-relaxed">
+               <p>{isEn ? "Living Structure originates from structural wholeness." : "生命力结构，源于不可分割的整体性。"}</p>
+               <p>{isEn ? "Vitality emerges from hierarchical coherence." : "客观的生命美感，涌现于层级的严密嵌套。"}</p>
+               <p className="font-black text-stone-900 text-3xl mt-6 tracking-widest">L = S × H</p>
              </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-stone-900 mb-4 tracking-tight">
-            THEORY OF<br/>LIVING STRUCTURE
+          <h1 className="text-4xl md:text-6xl font-serif font-black text-stone-900 mb-4 tracking-tight uppercase">
+            {isEn ? (
+              <>THEORY OF<br/>LIVING STRUCTURE</>
+            ) : (
+              <>生 命 结 构 理 论</>
+            )}
           </h1>
-          <p className="text-stone-500 font-mono uppercase tracking-widest text-xs">Vitality in Geometry & Architecture</p>
+          <p className="text-stone-500 font-mono uppercase tracking-widest text-xs">
+            {isEn ? "Vitality in Geometry & Architecture" : "几何与建筑中的生命力密码"}
+          </p>
         </motion.div>
 
+
         {/* Section 1: Origin */}
-        <Section title={trans.theory?.origin?.title || "Origin"} className="!pt-0 !border-0">
+        <Section title={trans.theory?.origin?.title || "Origin"}>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
              <div className="space-y-6">
                <p className="text-stone-800 text-lg leading-relaxed font-serif">{trans.theory?.origin?.content1}</p>
@@ -511,7 +632,7 @@ export function Theory() {
            </div>
            
            {/* Small Portrait Area */}
-           <div className="flex gap-8 border-t border-stone-100 pt-8">
+           <div className="flex flex-col md:flex-row gap-8 border-t border-stone-100 pt-8">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
                    <ImageWithFallback src="/images/A.png" alt="C. Alexander" className="w-full h-full object-cover" />
@@ -547,34 +668,57 @@ export function Theory() {
            </div>
         </Section>
 
-        {/* Section 3: How to See */}
+        {/* Section 3: How to See (全新可交互卡片) */}
         <Section title={trans.theory?.howToSee?.title || "How to See"}>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-stone-200 border border-stone-200 bg-white">
-              <div className="p-8 text-center hover:bg-stone-50 transition-colors">
-                 <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
-                    <Eye className="w-5 h-5" />
-                 </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method1}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method1Desc}</p>
-              </div>
-              <div className="p-8 text-center hover:bg-stone-50 transition-colors">
-                 <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
-                    <Layers className="w-5 h-5" />
-                 </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method2}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method2Desc}</p>
-              </div>
-              <div className="p-8 text-center hover:bg-stone-50 transition-colors">
-                 <div className="w-10 h-10 mx-auto bg-stone-100 rounded-full flex items-center justify-center text-stone-600 mb-4">
-                    <ArrowUpRight className="w-5 h-5" />
-                 </div>
-                 <h4 className="font-serif font-bold text-stone-900 mb-2">{trans.theory?.howToSee?.method3}</h4>
-                 <p className="text-xs text-stone-500">{trans.theory?.howToSee?.method3Desc}</p>
-              </div>
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {howToData.map((item) => {
+                const isActive = activeHowTo === item.id;
+                return (
+                  <motion.div 
+                    layout
+                    key={item.id}
+                    onClick={() => setActiveHowTo(isActive ? null : item.id)}
+                    className={cn(
+                      "border border-stone-200 rounded-2xl cursor-pointer transition-colors overflow-hidden",
+                      isActive ? "bg-stone-900 text-white shadow-xl" : "bg-white text-stone-900 hover:bg-stone-50"
+                    )}
+                  >
+                    <motion.div layout className="p-6 md:p-8 flex flex-col items-center text-center">
+                       <div className={cn(
+                         "w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors",
+                         isActive ? "bg-stone-800 text-teal-400" : "bg-stone-100 text-stone-600"
+                       )}>
+                          <item.icon className="w-5 h-5" />
+                       </div>
+                       <h4 className="font-serif font-bold text-lg mb-2">{item.title}</h4>
+                       <p className={cn("text-xs transition-colors", isActive ? "text-stone-300" : "text-stone-500")}>
+                         {item.shortDesc}
+                       </p>
+                    </motion.div>
+
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="px-6 md:px-8 pb-6 md:pb-8 text-left"
+                        >
+                           <div className="w-full h-px bg-stone-700 mb-6"></div>
+                           <p className="text-sm leading-relaxed text-stone-300">
+                             {item.fullDesc}
+                           </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
            </div>
         </Section>
 
-        {/* Section 4: 15 Properties (The newly redesigned Left-Nav & Right-Panel UI) */}
+        {/* Section 4: 15 Properties */}
         <Section title="15 Properties" subTitle={trans.theory?.propertiesSubtitle || "Fundamental patterns of living structure"}>
           
           <div className="flex flex-col lg:flex-row gap-12 mt-8">
@@ -628,7 +772,6 @@ export function Theory() {
                       </span>
                     </div>
 
-                    {/* 核心改动：自然与设计的双轨对比 */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 flex-grow">
                       {/* 自然界体现 */}
                       <div className="bg-emerald-50/50 p-6 rounded-lg border border-emerald-100">
@@ -641,7 +784,7 @@ export function Theory() {
                         </p>
                       </div>
 
-                      {/* 建筑/设计体现 (对应你原来的 example) */}
+                      {/* 建筑/设计体现 */}
                       <div className="bg-stone-50 p-6 rounded-lg border border-stone-200">
                         <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
                           <Building2 className="w-4 h-4" />
@@ -681,13 +824,13 @@ export function Theory() {
                 </AnimatePresence>
               </div>
 
-              {/* 面板 2：互动滑块分析组件（保留并嵌入你的核心组件！） */}
+              {/* 面板 2：互动滑块分析组件 */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden p-8 md:p-12">
                  <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-6 flex items-center gap-2">
                     <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
                  </h4>
                  <PropertyVisuals 
-                   key={activeProp.n} // 添加 key 以确保切换属性时滑块状态重置
+                   key={activeProp.n} 
                    imgPos={activeProp.imgPos} 
                    imgNeg={activeProp.imgNeg} 
                    title={language === 'zh' ? activeProp.tZh : activeProp.tEn} 
@@ -698,7 +841,7 @@ export function Theory() {
           </div>
         </Section>
         
-        {/* Section 5: Chinese Architecture (Independent) */}
+        {/* Section 5: Chinese Architecture */}
         <div className="mt-32">
           <Section title={trans.theory?.chinese?.title || "Chinese Architecture"} className="!pt-0 !border-0">
              <div className="mb-12 max-w-2xl">
