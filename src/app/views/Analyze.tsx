@@ -11,7 +11,8 @@ export function Analyze() {
   const [userIntent, setUserIntent] = useState<string>(""); 
   const [analysisResult, setAnalysisResult] = useState<any>(null); 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const { trans } = useLanguage();
+  const { trans, language } = useLanguage();
+  const isEn = language === 'en';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -101,7 +102,6 @@ export function Analyze() {
         🚨 [核心判定铁律] 🚨
         1. 空间的“美度” (B) 取决于其包含15个几何属性的数量。
         2. 对于每个属性，采用绝对二元判定：具备（积1分），不具备（积0分）。不存在中间分！
-        3. 总分最高15分。
         
         [15个强制打分属性名称（必须完全使用以下中文词汇）]
         1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 
@@ -127,7 +127,6 @@ export function Analyze() {
           "summary": "一句简明的学术总结。",
           "image_stats": [
             {
-              "beauty_score": ${isCompare ? "图1的总得分(0-15之间的整数)" : "该图总得分"},
               "all_attributes": [
                 {"name": "尺度层次", "score": 1, "desc": "1表示具备。简述其体现..."},
                 {"name": "强中心", "score": 0, "desc": "0表示不具备。简述为何缺失..."},
@@ -136,7 +135,6 @@ export function Analyze() {
               ]
             }${isCompare ? `,
             {
-              "beauty_score": 图2的总得分(0-15之间的整数),
               "all_attributes": [
                 {"name": "尺度层次", "score": 0, "desc": "..."},
                 {"name": "强中心", "score": 1, "desc": "..."}
@@ -182,7 +180,10 @@ export function Analyze() {
 
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
   
-  const beautyScore = Number(currentStats?.beauty_score) || 0;
+  // 🛡️ 核心修复：不信任大模型的算数能力，强制在前端重新数一遍有多少个 1 分！
+  const beautyScore = Array.isArray(currentStats?.all_attributes) 
+    ? currentStats.all_attributes.filter((attr: any) => Number(attr.score) >= 1).length 
+    : 0;
 
   return (
     <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
@@ -408,7 +409,7 @@ export function Analyze() {
                           {Array.isArray(currentStats?.all_attributes) ? (
                             <div className="grid grid-cols-3 gap-2 md:gap-3">
                               {currentStats.all_attributes.map((attr: any, idx: number) => {
-                                const isPresent = Number(attr.score) === 1;
+                                const isPresent = Number(attr.score) >= 1;
                                 return (
                                   <div 
                                     key={idx} 
