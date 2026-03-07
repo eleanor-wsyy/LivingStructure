@@ -32,10 +32,9 @@ export function Analyze() {
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
-  // 💡 一键加载本地默认图库功能
   const loadDefaultExamples = async () => {
     try {
-      const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"]; 
+      const DEFAULT_URLS = ["/images/good.jpg", "/images/bad.jpg"]; 
       
       const base64Images = await Promise.all(DEFAULT_URLS.map(async url => {
         const res = await fetch(url);
@@ -54,7 +53,6 @@ export function Analyze() {
     }
   };
 
-  // 🌟 新增：页面初次渲染时自动执行一次加载默认图片的操作
   useEffect(() => {
     loadDefaultExamples();
   }, []); 
@@ -180,7 +178,7 @@ export function Analyze() {
 
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
   
-  // 🛡️ 核心修复：不信任大模型的算数能力，强制在前端重新数一遍有多少个 1 分！
+  // 🛡️ 强制防呆逻辑：重新统计得分为 1 的属性个数
   const beautyScore = Array.isArray(currentStats?.all_attributes) 
     ? currentStats.all_attributes.filter((attr: any) => Number(attr.score) >= 1).length 
     : 0;
@@ -383,8 +381,7 @@ export function Analyze() {
                     >
                       <Card className="bg-white border-stone-200 shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
                         
-                        {/* 顶部：美度仪表盘 */}
-                        <div className="p-6 md:p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative">
+                        <div className="p-6 md:p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative pb-10">
                           {images.length === 2 && (
                             <div className="absolute top-3 left-0 w-full flex justify-center">
                               <span className="bg-stone-100 text-stone-500 text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
@@ -394,13 +391,11 @@ export function Analyze() {
                             </div>
                           )}
                           
-                          {/* 完美的图文分离仪表盘组件 */}
                           <div className="pt-4">
                             <BeautyGauge n={beautyScore} />
                           </div>
                         </div>
                         
-                        {/* 中部：15属性 3x5 矩阵 */}
                         <div className="p-4 md:p-6 bg-white">
                           <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                             <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性鉴定矩阵
@@ -444,7 +439,6 @@ export function Analyze() {
                           <p className="text-center text-[10px] text-stone-400 mt-4 italic">💡 提示：将鼠标悬停在方块上可查看判定原因</p>
                         </div>
                         
-                        {/* 底部：操作按钮 */}
                         <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
                           <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
                             重新分析下一个空间
@@ -466,23 +460,22 @@ export function Analyze() {
 }
 
 // ----------------------------------------------------------------------
-// 🏆 终极版：SVG 美度计仪表盘 (Beauty Gauge)
-// 彻底分离了图形与数字容器，避免任何交叉遮挡现象
+// 🏆 终极防Bug版：SVG 美度计仪表盘 (Beauty Gauge)
 // ----------------------------------------------------------------------
 function BeautyGauge({ n }: { n: number }) {
   const percentage = n / 15;
-  const rotation = percentage * 180 - 90;
+  const rotation = percentage * 240 - 120;
+  const dashLength = 294; 
+  const dashOffset = dashLength - percentage * dashLength;
 
   return (
-    <div className="relative w-full max-w-[240px] mx-auto flex flex-col items-center">
-      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">
+    <div className="relative w-full max-w-[260px] mx-auto flex flex-col items-center">
+      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-1 z-10 relative">
         Degree of Beauty (B)
       </div>
       
-      {/* 仪表盘图区：仅包含 SVG */}
       <div className="w-full relative px-2">
-        {/* 设置 overflow-visible 确保即使旋转到底部也不会被裁切 */}
-        <svg viewBox="0 0 200 110" className="w-full drop-shadow-sm overflow-visible">
+        <svg viewBox="0 0 200 160" className="w-full drop-shadow-sm overflow-visible">
           <defs>
             <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#e7e5e4" />
@@ -491,30 +484,43 @@ function BeautyGauge({ n }: { n: number }) {
             </linearGradient>
           </defs>
 
-          {/* 圆弧轨道 */}
-          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" />
-          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" />
+          {/* 背景灰色轨道 */}
+          <path 
+            d="M 39.4 135 A 70 70 0 1 1 160.6 135" 
+            fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" 
+          />
           
-          {/* 刻度值 0 和 15 */}
-          <text x="15" y="120" fontSize="13" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
-          <text x="185" y="120" fontSize="13" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
+          {/* 动态彩色填充轨道 */}
+          <motion.path 
+            d="M 39.4 135 A 70 70 0 1 1 160.6 135" 
+            fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" 
+            strokeDasharray={dashLength}
+            initial={{ strokeDashoffset: dashLength }}
+            animate={{ strokeDashoffset: dashOffset }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          />
+          
+          {/* 两端刻度 */}
+          <text x="22" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
+          <text x="178" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
 
-          {/* 带物理阻尼弹簧效果的指针 */}
+          {/* 🚀 核心修复：添加不可见的 rect 强制统一分组基准，彻底规避浏览器渲染偏心问题 */}
           <motion.g
-            initial={{ rotate: -90 }}
+            initial={{ rotate: -120 }}
             animate={{ rotate: rotation }}
             transition={{ type: "spring", stiffness: 45, damping: 15, delay: 0.4 }}
-            style={{ transformOrigin: "100px 100px" }}
+            style={{ originX: "50%", originY: "50%" }}
           >
-            <polygon points="96,100 104,100 100,20" fill="#292524" />
+            {/* 这个透明矩形是修复 Safari 等浏览器偏心旋转的秘诀！ */}
+            <rect x="0" y="0" width="200" height="200" fill="transparent" pointerEvents="none" />
+            <polygon points="97,100 103,100 100,28" fill="#292524" />
             <circle cx="100" cy="100" r="9" fill="#292524" />
             <circle cx="100" cy="100" r="3" fill="#ffffff" />
           </motion.g>
         </svg>
       </div>
 
-      {/* 数字分值区：紧贴在 SVG 下方，绝对不会发生重叠 */}
-      <div className="mt-4 flex items-baseline justify-center">
+      <div className="-mt-8 flex items-baseline justify-center relative z-10">
         <span className="text-5xl md:text-6xl font-black text-stone-800 font-mono tracking-tighter leading-none">
           {n}
         </span>
@@ -524,9 +530,6 @@ function BeautyGauge({ n }: { n: number }) {
   );
 }
 
-// ----------------------------------------------------------------------
-// 底部步骤条组件
-// ----------------------------------------------------------------------
 function StepItem({ current, target, number, label }: { current: string, target: string, number: number, label: string }) {
   const isActive = current === target;
   return (
