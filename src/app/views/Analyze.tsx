@@ -34,7 +34,7 @@ export function Analyze() {
 
   const loadDefaultExamples = async () => {
     try {
-      const DEFAULT_URLS = ["/images/good.jpg", "/images/bad.jpg"]; 
+      const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"]; 
       
       const base64Images = await Promise.all(DEFAULT_URLS.map(async url => {
         const res = await fetch(url);
