@@ -86,7 +86,7 @@ export const translations = {
       origin: {
         title: "The Origin of Living Structure",
         content1: "Living Structure originates from Christopher Alexander’s concept of “wholeness” and the 15 structural properties. The theory proposes that vitality is measurable and structurally generated.",
-        content2: "Professor Jiang Bin further developed the theory within the context of Chinese traditional architecture, formulating the mathematical relationship L = S × H.",
+        content2: "Professor Bin Jiang further developed the theory within the context of Chinese traditional architecture, formulating the mathematical relationship L = S × H.",
         formulaTitle: "Fundamental Equation",
         formulaL: "Living Intensity",
         formulaS: "Structural Coherence",
