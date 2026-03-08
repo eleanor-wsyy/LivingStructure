@@ -89,7 +89,7 @@ export const translations = {
         content2: "Professor Bin Jiang further developed the theory within the context of Chinese traditional architecture, formulating the mathematical relationship L = S × H.",
         formulaTitle: "Fundamental Equation",
         formulaL: "Living Intensity",
-        formulaS: "Structural Coherence",
+        formulaS: "Substructures",
         formulaH: "Hierarchical Depth"
       },
       aesthetic: {
