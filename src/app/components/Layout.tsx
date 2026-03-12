@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Input } from "@/app/components/ui";
-import { Search, Menu, X, Globe, User, Home, BookOpen, BarChart3, PenTool, Layout as LayoutIcon, Library as LibraryIcon, Info } from "lucide-react";
+// 👇 修改 1：在最后加上了 Users 图标
+import { Search, Menu, X, Globe, User, Home, BookOpen, BarChart3, PenTool, Layout as LayoutIcon, Library as LibraryIcon, Info, Users } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/app/components/ui";
 import { useLanguage } from "@/app/i18n/LanguageContext";
@@ -26,6 +27,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
     { id: "library", label: trans.nav.library, icon: LibraryIcon },
+    // 👇 修改 2：加上了 Community 页面，并做了中英文兼容
+    { id: "community", label: language === 'zh' ? '社区' : 'Community', icon: Users },
   ];
 
   const appTitle = language === 'zh' ? "活力结构" : "Living Structure";

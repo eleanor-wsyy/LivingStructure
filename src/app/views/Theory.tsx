@@ -9,7 +9,6 @@ import {
   Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen, Sparkles
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-const langjialiImage = "/images/Boundaries.png";
 
 // --- Data ---
 const genericNegative = "https://images.unsplash.com/photo-1572533541497-ed8f48f2e7e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm5pc3QlMjBnbGFzcyUyMGN1cnRhaW4lMjB3YWxsJTIwc2t5c2NyYXBlciUyMGRldGFpbHxlbnwxfHx8fDE3NzE2NDk5NTF8MA&ixlib=rb-4.1.0&q=80&w=1080";
@@ -80,7 +79,7 @@ const properties = [
       bookImg: "/images/alexander/placeholder.jpg"
     },
     { n: 5, tEn: "Positive Space", tZh: "正空间", quoteEn: "Space is not merely the residue between objects but a distinct entity.", quoteZh: "空间不仅仅是物体之间的残留物，而是一个独立的实体。", mechEn: "The mechanism for creating positive space is enclosure and convexity.", mechZh: "创造正空间的机制是围合和凸性。", relEn: "Increases S (Strength) by shaping the void.", relZh: "通过塑造虚空增加 S（强度）。", natureEn: "Nature avoids 'leftover' spaces; even the empty space between branches has a distinct shape.", natureZh: "大自然避免“多余”的空间；即使是树枝间的空隙也有清晰的形状。", exampleEn: "A public square defined by continuous building facades.", exampleZh: "由连续建筑立面定义的公共广场。", imgPos: "/images/Positive space.png", imgNeg: "/images/PSNEG.png", bookImg: "" },
-    { n: 6, tEn: "Good Shape", tZh: "良好形状", quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.", quoteZh: "生命结构中的每个元素都应该有一个“良形”——简单且连贯。", mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).", mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。", relEn: "Increases S (Strength) through geometric coherence.", relZh: "通过几何连贯性增加 S（强度）。", natureEn: "A water drop or a river stone, worn into an elemental and harmonious shape.", natureZh: "水滴或河石，被磨成了基本且和谐的形状。", exampleEn: "A perfectly proportioned rectangular window or circular arch.", exampleZh: "比例完美的矩形窗或圆拱。", imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "" },
+    { n: 6, tEn: "Good Shape", tZh: "良好形状", quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.", quoteZh: "活力结构中的每个元素都应该有一个“良形”——简单且连贯。", mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).", mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。", relEn: "Increases S (Strength) through geometric coherence.", relZh: "通过几何连贯性增加 S（强度）。", natureEn: "A water drop or a river stone, worn into an elemental and harmonious shape.", natureZh: "水滴或河石，被磨成了基本且和谐的形状。", exampleEn: "A perfectly proportioned rectangular window or circular arch.", exampleZh: "比例完美的矩形窗或圆拱。", imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "" },
     { n: 7, tEn: "Local Symmetries", tZh: "局部对称", quoteEn: "Small parts of the structure should be symmetrical within themselves.", quoteZh: "结构的微小部分在自身内部应对称。", mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", mechZh: "该机制是通过反射创建“子中心”。", relEn: "Increases S (Strength) by binding centers locally.", relZh: "通过局部结合中心增加 S（强度）。", natureEn: "Leaves, crystals, and animal faces possess striking local symmetry despite global variation.", natureZh: "尽管整体有变化，树叶、水晶和动物面部都具有惊人的局部对称性。", exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.", exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。", imgPos: "/images/Local symmetries.png", imgNeg: "/images/LSNEG.png", bookImg: "" },
     { n: 8, tEn: "Deep Interlock and Ambiguity", tZh: "深度交织与模糊性", quoteEn: "Elements should not simply sit next to each other; they should interlock.", quoteZh: "元素不应仅仅彼此相邻；它们应该嵌合。", mechEn: "The mechanism uses 'ambiguity of belonging' where material A penetrates material B.", mechZh: "该机制利用“归属的模糊性”，即材料 A 穿透材料 B。", relEn: "Increases S (Strength) by fusing adjacent centers.", relZh: "通过融合相邻中心增加 S（强度）。", natureEn: "The jagged interlocking of continental plates or roots winding through rocks.", natureZh: "大陆板块的锯齿状交错，或是盘绕穿过岩石的树根。", exampleEn: "Dove-tail joints in wood or interlocking paving stones.", exampleZh: "木材中的燕尾榫或互锁铺路石。", imgPos: "/images/Deep interlock and ambiguity.png", imgNeg: "/images/DNEG.png", bookImg: "" },
     { n: 9, tEn: "Contrast", tZh: "对比", quoteEn: "Life requires difference. Distinct parts should be visibly different in character.", quoteZh: "生命需要差异。独特部分在特征上应明显不同。", mechEn: "The mechanism is the unification of opposites, enhancing both qualities.", mechZh: "机制是对立面的统一，增强了两种特质。", relEn: "Increases S (Strength) by clarifying distinction.", relZh: "通过阐明区别增加 S（强度）。", natureEn: "The bright bloom of a flower against dark foliage, or stark shadows on a canyon wall.", natureZh: "深色树叶衬托下明亮的花朵，或峡谷崖壁上鲜明的阴影。", exampleEn: "Light against dark, rough stone against smooth plaster.", exampleZh: "明与暗，粗糙石头与光滑灰泥。", imgPos: "/images/Contrast.png", imgNeg: "/images/CNEG.png", bookImg: "" },
@@ -89,8 +88,15 @@ const properties = [
     { n: 12, tEn: "Echoes", tZh: "共鸣", quoteEn: "The same structural logic appears at different scales throughout the design.", quoteZh: "相同结构逻辑出现在设计的不同尺度中。", mechEn: "The mechanism is the use of a 'generative seed' or fractal DNA recursively.", mechZh: "机制是递归使用“生成种子”或分形 DNA。", relEn: "Increases H (Hierarchy) through self-similarity.", relZh: "通过自相似性增加 H（层级）。", natureEn: "The branching of a river delta echoing the veins in a single leaf.", natureZh: "河流三角洲的分支与单片树叶的叶脉形成呼应。", exampleEn: "The curve of a dome echoed in the arches below it.", exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。", imgPos: "/images/Echoes.png", imgNeg: "/images/ENEG.png", bookImg: "" },
     { n: 13, tEn: "The Void", tZh: "虚空", quoteEn: "In the most intense centers, there is often a moment of pure silence.", quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。", mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.", mechZh: "机制是特意保留一个由结构包围的空中心。", relEn: "Increases S (Strength) by creating a calm center.", relZh: "通过创造平静中心增加 S（强度）。", natureEn: "A clearing in a dense forest, or a perfectly still alpine lake.", natureZh: "茂密森林中的林间空地，或是一片平静的高山湖泊。", exampleEn: "An empty altar or a quiet central courtyard.", exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。", imgPos: "/images/The void.png", imgNeg: "/images/VNEG.png", bookImg: "" },
     { n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与内在平静", quoteEn: "The form feels calm because everything is exactly where it needs to be.", quoteZh: "形式感觉平静，因为一切都在它应该在的地方。", mechEn: "The mechanism is the removal of structural noise (Occam's Razor).", mechZh: "机制是消除结构噪音（奥卡姆剃刀）。", relEn: "Increases S (Strength) by removing friction.", relZh: "通过消除摩擦增加 S（强度）。", natureEn: "A smooth expanse of untouched snow, or a clear blue sky.", natureZh: "广阔无垠的纯洁雪原，或是清澈湛蓝的天空。", exampleEn: "A Shaker chair or a Zen garden.", exampleZh: "震颤派椅子或禅宗花园。", imgPos: "/images/Simplicity and inner calm.png", imgNeg: "/images/SINEG.png", bookImg: "" },
-    { n: 15, tEn: "Not-Separateness", tZh: "非分离性", quoteEn: "A living structure is not separate from its surroundings; it grows out of them.", quoteZh: "生命结构与其周围环境不是分离的；它是从中生长出来的。", mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.", mechZh: "机制是通过相互渗透模糊外边界。", relEn: "Increases H (Hierarchy) by connecting to the largest whole.", relZh: "通过连接到最大整体增加 H（层级）。", natureEn: "A nest woven seamlessly into the branches of a tree.", natureZh: "无缝编织在树枝间的鸟巢。", exampleEn: "A building that steps down the hillside, merging with the terrain.", exampleZh: "顺山势而下的建筑，与地形融为一体。", imgPos: "/images/Not separateness.png", imgNeg: "/images/NSNEG.png", bookImg: "" }
+    { n: 15, tEn: "Not-Separateness", tZh: "非分离性", quoteEn: "A living structure is not separate from its surroundings; it grows out of them.", quoteZh: "活力结构与其周围环境不是分离的；它是从中生长出来的。", mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.", mechZh: "机制是通过相互渗透模糊外边界。", relEn: "Increases H (Hierarchy) by connecting to the largest whole.", relZh: "通过连接到最大整体增加 H（层级）。", natureEn: "A nest woven seamlessly into the branches of a tree.", natureZh: "无缝编织在树枝间的鸟巢。", exampleEn: "A building that steps down the hillside, merging with the terrain.", exampleZh: "顺山势而下的建筑，与地形融为一体。", imgPos: "/images/Not separateness.png", imgNeg: "/images/NSNEG.png", bookImg: "" }
 ];
+
+interface CenterNode {
+  x: number; // 百分比坐标 0-100
+  y: number; // 百分比坐标 0-100
+  r: number; // 圈的大小 (px)
+  label: string; // 节点说明文字
+}
 
 interface CaseStudy {
   id: string;
@@ -109,6 +115,7 @@ interface CaseStudy {
   elevationUrl: string; 
   levels: number[];
   relatedProperties: number[];
+  centers?: CenterNode[]; // 💡 新增：用于存放高亮节点坐标的数组
 }
 
 const cases: CaseStudy[] = [
@@ -124,11 +131,17 @@ const cases: CaseStudy[] = [
     bValue: "6 / 15",
     description: "Jiangnan folk houses are a vital component of traditional Chinese residential architecture. Characterized by facing south for sunlight, using wooden beams for load-bearing, and stone/earth for protection.",
     descriptionZh: "江南民居是中国传统民居建筑的重要组成部分，江浙水乡注重前街后河，但无论南方还是北方的中国人，其传统民居的共同特点都是坐北朝南，注重内采光；以木梁承重，以砖、石、土砌护墙。",
-    imageUrl: "https://images.unsplash.com/photo-1742078009189-3607025a854c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMGNoaW5lc2UlMjB3b29kZW4lMjBhcmNoaXRlY3R1cmUlMjBkZXRhaWwlMjBtYWNyb3xlbnwxfHx8fDE3NzE2NDkyMzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    diagramUrl: langjialiImage,
-    elevationUrl: "https://images.unsplash.com/photo-1754873313580-5d70c8fa2b29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxUaGUlMjBBbGhhbWJyYSUyMEdyYW5hZGElMjBpbnRyaWNhdGUlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzcxNjQ3OTYzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageUrl: "/cnts/LJNMJ.png",
+    diagramUrl: "/cnts/LJNMJ.png", // 确保这张图的路径正确
+    elevationUrl: "/cnts/LJNMJ.png", // 确保这张图的路径正确
     levels: [4, 10, 36, 123, 533, 2967],
-    relatedProperties: [1, 3, 11, 15]
+    relatedProperties: [1, 3, 11, 15],
+    // 💡 这里的坐标和标签，你可以根据你真实图片的构图进行微调！
+    centers: [
+      { x: 50, y: 30, r: 80, label: "Main Ridge (主脊)" },
+      { x: 30, y: 60, r: 60, label: "Gable Wall (山墙)" },
+      { x: 70, y: 60, r: 60, label: "Courtyard Entry (庭院入口)" },
+    ]
   },
   {
     id: "forbidden_city",
@@ -146,7 +159,12 @@ const cases: CaseStudy[] = [
     diagramUrl: "https://images.unsplash.com/photo-1599571342676-47b297800067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwcm9vZiUyMGRldGFpbCUyMGdvbGRlbnxlbnwxfHx8fDE3NzE2NDk2MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     elevationUrl: "https://images.unsplash.com/photo-1546261547-49f3e4c4c77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwZmFjYWRlfGVufDF8fHx8MTc3MTY0OTYxOXww&ixlib=rb-4.1.0&q=80&w=1080",
     levels: [2, 12, 48, 192, 864, 4200],
-    relatedProperties: [2, 6, 7, 12, 14]
+    relatedProperties: [2, 6, 7, 12, 14],
+    centers: [
+      { x: 50, y: 50, r: 120, label: "Imperial Throne (宝座中心)" },
+      { x: 20, y: 40, r: 50, label: "Dougong Cluster (斗拱群)" },
+      { x: 80, y: 40, r: 50, label: "Dougong Cluster (斗拱群)" },
+    ]
   },
   {
     id: "suzhou_garden",
@@ -164,7 +182,12 @@ const cases: CaseStudy[] = [
     diagramUrl: "https://images.unsplash.com/photo-1523528206898-1e43c5101037?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXpob3UlMjBnYXJkZW4lMjBkZXRhaWx8ZW58MXx8fHwxNzcxNjQ5NjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     elevationUrl: "https://images.unsplash.com/photo-1512805177439-012b18f15d73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXpob3UlMjBnYXJkZW4lMjB3aW5kb3d8ZW58MXx8fHwxNzcxNjQ5NjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
     levels: [6, 24, 88, 300, 1100, 3500],
-    relatedProperties: [4, 8, 11, 13, 15]
+    relatedProperties: [4, 8, 11, 13, 15],
+    centers: [
+      { x: 40, y: 70, r: 70, label: "Rockery Point (假山叠石)" },
+      { x: 75, y: 45, r: 60, label: "Framed Window (漏窗透景)" },
+      { x: 25, y: 25, r: 50, label: "Curved Eave (飞檐)" },
+    ]
   }
 ];
 
@@ -401,14 +424,20 @@ const ChineseArchitecturalSystem = () => {
               </div>
            </div>
 
+           {/* 💡 升级版的高亮按钮 */}
            <div className="pt-6 border-t border-stone-100">
-              <label className="flex items-center justify-between cursor-pointer group">
-                 <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">{trans.theory?.chinese?.toggleCenters || 'Highlight Centers'}</span>
+              <label className="flex items-center justify-between cursor-pointer group bg-stone-50 p-4 rounded-lg border border-stone-200 hover:border-amber-400 transition-all">
+                 <div className="flex flex-col">
+                   <span className="text-sm font-bold text-stone-900 group-hover:text-amber-600 transition-colors">
+                     {trans.theory?.chinese?.toggleCenters || 'Highlight Living Centers'}
+                   </span>
+                   <span className="text-[10px] text-stone-500 mt-1">Reveal architectural focal points</span>
+                 </div>
                  <button 
                    onClick={() => setHighlightCenters(!highlightCenters)}
                    className={cn(
-                     "w-12 h-6 rounded-full relative transition-colors duration-300",
-                     highlightCenters ? "bg-amber-500" : "bg-stone-200"
+                     "w-12 h-6 rounded-full relative transition-colors duration-300 shadow-inner",
+                     highlightCenters ? "bg-amber-500" : "bg-stone-300"
                    )}
                  >
                    <div className={cn(
@@ -421,23 +450,63 @@ const ChineseArchitecturalSystem = () => {
         </div>
 
         <div className="lg:col-span-8 grid grid-cols-1 gap-6">
-           <div className="bg-white border border-stone-100 p-1 rounded-sm shadow-sm group relative">
-              <div className="relative aspect-[16/9] overflow-hidden bg-stone-50 flex items-center justify-center">
+           <div className="bg-white border border-stone-100 p-1 rounded-sm shadow-sm relative overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden bg-stone-900 flex items-center justify-center">
+                 
                  <ImageWithFallback 
                    src={selectedCase.diagramUrl}
                    alt="Structural Diagram"
                    className={cn(
-                     "w-full h-full object-contain mix-blend-multiply transition-all duration-700",
-                     highlightCenters ? "opacity-100 scale-105" : "opacity-80"
+                     "w-full h-full object-contain transition-all duration-700",
+                     highlightCenters ? "opacity-60 scale-100 blur-[1px]" : "opacity-100 scale-105"
                    )}
                  />
-                 {highlightCenters && (
-                   <div className="absolute inset-0 pointer-events-none">
-                      <div className="absolute top-1/2 left-1/2 w-32 h-32 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50 animate-pulse" />
-                      <div className="absolute top-1/2 left-1/4 w-16 h-16 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
-                      <div className="absolute top-1/2 right-1/4 w-16 h-16 border-2 border-red-500 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-30" />
-                   </div>
-                 )}
+                 
+                 {/* 💡 全新的网格与精准节点渲染层 */}
+                 <AnimatePresence>
+                   {highlightCenters && selectedCase.centers && (
+                     <motion.div
+                       initial={{ opacity: 0 }}
+                       animate={{ opacity: 1 }}
+                       exit={{ opacity: 0 }}
+                       className="absolute inset-0 pointer-events-none z-10"
+                     >
+                       {/* 科技感建筑测绘网格 */}
+                       <div 
+                         className="absolute inset-0 opacity-20" 
+                         style={{ 
+                           backgroundImage: 'linear-gradient(rgba(251, 191, 36, 0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(251, 191, 36, 0.4) 1px, transparent 1px)', 
+                           backgroundSize: '40px 40px' 
+                         }} 
+                       />
+
+                       {/* 动态渲染配置好的坐标节点 */}
+                       {selectedCase.centers.map((center, idx) => (
+                         <motion.div
+                           key={idx}
+                           initial={{ scale: 0, opacity: 0 }}
+                           animate={{ scale: 1, opacity: 1 }}
+                           transition={{ delay: idx * 0.15, type: "spring", stiffness: 100 }}
+                           className="absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                           style={{ left: `${center.x}%`, top: `${center.y}%`, width: center.r, height: center.r }}
+                         >
+                           {/* 核心金点 */}
+                           <div className="absolute w-2 h-2 bg-amber-400 rounded-full shadow-[0_0_15px_rgba(251,191,36,1)] z-20" />
+                           {/* 旋转的虚线环 */}
+                           <div className="absolute w-full h-full border border-amber-400/80 rounded-full animate-[spin_8s_linear_infinite] border-dashed" />
+                           {/* 脉冲扩散波纹 */}
+                           <div className="absolute w-[150%] h-[150%] border border-amber-300/40 rounded-full animate-ping" />
+                           
+                           {/* 节点文字标签 */}
+                           <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 bg-stone-900/90 backdrop-blur border border-amber-500/30 text-amber-50 text-[10px] px-3 py-1 rounded shadow-xl uppercase tracking-widest whitespace-nowrap">
+                             {center.label}
+                           </div>
+                         </motion.div>
+                       ))}
+                     </motion.div>
+                   )}
+                 </AnimatePresence>
+
               </div>
            </div>
         </div>
@@ -452,13 +521,12 @@ const ChineseArchitecturalSystem = () => {
 export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
   const [iframeLoaded, setIframeLoaded] = useState(false); 
-  const [activeHowTo, setActiveHowTo] = useState<number | null>(null); // 控制三小块的交互状态
+  const [activeHowTo, setActiveHowTo] = useState<number | null>(null); 
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
   
   const activeProp = properties.find(p => p.n === activePropId) || properties[0];
 
-  // 为三小块准备的具体展开内容（遵循原著的方法论）
   const howToData = [
     {
       id: 1,
@@ -467,7 +535,7 @@ export function Theory() {
       shortDesc: isEn ? "Use the squint test to blur details." : "用眯眼法则模糊表层细节。",
       fullDesc: isEn 
         ? "To see the living structure, you must first ignore the functional labels or decorative styles. Squint your eyes until the image blurs. What remains are the true underlying 'centers' of gravity. Does the blurred structure still feel whole, or does it fall apart into chaotic fragments?" 
-        : "要看清生命结构，必须先抛弃功能标签或装饰风格。眯起你的眼睛，直到画面变得模糊。剩下的那些较暗或较亮的体块，就是底层真实的‘重心（Centers）’。在模糊状态下，它依然是一个统一的整体，还是碎裂成了混乱的碎片？"
+        : "要看清活力结构，必须先抛弃功能标签或装饰风格。眯起你的眼睛，直到画面变得模糊。剩下的那些较暗或较亮的体块，就是底层真实的‘重心（Centers）’。在模糊状态下，它依然是一个统一的整体，还是碎裂成了混乱的碎片？"
     },
     {
       id: 2,
@@ -580,7 +648,7 @@ export function Theory() {
 
 
         {/* ========================================================================= */}
-        {/* 核心过渡：巨幅大标题（被移到了这里） */}
+        {/* 核心过渡：巨幅大标题 */}
         {/* ========================================================================= */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -668,7 +736,7 @@ export function Theory() {
            </div>
         </Section>
 
-        {/* Section 3: How to See (全新可交互卡片) */}
+        {/* Section 3: How to See */}
         <Section title={trans.theory?.howToSee?.title || "How to See"}>
            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {howToData.map((item) => {
