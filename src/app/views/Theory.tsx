@@ -1,14 +1,16 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { cn } from "@/app/components/ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  ChevronDown, ArrowRight, ArrowLeft, Quote, Info, Check, X, 
-  Minus, Plus, Search, MapPin, Calendar, Activity, BarChart3,
-  Columns, ScanLine, Maximize, MoveHorizontal, Divide,
-  Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen, Sparkles
+  ArrowRight, ArrowLeft, Quote, Info, Check, X, 
+  Columns, ScanLine, MoveHorizontal,
+  Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen, Sparkles, Microscope, Loader2, RefreshCcw
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
+
+// 💡 相对路径导入：直接跳出一层寻找 hooks 文件夹
+import { useGemini } from '../hooks/useGemini'; 
 
 // --- Data ---
 const genericNegative = "https://images.unsplash.com/photo-1572533541497-ed8f48f2e7e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm5pc3QlMjBnbGFzcyUyMGN1cnRhaW4lMjB3YWxsJTIwc2t5c2NyYXBlciUyMGRldGFpbHxlbnwxfHx8fDE3NzE2NDk5NTF8MA&ixlib=rb-4.1.0&q=80&w=1080";
@@ -115,7 +117,7 @@ interface CaseStudy {
   elevationUrl: string; 
   levels: number[];
   relatedProperties: number[];
-  centers?: CenterNode[]; // 💡 新增：用于存放高亮节点坐标的数组
+  centers?: CenterNode[]; 
 }
 
 const cases: CaseStudy[] = [
@@ -132,11 +134,10 @@ const cases: CaseStudy[] = [
     description: "Jiangnan folk houses are a vital component of traditional Chinese residential architecture. Characterized by facing south for sunlight, using wooden beams for load-bearing, and stone/earth for protection.",
     descriptionZh: "江南民居是中国传统民居建筑的重要组成部分，江浙水乡注重前街后河，但无论南方还是北方的中国人，其传统民居的共同特点都是坐北朝南，注重内采光；以木梁承重，以砖、石、土砌护墙。",
     imageUrl: "/cnts/LJNMJ.png",
-    diagramUrl: "/cnts/LJNMJ.png", // 确保这张图的路径正确
-    elevationUrl: "/cnts/LJNMJ.png", // 确保这张图的路径正确
+    diagramUrl: "/cnts/LJNMJ.png", 
+    elevationUrl: "/cnts/LJNMJ.png", 
     levels: [4, 10, 36, 123, 533, 2967],
     relatedProperties: [1, 3, 11, 15],
-    // 💡 这里的坐标和标签，你可以根据你真实图片的构图进行微调！
     centers: [
       { x: 50, y: 30, r: 80, label: "Main Ridge (主脊)" },
       { x: 30, y: 60, r: 60, label: "Gable Wall (山墙)" },
@@ -155,7 +156,7 @@ const cases: CaseStudy[] = [
     bValue: "12 / 15",
     description: "The largest hall in the Forbidden City, exemplifying imperial power through strict symmetry, massive scale, and intricate Dougong bracket sets. It represents the peak of official structural hierarchy.",
     descriptionZh: "故宫中最大的殿宇，通过严格的对称性、巨大的尺度和复杂的斗拱结构体现皇权。它代表了官方结构等级制度的巅峰。",
-    imageUrl: "https://images.unsplash.com/photo-1740390364580-bfc152f2499d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwQmVpamluZyUyMGFlcmlhbCUyMHZpZXclMjBzeW1tZXRyeSUyMGFyY2hpdGVjdHVyZXxlbnwxfHx8fDE3NzE2NDk2MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+    imageUrl: "https://images.unsplash.com/photo-1740390364580-bfc152f2499d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwQmVpamluZyUyMGFlcmlhbCUyMHZpZXclMjBzeW1tZXRyeSUyMGFyY2hpdGVjdHVyZXxlbnwxfHx8fDE3NzE2NDk6MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     diagramUrl: "https://images.unsplash.com/photo-1599571342676-47b297800067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwcm9vZiUyMGRldGFpbCUyMGdvbGRlbnxlbnwxfHx8fDE3NzE2NDk2MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
     elevationUrl: "https://images.unsplash.com/photo-1546261547-49f3e4c4c77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwZmFjYWRlfGVufDF8fHx8MTc3MTY0OTYxOXww&ixlib=rb-4.1.0&q=80&w=1080",
     levels: [2, 12, 48, 192, 864, 4200],
@@ -190,6 +191,40 @@ const cases: CaseStudy[] = [
     ]
   }
 ];
+
+const QUESTION_POOL = [
+  {
+    id: 1, property: "Roughness vs. Perfection",
+    optionA: { id: "A1", type: "strong", img: "/images/Roughness.png", descEn: "Adapting to the local environment", descZh: "适应局部环境的粗糙生长" },
+    optionB: { id: "B1", type: "weak", img: "/images/RNEG.png", descEn: "Mechanically perfect and sterile", descZh: "机械般的完美与绝对无瑕" }
+  },
+  {
+    id: 2, property: "Living Centers vs. Fragmented Space",
+    optionA: { id: "A2", type: "weak", img: "/images/SCNEG.png", descEn: "Isolated, disjointed elements", descZh: "孤立、割裂的元素堆砌" },
+    optionB: { id: "B2", type: "strong", img: "/images/Strong centers.png", descEn: "Centers reinforcing each other", descZh: "中心互相强化的嵌套层级" }
+  },
+  {
+    id: 3, property: "Wholeness vs. Cartesian Grid",
+    optionA: { id: "A3", type: "strong", img: "/images/Not separateness.png", descEn: "An unbroken, deeply interlocked whole", descZh: "不可分割、深度交织的整体" },
+    optionB: { id: "B3", type: "weak", img: "/images/NSNEG.png", descEn: "A rigid, imposed mathematical grid", descZh: "强加的、死板的笛卡尔网格" }
+  },
+  {
+    id: 4, property: "Gradients vs. Sharp Transitions",
+    optionA: { id: "A4", type: "weak", img: "/images/GRNEG.png", descEn: "Abrupt, unnatural boundaries", descZh: "生硬、断裂的非自然边界" },
+    optionB: { id: "B4", type: "strong", img: "/images/Gradients.png", descEn: "Gradual, organic transitions", descZh: "有机、柔和的层次渐变" }
+  },
+  {
+    id: 5, property: "Local Symmetries vs. Monotony",
+    optionA: { id: "A5", type: "strong", img: "/images/Local symmetries.png", descEn: "Complex, nested symmetries", descZh: "充满细节的嵌套局部对称" },
+    optionB: { id: "B5", type: "weak", img: "/images/LSNEG.png", descEn: "Featureless, blank surfaces", descZh: "毫无特征的死板表面" }
+  },
+  {
+    id: 6, property: "The Void vs. Clutter",
+    optionA: { id: "A6", type: "weak", img: "/images/VNEG.png", descEn: "Chaotic and overwhelming noise", descZh: "拥挤不堪的结构噪音" },
+    optionB: { id: "B6", type: "strong", img: "/images/The void.png", descEn: "A calm, unifying empty center", descZh: "平静、统摄全局的虚空" }
+  }
+];
+
 
 // --- Components ---
 
@@ -424,7 +459,7 @@ const ChineseArchitecturalSystem = () => {
               </div>
            </div>
 
-           {/* 💡 升级版的高亮按钮 */}
+           {/* 高亮按钮 */}
            <div className="pt-6 border-t border-stone-100">
               <label className="flex items-center justify-between cursor-pointer group bg-stone-50 p-4 rounded-lg border border-stone-200 hover:border-amber-400 transition-all">
                  <div className="flex flex-col">
@@ -462,7 +497,6 @@ const ChineseArchitecturalSystem = () => {
                    )}
                  />
                  
-                 {/* 💡 全新的网格与精准节点渲染层 */}
                  <AnimatePresence>
                    {highlightCenters && selectedCase.centers && (
                      <motion.div
@@ -471,7 +505,6 @@ const ChineseArchitecturalSystem = () => {
                        exit={{ opacity: 0 }}
                        className="absolute inset-0 pointer-events-none z-10"
                      >
-                       {/* 科技感建筑测绘网格 */}
                        <div 
                          className="absolute inset-0 opacity-20" 
                          style={{ 
@@ -480,7 +513,6 @@ const ChineseArchitecturalSystem = () => {
                          }} 
                        />
 
-                       {/* 动态渲染配置好的坐标节点 */}
                        {selectedCase.centers.map((center, idx) => (
                          <motion.div
                            key={idx}
@@ -490,14 +522,9 @@ const ChineseArchitecturalSystem = () => {
                            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
                            style={{ left: `${center.x}%`, top: `${center.y}%`, width: center.r, height: center.r }}
                          >
-                           {/* 核心金点 */}
                            <div className="absolute w-2 h-2 bg-amber-400 rounded-full shadow-[0_0_15px_rgba(251,191,36,1)] z-20" />
-                           {/* 旋转的虚线环 */}
                            <div className="absolute w-full h-full border border-amber-400/80 rounded-full animate-[spin_8s_linear_infinite] border-dashed" />
-                           {/* 脉冲扩散波纹 */}
                            <div className="absolute w-[150%] h-[150%] border border-amber-300/40 rounded-full animate-ping" />
-                           
-                           {/* 节点文字标签 */}
                            <div className="absolute top-full mt-3 left-1/2 -translate-x-1/2 bg-stone-900/90 backdrop-blur border border-amber-500/30 text-amber-50 text-[10px] px-3 py-1 rounded shadow-xl uppercase tracking-widest whitespace-nowrap">
                              {center.label}
                            </div>
@@ -520,12 +547,101 @@ const ChineseArchitecturalSystem = () => {
 
 export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
-  const [iframeLoaded, setIframeLoaded] = useState(false); 
   const [activeHowTo, setActiveHowTo] = useState<number | null>(null); 
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
   
   const activeProp = properties.find(p => p.n === activePropId) || properties[0];
+
+  // 💡 提取观测相关的状态
+  const { analyzeStructure, isThinking } = useGemini();
+  const [hasStarted, setHasStarted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<{property: string, choiceType: string}[]>([]);
+  const [report, setReport] = useState<string | null>(null);
+  
+  // ✨ 修改点：存放题目的变量，改为固定 6 道
+  const [activeQuestions, setActiveQuestions] = useState<typeof QUESTION_POOL>([]);
+
+  // ✨ 修改点：启动函数改为固定 6 道，且不再随机洗牌
+  const startTest = () => {
+    // 1. 直接使用全部 6 道题
+    setActiveQuestions(QUESTION_POOL); 
+    setHasStarted(true);
+    setCurrentStep(0);
+    setAnswers([]);
+    setReport(null);
+  };
+
+
+  const handleSelect = async (choiceType: string, property: string) => {
+    const newAnswers = [...answers, { property, choiceType }];
+    setAnswers(newAnswers);
+
+    if (currentStep < activeQuestions.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      generateReport(newAnswers);
+    }
+  };
+
+  const generateReport = async (finalAnswers: {property: string, choiceType: string}[]) => {
+    const strongCount = finalAnswers.filter(a => a.choiceType === 'strong').length;
+    const total = finalAnswers.length;
+    
+    const prompt = `
+      You are an expert in Christopher Alexander's "The Nature of Order" (specifically Book 1, Chapters 8 & 9) and Professor Bin Jiang's "Living Structure" theory. 
+      A user just completed the "Mirror of the Self" test, choosing between Living Structures and Cartesian/mechanistic structures.
+      
+      Their empirical observations:
+      ${finalAnswers.map((a, i) => `- Task ${i+1} (${a.property}): Identified the "${a.choiceType === 'strong' ? 'Living Structure' : 'Cartesian/Mechanistic Structure'}" as a truer picture of their whole self.`).join('\n')}
+      
+      Total living structure identified: ${strongCount} out of ${total}.
+
+      Task: Write a profound diagnosis (150-200 words) acting as a phenomenological scientist. 
+      Core directives based on Chapter 8 & 9:
+      1. Explain that their choices were NOT subjective "preferences", but an objective scientific measurement of the degree of life in the physical world using their own feeling as the instrument (Ch 8).
+      2. If they chose 'strong' mostly: Explain how they successfully pierced through the 300-year-old Cartesian mechanistic worldview (Ch 9). They re-established the connection between the "I" and the world's geometry.
+      3. If they chose 'weak' mostly: Gently point out how the modern mechanistic, Cartesian conditioning still heavily influences their perception, separating their inner humanity from the physical space.
+      
+      Tone: Profound, scientific, yet deeply healing and philosophical. Do not mention "Chapter 8", "Chapter 9", or raw scores. Speak directly to their perception of reality.
+      
+      ==================================================
+      ⚠️ CRITICAL OUTPUT LANGUAGE INSTRUCTION ⚠️
+      You MUST translate your thoughts and write the final response STRICTLY in: ${isEn ? 'English' : '简体中文 (Simplified Chinese)'}.
+      ${isEn ? 'Ensure your entire response is in highly elegant English.' : '【强制警告】你的最终诊断报告必须 100% 使用优美、深邃的中文输出！绝不允许出现任何一段英文！'}
+      ==================================================
+    `;
+
+    try {
+      const aiResponse = await analyzeStructure(prompt);
+      if (aiResponse) {
+        setReport(aiResponse);
+      } else {
+        setReport("⚠️ 获取报告失败：AI 返回了空值。请按 F12 打开浏览器控制台 (Console) 查看具体网络或 Key 报错。");
+      }
+    } catch (error) {
+      setReport(`⚠️ 发生错误：${error}`);
+    }
+  };
+
+  const handleShareToX = () => {
+    const text = encodeURIComponent(
+      isEn 
+        ? "I just completed the 'Mirror of the Self' observation and shattered the Cartesian mechanistic worldview! 🔬✨ Discover your inner resonance with Living Structure:" 
+        : "我刚刚完成了『自我之镜』客观生命力观测，并打破了笛卡尔机械世界观的束缚！🔬✨ 来测试你的内在几何共振："
+    );
+    const url = encodeURIComponent("https://livablecitylab.hkust-gz.edu.cn"); 
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
+  };
+
+  const resetTest = () => {
+    setHasStarted(false);
+    setCurrentStep(0);
+    setAnswers([]);
+    setReport(null);
+  };
+
 
   const howToData = [
     {
@@ -563,7 +679,7 @@ export function Theory() {
       <div className="w-full max-w-7xl mx-auto p-8 md:p-16 pb-0">
 
         {/* ========================================================================= */}
-        {/* Section 0: Intuition Test (第一眼看到的破冰区) */}
+        {/* Section 0: The Empirical Mirror (✨ 视觉升级：告别黑框，改为优雅浅色) */}
         {/* ========================================================================= */}
         <div className="mb-32">
           
@@ -579,69 +695,145 @@ export function Theory() {
              </p>
           </div>
 
-          <Section title={isEn ? "Intuition Test" : "直觉测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：结构美测试"} className="!pt-0 !border-0">
-            <div className="bg-white rounded-3xl p-4 md:p-10 shadow-sm border border-stone-200">
+          <Section title={isEn ? "Empirical Test" : "实证测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：观测与测量"} className="!pt-0 !border-0">
+            {/* ✨ 视觉点：这里去掉了 bg-stone-900，改成了带阴影的白/浅石色容器 */}
+            <div className="w-full bg-white border border-stone-200 text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[600px] flex flex-col items-center justify-center p-8">
               
-              <div className="mb-10 text-center max-w-3xl mx-auto space-y-6">
-                <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-900">
-                   {isEn ? "Which one is a better picture of your true self?" : "哪一个，更像你内心深处真实的自己？"}
-                </h3>
-                
-                <div className="text-stone-600 text-sm md:text-base leading-loose space-y-4 text-left md:text-center">
-                   <p>
-                     {isEn 
-                       ? "For three hundred years our mechanistic world view has disconnected us from our selves. We have a picture of the universe that is powerful and apparently accurate, but which leaves us out." 
-                       : "三百年来，机械的现代世界观切断了我们与『自我（Self）』的联系。我们拥有了一幅看似安全、强大且客观的现实图景，但这幅图景里唯独没有『我』的存在。"}
-                   </p>
-                   <p>
-                     {isEn
-                       ? "Before diving into the cold mathematical equations of the 15 geometric properties, let's take a 1-minute intuition test. When looking at the pairs of images below, do not ask 'which is prettier'. Ask: which comes closer to a true picture of you in all your weakness and humanity; of the love in you, and the hate; of your past, present, and future?"
-                       : "在进入冰冷的数学公式与 15 个几何属性之前，不妨先花 1 分钟进行一场直觉测试。当您凝视测试中的两张图片时，请不要问『哪个更好看』，而是问：哪一个更接近你全部的弱点与人性？哪一个包容了你的爱与恨，你的过去、现在与未来？"}
-                   </p>
-                </div>
-              </div>
-              
-              <div className="relative rounded-2xl overflow-hidden border border-stone-200/60 h-[750px] md:h-[800px] w-full flex flex-col bg-stone-50">
-                <div className="h-10 bg-stone-100 border-b border-stone-200 flex items-center px-4 gap-2 shrink-0">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
-                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
-                    <div className="w-3 h-3 rounded-full bg-stone-300"></div>
-                  </div>
-                  <div className="mx-auto bg-white px-3 py-1 rounded-md text-[10px] text-stone-400 font-mono shadow-sm flex items-center gap-1">
-                    🔒 livablecitylab.hkust-gz.edu.cn/beautyofarchitecture
-                  </div>
-                </div>
-
-                {!iframeLoaded && (
-                  <div className="absolute inset-0 top-10 flex flex-col items-center justify-center bg-stone-50 z-10">
-                    <div className="w-10 h-10 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin mb-4"></div>
-                    <p className="text-sm font-medium text-stone-500 animate-pulse">
-                      {isEn ? "Loading official test terminal..." : "正在连接实验室官方测试终端..."}
+              <AnimatePresence mode="wait">
+                {!hasStarted && !report && (
+                  <motion.div 
+                    key="start"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="text-center max-w-xl"
+                  >
+                    <Microscope className="w-12 h-12 text-amber-500 mx-auto mb-6 opacity-80" />
+                    <h3 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 mb-6">
+                      {isEn ? "The Empirical Mirror" : "实证之镜"}
+                    </h3>
+                    <p className="text-stone-500 text-base md:text-lg mb-4 leading-relaxed font-serif">
+                      {isEn 
+                        ? "This is not a test of preference. It is a scientific observation. We have been taught by the Cartesian worldview that our inner feelings and objective reality are entirely separate." 
+                        : "这不是一场关于主观喜好的测试，而是一次严谨的科学观测。过去三百年的笛卡尔世界观告诉我们，客观物质与主观感受是彻底割裂的。"}
                     </p>
-                  </div>
+                    <p className="text-stone-600 text-sm md:text-base mb-10 leading-relaxed font-serif italic border-l-2 border-amber-500/50 pl-4 text-left">
+                      {isEn 
+                        ? "Please quiet your mind. When the images appear, use your inner feeling as a precision instrument. Ask yourself: Which of these two geometries is a truer, more encompassing picture of your whole self?" 
+                        : "请平静你的大脑。当画面出现时，请将你内心的深刻感受作为一把精密的科学量尺。问问你自己：哪一种几何形态，能更准确、更完整地映照出你作为一个人的全部本质？"}
+                    </p>
+                    <button 
+                      onClick={startTest}
+                      className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold tracking-widest uppercase text-sm hover:bg-amber-500 transition-colors flex items-center gap-2 mx-auto shadow-md"
+                    >
+                      {isEn ? "Begin Observation" : "启动观测实验"} <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </motion.div>
                 )}
 
-                <iframe
-                  src="https://livablecitylab.hkust-gz.edu.cn/beautyofarchitecture"
-                  className="w-full h-full border-none flex-1"
-                  onLoad={() => setIframeLoaded(true)}
-                  allow="fullscreen"
-                  title="LivableCityLAB Beauty of Architecture Test"
-                />
-              </div>
-              
-              <div className="mt-8 text-center px-4">
-                 <p className="text-sm md:text-base font-serif font-medium text-stone-500 italic">
-                   {isEn 
-                     ? "At each instant, as we go through the world, our humanity is expanding and diminishing all the time... Scroll down to discover the mathematical laws behind your intuition." 
-                     : "每一个瞬间，当我们在世界上穿行时，我们的人性都在因周遭的空间而不断地扩张与收缩……继续向下滑动，揭开您的直觉背后，那关于生命力与自然秩序的数学真相。"}
-                 </p>
-                 <div className="w-px h-16 md:h-24 bg-stone-300 mx-auto mt-8 relative">
-                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-stone-400 animate-bounce"></div>
-                 </div>
-              </div>
+                {hasStarted && !isThinking && !report && activeQuestions.length > 0 && (
+                  <motion.div 
+                    key={`step-${currentStep}`}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full max-w-4xl"
+                  >
+                    <div className="text-center mb-8">
+                      <div className="text-xs uppercase tracking-[0.3em] text-stone-400 mb-2">
+                        {isEn ? "Observation" : "观测节点"} {currentStep + 1} / {activeQuestions.length}
+                      </div>
+                      <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden max-w-md mx-auto border border-stone-200">
+                        <div 
+                          className="bg-amber-500 h-full transition-all duration-500" 
+                          style={{ width: `${((currentStep) / activeQuestions.length) * 100}%` }}
+                        />
+                      </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-[400px]">
+                      <div 
+                        onClick={() => handleSelect(activeQuestions[currentStep].optionA.type, activeQuestions[currentStep].property)}
+                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-stone-200 hover:border-amber-400 shadow-sm transition-all"
+                      >
+                        <img src={activeQuestions[currentStep].optionA.img} alt="Option A" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
+                        <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-stone-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-white text-sm font-medium text-center font-serif">
+                            {isEn ? activeQuestions[currentStep].optionA.descEn : activeQuestions[currentStep].optionA.descZh}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div 
+                        onClick={() => handleSelect(activeQuestions[currentStep].optionB.type, activeQuestions[currentStep].property)}
+                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-stone-200 hover:border-amber-400 shadow-sm transition-all"
+                      >
+                        <img src={activeQuestions[currentStep].optionB.img} alt="Option B" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
+                        <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-stone-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-white text-sm font-medium text-center font-serif">
+                            {isEn ? activeQuestions[currentStep].optionB.descEn : activeQuestions[currentStep].optionB.descZh}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {isThinking && (
+                  <motion.div 
+                    key="thinking"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex flex-col items-center justify-center text-center"
+                  >
+                    <Loader2 className="w-12 h-12 text-amber-500 animate-spin mb-6" />
+                    <h3 className="text-xl font-serif text-stone-900 mb-2">
+                      {isEn ? "Computing Structural Resonance..." : "正在计算几何结构与自我的共振..."}
+                    </h3>
+                    <p className="text-stone-400 text-sm animate-pulse">
+                      {isEn ? "Analyzing objective life degree based on Chapter 8 & 9 paradigms" : "正在依据超越笛卡尔的全新科学范式，生成观测报告..."}
+                    </p>
+                  </motion.div>
+                )}
+
+                {report && !isThinking && (
+                  <motion.div 
+                    key="report"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-3xl w-full bg-stone-50/80 p-8 md:p-12 rounded-2xl border border-stone-200 backdrop-blur-sm shadow-inner"
+                  >
+                    <div className="text-amber-600 text-xs font-bold uppercase tracking-[0.2em] mb-4 text-center flex items-center justify-center gap-2">
+                      <Sparkles className="w-4 h-4" /> 
+                      {isEn ? "Scientific Observation Report" : "客观生命力观测报告"}
+                    </div>
+                    
+                    <p className="text-stone-700 text-base md:text-lg leading-loose font-serif whitespace-pre-line mb-10 text-justify">
+                      {report}
+                    </p>
+
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-6 border-t border-stone-200 pt-8">
+                      <button 
+                        onClick={resetTest}
+                        className="text-stone-500 hover:text-stone-900 flex items-center gap-2 text-sm transition-colors font-bold uppercase tracking-widest"
+                      >
+                        <RefreshCcw className="w-4 h-4" /> {isEn ? "New Observation" : "开启新观测"}
+                      </button>
+
+                      <button 
+                        onClick={handleShareToX}
+                        className="bg-stone-900 text-white hover:bg-amber-600 px-6 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all shadow-md"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4 fill-current"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.96H5.078z"></path></g></svg>
+                        {isEn ? "Share Results" : "分享观测结果"}
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </Section>
         </div>
@@ -699,7 +891,6 @@ export function Theory() {
              </div>
            </div>
            
-           {/* Small Portrait Area */}
            <div className="flex flex-col md:flex-row gap-8 border-t border-stone-100 pt-8">
               <div className="flex items-center gap-4">
                  <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
@@ -790,7 +981,6 @@ export function Theory() {
         <Section title="15 Properties" subTitle={trans.theory?.propertiesSubtitle || "Fundamental patterns of living structure"}>
           
           <div className="flex flex-col lg:flex-row gap-12 mt-8">
-            {/* 左侧：15个属性的导航列表 */}
             <div className="w-full lg:w-1/4 flex flex-col gap-2">
               {properties.map((prop) => (
                 <button
@@ -808,10 +998,8 @@ export function Theory() {
               ))}
             </div>
 
-            {/* 右侧：当前选中属性的详细解析 */}
             <div className="w-full lg:w-3/4 flex flex-col gap-8">
               
-              {/* 面板 1：理论与原著体现 */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden min-h-[500px] flex flex-col">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -841,7 +1029,6 @@ export function Theory() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 flex-grow">
-                      {/* 自然界体现 */}
                       <div className="bg-emerald-50/50 p-6 rounded-lg border border-emerald-100">
                         <h4 className="flex items-center gap-2 text-emerald-800 font-bold mb-4 uppercase tracking-wider text-sm">
                           <Leaf className="w-4 h-4" />
@@ -852,7 +1039,6 @@ export function Theory() {
                         </p>
                       </div>
 
-                      {/* 建筑/设计体现 */}
                       <div className="bg-stone-50 p-6 rounded-lg border border-stone-200">
                         <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
                           <Building2 className="w-4 h-4" />
@@ -864,7 +1050,6 @@ export function Theory() {
                       </div>
                     </div>
 
-                    {/* 原著配图展示区 */}
                     <div className="mt-auto pt-6 border-t border-stone-100">
                       <p className="text-xs text-stone-400 uppercase tracking-widest mb-3 font-bold flex items-center gap-2">
                         <BookOpen className="w-4 h-4" />
@@ -892,7 +1077,6 @@ export function Theory() {
                 </AnimatePresence>
               </div>
 
-              {/* 面板 2：互动滑块分析组件 */}
               <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden p-8 md:p-12">
                  <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-6 flex items-center gap-2">
                     <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
@@ -909,7 +1093,6 @@ export function Theory() {
           </div>
         </Section>
         
-        {/* Section 5: Chinese Architecture */}
         <div className="mt-32">
           <Section title={trans.theory?.chinese?.title || "Chinese Architecture"} className="!pt-0 !border-0">
              <div className="mb-12 max-w-2xl">

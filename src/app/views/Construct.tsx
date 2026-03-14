@@ -42,7 +42,7 @@ export function Construct() {
       <div className="mx-auto max-w-7xl space-y-6 md:space-y-8 w-full">
         
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活结构工作室"}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">{isEn ? "Construct Studio" : "活力结构工作室"}</h1>
           <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-2xl leading-snug">
             {isEn 
               ? "Observe the discrete evolution of a classical structure. The livingness (L) is calculated by multiplying the cumulative number of substructures (ΣS) with the hierarchy depth (H)." 
