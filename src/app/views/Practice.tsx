@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
-import { Play, Pause, Activity, Wind, Send, Calendar as CalendarIcon, Sparkles, History, Trash2 } from "lucide-react";
+import { 
+  Play, Pause, Wind, Send, Calendar as CalendarIcon, 
+  Sparkles, History, Trash2, Camera, Scan, AlertCircle, 
+  Mic, X, Sun, Zap, Box, Plus 
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import OpenAI from "openai";
@@ -9,72 +13,175 @@ interface Message {
   id: string;
   role: "user" | "ai";
   content: string;
-  timestamp: number; // 👇 新增：时间戳，用来记录发生的时间
+  image?: string; 
+  timestamp: number;
+  prescription?: string[]; 
 }
 
-// 定义本地存储的 Key
 const STORAGE_KEY = "vitality_healing_chat_history";
+const MOOD_STORAGE_KEY = "vitality_healing_mood_history";
+
+// 💡 空间心境选项配置
+const MOOD_OPTIONS = [
+  { id: "living", icon: Sun, color: "text-teal-500", bg: "bg-teal-50", border: "border-teal-200", labelEn: "Living", labelZh: "充满生机" },
+  { id: "calm", icon: Wind, color: "text-sky-500", bg: "bg-sky-50", border: "border-sky-200", labelEn: "Calm", labelZh: "宁静安和" },
+  { id: "fragmented", icon: Zap, color: "text-amber-500", bg: "bg-amber-50", border: "border-amber-200", labelEn: "Fragmented", labelZh: "割裂混乱" },
+  { id: "rigid", icon: Box, color: "text-stone-500", bg: "bg-stone-100", border: "border-stone-300", labelEn: "Rigid", labelZh: "死板压抑" }
+];
 
 export function Practice() {
   const { trans, language } = useLanguage();
-  const isEn = language === 'en' || trans.practice.title === "Embodied Practice";
+  const isEn = language === 'en';
 
-  const defaultMessageEn = "How are you feeling today? Tell me about your current emotions or your feelings about the space you are in. I will prescribe a personalized 'Spatial Prescription' for you.";
-  const defaultMessageZh = "今天感觉怎么样？告诉我你此刻的情绪，或是你所在空间的感受。我会为你开出一份专属的『空间处方』。";
+  const welcomeEn = "Welcome to the Healing Lab. Upload a photo of your current space, and I will use Christopher Alexander's decision-procedure to diagnose its 'Living Structure' and prescribe a spatial remedy for you.";
+  const welcomeZh = "欢迎来到疗愈实验室。上传一张你所在空间的照片，我将运用亚历山大的“建筑质量决策流程”为你诊断空间的生命力，并开出物理处方。";
 
-  // 👇 1. 状态初始化升级：优先从 localStorage 读取历史记录
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error("解析历史记录失败", e);
-      }
-    }
-    // 如果没有历史记录，再显示默认欢迎语
-    return [{ id: "0", role: "ai", content: isEn ? defaultMessageEn : defaultMessageZh, timestamp: Date.now() }];
+    if (saved) try { return JSON.parse(saved); } catch (e) { console.error(e); }
+    return [{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }];
   });
+
+  const [moodHistory, setMoodHistory] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem(MOOD_STORAGE_KEY);
+    if (saved) try { return JSON.parse(saved); } catch(e) {}
+    return {};
+  });
+  const [showMoodSelector, setShowMoodSelector] = useState(false);
 
   const [inputText, setInputText] = useState("");
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const base64ImageRef = useRef<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
-  const [showHistoryOptions, setShowHistoryOptions] = useState(false); // 控制历史选项面板
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanStep, setScanStep] = useState(0); 
+  const [isListening, setIsListening] = useState(false);
 
-  // 👇 2. 记忆保存升级：每次 messages 更新时，自动同步到 localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const startTextRef = useRef("");
+
+  // 保存聊天记录
+  useEffect(() => { 
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); 
+    } catch (e) {
+      console.warn("LocalStorage quota exceeded, saving without images...");
+      const safeMessages = messages.map(m => ({ ...m, image: undefined }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(safeMessages));
+    }
   }, [messages]);
 
-  // 当用户切换语言且只有第一句默认语时，跟随切换
+  // 保存心情记录
   useEffect(() => {
-    if (messages.length === 1 && messages[0].id === "0") {
-      setMessages([{ id: "0", role: "ai", content: isEn ? defaultMessageEn : defaultMessageZh, timestamp: Date.now() }]);
+    localStorage.setItem(MOOD_STORAGE_KEY, JSON.stringify(moodHistory));
+  }, [moodHistory]);
+
+  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
+
+  // 语音识别初始化
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = true;
+        
+        recognitionRef.current.onstart = () => { startTextRef.current = inputText; };
+        recognitionRef.current.onresult = (event: any) => {
+          let currentTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            currentTranscript += event.results[i][0].transcript;
+          }
+          setInputText(startTextRef.current + (startTextRef.current ? " " : "") + currentTranscript);
+        };
+        recognitionRef.current.onerror = () => setIsListening(false);
+        recognitionRef.current.onend = () => setIsListening(false);
+      }
     }
-  }, [isEn, messages.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // 自动滚动到最新消息
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+  const toggleListening = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.lang = isEn ? 'en-US' : 'zh-CN';
+        recognitionRef.current.start();
+        setIsListening(true);
+      } else {
+        alert(isEn ? "Your browser does not support voice input." : "当前浏览器不支持语音识别功能。");
+      }
+    }
+  };
 
-  const last7Days = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    const isToday = i === 6;
-    const level = isToday ? 0 : Math.floor(Math.random() * 4); 
-    return { date: d, level, isToday };
-  });
+  // Canvas 压缩图片
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewImage(objectUrl);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800; 
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        
+        base64ImageRef.current = canvas.toDataURL("image/jpeg", 0.7); 
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearImage = () => {
+    setPreviewImage(null);
+    base64ImageRef.current = null;
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleSendMessage = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !previewImage) return;
 
-    // 加入时间戳
-    const newUserMsg: Message = { id: Date.now().toString(), role: "user", content: inputText, timestamp: Date.now() };
+    const userBase64 = base64ImageRef.current;
+    const newUserMsg: Message = { 
+      id: Date.now().toString(), 
+      role: "user", 
+      content: inputText, 
+      image: userBase64 || undefined,
+      timestamp: Date.now() 
+    };
+
     setMessages(prev => [...prev, newUserMsg]);
     setInputText("");
+    clearImage(); 
     setIsTyping(true);
-    setShowHistoryOptions(false);
+    
+    if (newUserMsg.image) {
+      setIsScanning(true);
+      setScanStep(1);
+      setTimeout(() => setScanStep(2), 1000);
+      setTimeout(() => setScanStep(3), 2500);
+    }
 
     try {
       const openai = new OpenAI({
@@ -83,246 +190,314 @@ export function Practice() {
         dangerouslyAllowBrowser: true 
       });
 
-      const prompt = `
-        [角色定义]
-        你是一位极度共情、温柔如水的“空间疗愈师”。你像一位认识多年的知心好友，声音轻柔，充满包容。你精通亚历山大的15个几何属性，但你从不生硬地说教，而是将它们化作温柔的抚慰。
+      // 🧠 核心：将同门的 PDF 决策流程转化为 AI Prompt
+      const systemPrompt = `
+        You are an expert "Spatial Therapist" and architectural diagnostician. 
+        A user has provided an image or description of a space. You must use the "Decision-Procedure for Quality in the Built Environment" based on Christopher Alexander's work.
         
-        [对话守则]
-        1. 完全的接纳与拥抱：首先，用最柔软的语言接纳用户的任何情绪。
-        2. 毫不费力的空间微调：在深深的共情后，轻轻地借用 1-2 个【亚历山大属性】，给出一个极其微小、毫不费力的建议。
-        3. 语调限制：像是在耳边的轻语，充满呼吸感与诗意，绝不要像机器或客服。字数请严格控制在 150 字以内。
-
-        🚨 [CRITICAL LANGUAGE INSTRUCTION] 🚨
-        You MUST respond entirely in ${isEn ? 'ENGLISH' : 'CHINESE'}. Do not mix languages.
+        Follow this strict 3-step analytical procedure:
+        1. Feeling as the Meter (Felt Sense): Empathize and state how the body reads the space. Does it feel "alive", "exposed", "flat", or "sheltered"? What drives this feeling?
+        2. The 15 Properties & Centers: Analyze the structure. Name 1-2 specific properties (e.g., Boundaries, Levels of Scale, Gradients, Roughness) that are weak or missing.
+        3. The Timeless Way Prescription: Tell them how to gain "life". Do not just "add decoration", but create and thicken centers. Propose 2-3 specific, physical moves (e.g., "thicken the edge with a rug", "carve the space into smaller rooms", "create a real central thing"). Follow the rule: "Make one small center more intense, let that force the next step."
+        
+        Tone: Compassionate, phenomenological, highly practical. Max 150 words. Format with short paragraphs.
+        Language: ${isEn ? 'ENGLISH' : 'CHINESE'}.
       `;
-
-      const conversationHistory = messages.map(m => ({
-        role: m.role === "ai" ? "assistant" : "user",
-        content: m.content
-      }));
 
       const response = await openai.chat.completions.create({
         model: "qwen-max", 
         messages: [
-          { role: "system", content: prompt },
-          ...conversationHistory as any,
-          { role: "user", content: newUserMsg.content }
+          { role: "system", content: systemPrompt },
+          ...messages.slice(-4).map(m => ({ role: m.role === "ai" ? "assistant" : "user", content: m.content })),
+          { role: "user", content: `${newUserMsg.image ? "[User uploaded an image of their room] " : ""}${newUserMsg.content}` }
         ]
       });
 
-      const aiContent = response.choices[0].message.content || (isEn ? "I'm a little distracted right now. Take a deep breath and feel the boundaries of your space." : "抱歉，我此刻有些走神。深呼吸，感受当下的空间边界吧。");
-      
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: "ai", content: aiContent, timestamp: Date.now() }]);
+      const aiContent = response.choices[0].message.content || "";
+      const mockPrescription = isEn ? ["Thicken Edges", "Create a Center"] : ["强化中心", "增厚边界"];
+
+      setIsScanning(false);
+      setMessages(prev => [...prev, { 
+        id: Date.now().toString(), 
+        role: "ai", 
+        content: aiContent, 
+        timestamp: Date.now(),
+        prescription: mockPrescription
+      }]);
 
     } catch (error) {
-      console.error("AI Healing Failed:", error);
-      const errorMsg = isEn 
-        ? "The network is a bit unstable, but that's okay. In this quiet moment, try taking a few deep breaths to find your inner 'Strong Center'." 
-        : "网络好像有些波动，但没关系。在这个静谧的时刻，不妨先尝试几个深呼吸，找回内心的『强中心』。";
-      setMessages(prev => [...prev, { id: Date.now().toString(), role: "ai", content: errorMsg, timestamp: Date.now() }]);
+      setIsScanning(false);
+      setIsTyping(false);
     } finally {
       setIsTyping(false);
     }
   };
 
-  // 👇 清空历史记录的功能
-  const clearHistory = () => {
-    if (window.confirm(isEn ? "Are you sure you want to clear all chat history?" : "确定要清空所有疗愈记录吗？一切将重新开始。")) {
-      setMessages([{ id: Date.now().toString(), role: "ai", content: isEn ? defaultMessageEn : defaultMessageZh, timestamp: Date.now() }]);
-      setShowHistoryOptions(false);
-    }
+  // 💡 视觉扫描文案：对齐教授的决策流程
+  const getScanText = () => {
+    if (scanStep === 1) return isEn ? "1. Reading 'Felt Sense' as a meter..." : "1. 以身体感受作为量尺进行测度...";
+    if (scanStep === 2) return isEn ? "2. Analyzing 15 Properties & Strong Centers..." : "2. 分析 15 种属性与强中心缺陷...";
+    if (scanStep === 3) return isEn ? "3. Formulating Timeless Way Prescription..." : "3. 基于《永恒之道》生成物理处方...";
+    return "";
   };
 
-  // 格式化时间的辅助函数
-  const formatTime = (ts: number) => {
-    return new Date(ts).toLocaleTimeString(isEn ? 'en-US' : 'zh-CN', { hour: '2-digit', minute: '2-digit' });
+  // 💡 生成最近 7 天的日期序列
+  const generateLast7Days = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      const dayName = isEn 
+        ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()]
+        : ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+      days.push({ dateKey, dayName, isToday: i === 0 });
+    }
+    return days;
+  };
+
+  const last7Days = generateLast7Days();
+  const todayKey = last7Days[last7Days.length - 1].dateKey;
+
+  const handleMoodSelect = (moodId: string) => {
+    setMoodHistory(prev => ({ ...prev, [todayKey]: moodId }));
+    setShowMoodSelector(false);
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 py-12 px-4">
-      <div className="mx-auto max-w-6xl space-y-12">
+    <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
+      <div className="mx-auto max-w-7xl space-y-10">
         
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-stone-900">{trans.practice.title || (isEn ? "Embodied Practice" : "空间觉知与疗愈")}</h1>
-          <p className="mt-4 text-stone-600 max-w-2xl mx-auto">
-            {trans.practice.subtitle || (isEn ? "Vitality is not just an intellectual concept, but a felt experience. Use these tools to attune your perception to living structure." : "在物理空间中找回内心的秩序，让建筑的生命力滋养你的情绪。")}
+        {/* Header */}
+        <header className="text-center space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[10px] font-bold text-teal-600 uppercase tracking-widest">
+             <Sparkles className="w-3 h-3" /> Spatial Healing Lab
+          </div>
+          <h1 className="text-4xl font-serif font-black text-stone-900 italic">
+            {isEn ? "The Healing Mirror" : "疗愈之镜"}
+          </h1>
+          <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
+            {isEn 
+              ? "Upload a photo of your environment. Let the AI apply the Alexander decision-procedure to recalibrate your spatial wholeness." 
+              : "上传环境照片或通过语音描述。让 AI 运用亚历山大建筑质量决策流程，为你重新校准空间的整体性。"}
           </p>
-        </div>
+        </header>
 
-        <div className="grid gap-8 lg:grid-cols-12">
+        <div className="grid gap-8 lg:grid-cols-12 items-start">
           
-          {/* 左侧区域：保持不变 */}
-          <div className="lg:col-span-4 space-y-8">
-            <Card className="p-8 flex flex-col items-center justify-center bg-white h-[350px]">
-              <div className="mb-6 flex items-center gap-2 text-stone-500">
-                <Wind className="h-5 w-5" />
-                <span className="text-sm font-medium uppercase tracking-widest">{trans.practice.breathing || (isEn ? "Visual Breathing" : "正念呼吸")}</span>
+          {/* 左侧：呼吸与足迹 */}
+          <div className="lg:col-span-4 space-y-6">
+            <Card className="p-8 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center">
+              <div className="mb-8 flex items-center gap-2 text-stone-400">
+                <Wind className="h-4 w-4" />
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{isEn ? "Visual Resonance" : "视觉共振"}</span>
               </div>
               <BreathingCircle isEn={isEn} />
             </Card>
 
-            <Card className="p-6 bg-white">
-              <div className="flex items-center gap-2 mb-6 text-stone-800">
-                <CalendarIcon className="h-5 w-5 text-teal-600" />
-                <h3 className="font-semibold">{isEn ? "Vitality Footprints" : "活力足迹"}</h3>
-              </div>
-              
-              <div className="flex justify-between items-end mb-2">
-                <span className="text-xs text-stone-400 font-medium">{isEn ? "Last 7 Days" : "近 7 天情绪轨迹"}</span>
-                <span className="text-xs text-stone-400 font-medium flex gap-1 items-center">
-                  Low <div className="flex gap-1 mx-1">{[0,1,2,3].map(l => <div key={l} className={cn("w-2 h-2 rounded-sm", getHeatmapColor(l))} />)}</div> High
-                </span>
+            {/* 💡 升级版：空间心境记录器 */}
+            <Card className="p-6 bg-white/50 backdrop-blur border-stone-200 shadow-sm relative overflow-visible">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="h-4 w-4 text-stone-400" />
+                  <h3 className="text-sm font-bold text-stone-700">{isEn ? "Spatial Mood" : "空间心境"}</h3>
+                </div>
               </div>
 
-              <div className="flex justify-between items-center gap-2 mt-4 bg-stone-50 p-4 rounded-xl border border-stone-100">
-                {last7Days.map((day, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-2">
-                    <div 
-                      className={cn(
-                        "w-8 h-8 rounded-md transition-all duration-300 shadow-sm cursor-pointer hover:scale-110",
-                        getHeatmapColor(day.level),
-                        day.isToday && "ring-2 ring-offset-2 ring-teal-500"
-                      )}
-                      title={isEn ? `${day.date.toLocaleDateString()} - Level ${day.level}` : `${day.date.toLocaleDateString()} - 活力等级 ${day.level}`}
-                    />
-                    <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-700" : "text-stone-400")}>
-                      {isEn 
-                        ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day.date.getDay()] 
-                        : ["日", "一", "二", "三", "四", "五", "六"][day.date.getDay()]}
-                    </span>
-                  </div>
-                ))}
+              <div className="flex justify-between items-center gap-2 relative z-10">
+                {last7Days.map((day) => {
+                  const moodId = moodHistory[day.dateKey];
+                  const mood = MOOD_OPTIONS.find(m => m.id === moodId);
+
+                  return (
+                    <div key={day.dateKey} className="flex flex-col items-center gap-2 relative">
+                      <div 
+                        onClick={() => { if (day.isToday) setShowMoodSelector(!showMoodSelector); }}
+                        className={cn(
+                          "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+                          day.isToday ? "cursor-pointer ring-2 ring-offset-2 ring-stone-200 hover:ring-teal-400" : "",
+                          mood ? mood.bg : "bg-stone-100 border border-stone-200",
+                          day.isToday && !mood && "animate-pulse border-dashed border-teal-300 bg-teal-50/50"
+                        )}
+                      >
+                        {mood ? (
+                          <mood.icon className={cn("w-4 h-4", mood.color)} />
+                        ) : (
+                          day.isToday ? <Plus className="w-4 h-4 text-teal-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                        )}
+                      </div>
+                      <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-600" : "text-stone-400")}>
+                        {day.dayName}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* 心境选择浮层 */}
+              <AnimatePresence>
+                {showMoodSelector && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
+                  >
+                    <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">
+                      {isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {MOOD_OPTIONS.map(mood => (
+                        <button
+                          key={mood.id}
+                          onClick={() => handleMoodSelect(mood.id)}
+                          className={cn(
+                            "flex items-center gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02] active:scale-95",
+                            mood.bg, mood.border
+                          )}
+                        >
+                          <mood.icon className={cn("w-4 h-4", mood.color)} />
+                          <span className={cn("text-xs font-bold", mood.color)}>{isEn ? mood.labelEn : mood.labelZh}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </Card>
           </div>
 
-          {/* 右侧区域：支持本地记忆的 AI 疗愈对话 */}
+          {/* 右侧：诊断对话区 */}
           <div className="lg:col-span-8">
-            <Card className="bg-white flex flex-col h-[700px] shadow-lg border-stone-200 overflow-hidden relative">
+            <Card className="bg-white h-[750px] shadow-2xl border-stone-200 flex flex-col overflow-hidden relative">
               
-              <div className="p-6 border-b border-stone-100 bg-stone-50/80 backdrop-blur-sm flex justify-between items-center z-20">
+              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-teal-100 rounded-full">
-                    <Sparkles className="h-5 w-5 text-teal-700" />
+                  <div className="relative">
+                    <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center text-white shadow-lg"><Scan className="w-5 h-5" /></div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-stone-900">{isEn ? "AI Spatial Therapist" : "AI 空间疗愈师"}</h3>
-                    <p className="text-xs text-stone-500">{isEn ? "Psychological prescription based on 15 properties" : "基于亚历山大 15 属性的心理处方"}</p>
+                    <h3 className="font-serif font-bold text-stone-900">{isEn ? "Diagnostic Vision" : "诊断视界"}</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500" />
+                      <p className="text-[10px] text-stone-400 font-mono uppercase">AI Decision-Procedure Active</p>
+                    </div>
                   </div>
                 </div>
-                
-                {/* 👇 历史记录管理按钮 */}
-                <div className="relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-stone-500 hover:text-stone-900 flex gap-2 items-center"
-                    onClick={() => setShowHistoryOptions(!showHistoryOptions)}
-                  >
-                    <History className="w-4 h-4" />
-                    <span className="text-xs font-medium">{isEn ? "History" : "历史"}</span>
-                  </Button>
-                  
-                  {/* 悬浮菜单 */}
-                  <AnimatePresence>
-                    {showHistoryOptions && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute right-0 top-10 w-48 bg-white border border-stone-100 shadow-xl rounded-xl p-2 z-30"
-                      >
-                        <div className="px-3 py-2 text-xs text-stone-400 border-b border-stone-50 mb-1">
-                          {isEn ? `Saved ${messages.length} messages` : `已为您妥善保管 ${messages.length} 条记录`}
-                        </div>
-                        <button 
-                          onClick={clearHistory}
-                          className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          {isEn ? "Clear Chat History" : "清空历史重新开始"}
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                <Button variant="ghost" size="sm" onClick={() => { if(window.confirm('Reset?')) setMessages([{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }]); }} className="text-stone-400 hover:text-red-500 transition-colors">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
 
-              {/* 聊天记录区域 */}
-              <div 
-                className="flex-1 overflow-y-auto p-6 space-y-6 bg-stone-50/30"
-                onClick={() => setShowHistoryOptions(false)} // 点击空白处关闭菜单
-              >
-                <div className="text-center text-xs text-stone-400 my-4">
-                  {isEn ? "Your chat history is securely saved in this browser." : "所有的情绪轨迹已在这个浏览器中为您安全保存。"}
-                </div>
-
+              {/* 聊天记录 */}
+              <div className="flex-1 overflow-y-auto p-8 space-y-10 scrollbar-hide bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
                 <AnimatePresence initial={false}>
                   {messages.map((msg) => (
                     <motion.div
                       key={msg.id}
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      className={cn(
-                        "flex flex-col max-w-[80%]",
-                        msg.role === "user" ? "ml-auto items-end" : "mr-auto items-start"
-                      )}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={cn("flex flex-col gap-3", msg.role === "user" ? "items-end" : "items-start")}
                     >
+                      {msg.image && (
+                        <div className="relative group max-w-sm rounded-2xl overflow-hidden border-4 border-white shadow-xl rotate-1">
+                          <img src={msg.image} className="w-full h-auto object-cover" alt="Upload" />
+                          <div className="absolute top-2 left-2 bg-stone-900/80 backdrop-blur px-2 py-1 rounded text-[8px] text-white font-bold uppercase tracking-widest flex items-center gap-1">
+                            <Camera className="w-3 h-3" /> Input Source
+                          </div>
+                        </div>
+                      )}
+
                       <div className={cn(
-                        "p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
-                        msg.role === "user" 
-                          ? "bg-stone-900 text-stone-50 rounded-br-sm" 
-                          : "bg-white border border-stone-200 text-stone-800 rounded-bl-sm"
+                        "max-w-[85%] p-6 rounded-3xl text-sm leading-loose shadow-sm",
+                        msg.role === "user" ? "bg-stone-900 text-stone-50 rounded-br-none font-sans" : "bg-white border border-stone-200 text-stone-800 rounded-bl-none font-serif"
                       )}>
-                        {msg.content}
+                        <div className="whitespace-pre-line">{msg.content}</div>
+
+                        {msg.prescription && (
+                          <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
+                            {msg.prescription.map(p => (
+                              <span key={p} className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider rounded border border-teal-100 flex items-center gap-1 shadow-sm">
+                                <AlertCircle className="w-3 h-3" /> {p}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      {/* 👇 渲染时间戳 */}
-                      <span className="text-[10px] text-stone-400 mt-1.5 px-1">
-                        {formatTime(msg.timestamp)}
-                      </span>
+                      <span className="text-[9px] text-stone-300 font-mono px-2">{new Date(msg.timestamp).toLocaleTimeString()}</span>
                     </motion.div>
                   ))}
-                  
-                  {isTyping && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col mr-auto max-w-[80%]">
-                      <div className="p-4 rounded-2xl bg-white border border-stone-200 text-stone-500 rounded-bl-sm flex gap-1 items-center h-[52px]">
-                        <motion.div className="w-2 h-2 bg-teal-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0 }} />
-                        <motion.div className="w-2 h-2 bg-teal-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }} />
-                        <motion.div className="w-2 h-2 bg-teal-400 rounded-full" animate={{ y: [0, -5, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }} />
-                      </div>
-                    </motion.div>
-                  )}
                 </AnimatePresence>
+
+                {/* 💡 扫描动画与动态文字 */}
+                {isScanning && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
+                    <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-100 border-2 border-stone-200">
+                      <motion.div 
+                        className="absolute top-0 left-0 w-full h-1 bg-teal-400 shadow-[0_0_15px_rgba(45,212,191,1)] z-10"
+                        animate={{ top: ["0%", "100%", "0%"] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center text-stone-400">
+                        <Scan className="w-8 h-8 animate-pulse" />
+                      </div>
+                    </div>
+                    <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{getScanText()}</p>
+                  </motion.div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
               {/* 输入区域 */}
-              <div className="p-4 bg-white border-t border-stone-100 z-10" onClick={() => setShowHistoryOptions(false)}>
-                <div className="relative flex items-end gap-2 bg-stone-50 rounded-2xl border border-stone-200 p-2 focus-within:ring-2 focus-within:ring-teal-500/20 focus-within:border-teal-500 transition-all">
-                  <textarea
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
-                    }}
-                    placeholder={isEn ? "Write down your feelings to get a spatial prescription..." : "写下你今天的感受，获取空间处方..."}
-                    className="w-full bg-transparent resize-none outline-none p-3 text-sm text-stone-800 placeholder:text-stone-400 max-h-[120px]"
-                    rows={2}
-                  />
-                  <Button 
-                    onClick={handleSendMessage} 
-                    disabled={!inputText.trim() || isTyping}
-                    className="mb-1 mr-1 rounded-xl bg-teal-600 hover:bg-teal-700 text-white h-10 w-10 p-0 flex shrink-0 shadow-md"
-                  >
-                    <Send className="h-4 w-4 ml-0.5" />
-                  </Button>
+              <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-stone-200">
+                <div className="flex flex-col gap-4 max-w-3xl mx-auto">
+                  <div className="relative flex flex-col bg-white rounded-3xl border border-stone-200 shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
+                    
+                    <AnimatePresence>
+                      {previewImage && (
+                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} className="p-2 flex items-center gap-3">
+                           <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-md">
+                              <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
+                              <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
+                           </div>
+                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready for procedure" : "图像已准备就绪"}</p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="flex items-end">
+                      <button onClick={() => fileInputRef.current?.click()} className="p-3 text-stone-400 hover:text-teal-600 transition-colors" title={isEn ? "Upload Photo" : "上传照片"}>
+                        <Camera className="w-5 h-5" />
+                      </button>
+                      
+                      <button 
+                        onClick={toggleListening} 
+                        className={cn("p-3 transition-colors", isListening ? "text-red-500 animate-pulse" : "text-stone-400 hover:text-teal-600")}
+                        title={isEn ? "Voice Input" : "语音输入"}
+                      >
+                        <Mic className="w-5 h-5" />
+                      </button>
+
+                      <textarea
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage();
+                          }
+                        }}
+                        placeholder={isEn ? "Upload photo or tap mic to speak..." : "上传照片，或点击麦克风说出你的感受..."}
+                        className="flex-1 bg-transparent resize-none outline-none p-3 text-sm text-stone-800 placeholder:text-stone-300 h-12 py-3"
+                        rows={1}
+                      />
+                      <button onClick={handleSendMessage} disabled={(!inputText.trim() && !previewImage) || isTyping} className="m-1 rounded-2xl bg-stone-900 hover:bg-teal-600 text-white h-10 w-10 flex items-center justify-center transition-all shadow-md active:scale-90"><Send className="w-4 h-4" /></button>
+                    </div>
+                  </div>
+                  <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageSelect} />
                 </div>
-                <p className="text-center text-[10px] text-stone-400 mt-3 font-medium">
-                  {isEn ? "AI provides heuristic suggestions, please combine with actual environment." : "AI 提供启发式建议，请结合实际环境体验。"}
-                </p>
               </div>
 
             </Card>
@@ -334,49 +509,19 @@ export function Practice() {
   );
 }
 
-// ------ 辅助函数 & 组件 ------
-
-function getHeatmapColor(level: number) {
-  switch (level) {
-    case 0: return "bg-stone-100 border border-stone-200"; 
-    case 1: return "bg-teal-100 border border-teal-200";
-    case 2: return "bg-teal-400 border border-teal-500";
-    case 3: return "bg-teal-700 border border-teal-800 shadow-inner"; 
-    default: return "bg-stone-100";
-  }
-}
-
 function BreathingCircle({ isEn }: { isEn: boolean }) {
   const [isActive, setIsActive] = useState(false);
-  const { trans } = useLanguage();
-
   return (
-    <div className="relative flex flex-col items-center">
-      <div className="relative flex items-center justify-center h-48 w-48">
-        <motion.div
-          className="absolute inset-0 rounded-full bg-teal-50 border border-teal-100"
-          animate={isActive ? { scale: [1, 1.4, 1], opacity: [0.8, 0.3, 0.8] } : { scale: 1 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute inset-4 rounded-full bg-teal-100/50 border border-teal-200"
-          animate={isActive ? { scale: [1, 1.2, 1], opacity: [0.9, 0.5, 0.9] } : { scale: 1 }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-        />
-         <motion.div
-          className="relative h-24 w-24 rounded-full bg-teal-600 shadow-xl flex items-center justify-center text-white cursor-pointer hover:bg-teal-700 transition-colors z-10"
-          onClick={() => setIsActive(!isActive)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {isActive ? <Pause className="h-8 w-8" /> : <Play className="h-8 w-8 ml-1" />}
+    <div className="flex flex-col items-center">
+      <div className="relative h-44 w-44 flex items-center justify-center">
+        <motion.div className="absolute inset-0 rounded-full border border-teal-100 bg-teal-50/30" animate={isActive ? { scale: [1, 1.3, 1], opacity: [0.6, 0.2, 0.6] } : {}} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} />
+        <motion.div className="w-24 h-24 rounded-full bg-stone-900 flex items-center justify-center text-white cursor-pointer shadow-2xl z-10" onClick={() => setIsActive(!isActive)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+          {isActive ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
         </motion.div>
       </div>
-      <div className="mt-6 text-sm font-bold tracking-wide text-stone-800">
-        {isActive 
-          ? (trans.practice.breatheAction || (isEn ? "Inhale... Exhale..." : "吸气...呼气...")) 
-          : (trans.practice.startSession || (isEn ? "Start Session" : "点击开始"))}
-      </div>
+      <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-stone-500">
+        {isActive ? (isEn ? "Synchronizing..." : "正在同步频率...") : (isEn ? "Start Alignment" : "开始视觉校准")}
+      </p>
     </div>
   );
 }

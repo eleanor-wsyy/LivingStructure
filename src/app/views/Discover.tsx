@@ -429,10 +429,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
         <div className="w-16 h-px bg-stone-200 mx-auto" />
 
         <TheoryFounder 
-          nameEn="Professor Bin Jiang"
-          nameZh="江斌教授 (Professor Bin Jiang)"
-          roleEn="Professor of Geo-Informatics"
-          roleZh="地理信息科学教授"
+          nameEn="Bin Jiang"
+          nameZh="江斌 (Bin Jiang)"
+          roleEn="Professor of Urban Design & Computational Media Arts"
+          roleZh="城市治理与设计和计算媒体与艺术双聘教授"
           descEn="Creator of the 'Living Structure' mathematical framework (L = S × H). His work transforms Alexander's qualitative concepts into computable metrics, utilizing topological analysis and head/tail breaks to quantify structural beauty."
           descZh="“活力结构”数学框架（L = S × H）的创立者。他的研究将亚历山大的定性概念转化为可计算的指标，利用拓扑分析和头尾断裂法（head/tail breaks）来精准量化结构之美。"
           image="/images/BJ.png"

@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
-// 💡 相对路径导入：直接跳出一层寻找 hooks 文件夹
 import { useGemini } from '../hooks/useGemini'; 
 
 // --- Data ---
@@ -84,11 +83,11 @@ const properties = [
     { n: 6, tEn: "Good Shape", tZh: "良好形状", quoteEn: "Every element in a living structure should have a 'good shape'—simple and coherent.", quoteZh: "活力结构中的每个元素都应该有一个“良形”——简单且连贯。", mechEn: "Mechanism implies compactness and elementary geometry (squares, circles).", mechZh: "机制意味着紧凑性和基本几何（正方形、圆形）。", relEn: "Increases S (Strength) through geometric coherence.", relZh: "通过几何连贯性增加 S（强度）。", natureEn: "A water drop or a river stone, worn into an elemental and harmonious shape.", natureZh: "水滴或河石，被磨成了基本且和谐的形状。", exampleEn: "A perfectly proportioned rectangular window or circular arch.", exampleZh: "比例完美的矩形窗或圆拱。", imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "" },
     { n: 7, tEn: "Local Symmetries", tZh: "局部对称", quoteEn: "Small parts of the structure should be symmetrical within themselves.", quoteZh: "结构的微小部分在自身内部应对称。", mechEn: "The mechanism is the creation of 'sub-centers' through reflection.", mechZh: "该机制是通过反射创建“子中心”。", relEn: "Increases S (Strength) by binding centers locally.", relZh: "通过局部结合中心增加 S（强度）。", natureEn: "Leaves, crystals, and animal faces possess striking local symmetry despite global variation.", natureZh: "尽管整体有变化，树叶、水晶和动物面部都具有惊人的局部对称性。", exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.", exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。", imgPos: "/images/Local symmetries.png", imgNeg: "/images/LSNEG.png", bookImg: "" },
     { n: 8, tEn: "Deep Interlock and Ambiguity", tZh: "深度交织与模糊性", quoteEn: "Elements should not simply sit next to each other; they should interlock.", quoteZh: "元素不应仅仅彼此相邻；它们应该嵌合。", mechEn: "The mechanism uses 'ambiguity of belonging' where material A penetrates material B.", mechZh: "该机制利用“归属的模糊性”，即材料 A 穿透材料 B。", relEn: "Increases S (Strength) by fusing adjacent centers.", relZh: "通过融合相邻中心增加 S（强度）。", natureEn: "The jagged interlocking of continental plates or roots winding through rocks.", natureZh: "大陆板块的锯齿状交错，或是盘绕穿过岩石的树根。", exampleEn: "Dove-tail joints in wood or interlocking paving stones.", exampleZh: "木材中的燕尾榫或互锁铺路石。", imgPos: "/images/Deep interlock and ambiguity.png", imgNeg: "/images/DNEG.png", bookImg: "" },
-    { n: 9, tEn: "Contrast", tZh: "对比", quoteEn: "Life requires difference. Distinct parts should be visibly different in character.", quoteZh: "生命需要差异。独特部分在特征上应明显不同。", mechEn: "The mechanism is the unification of opposites, enhancing both qualities.", mechZh: "机制是对立面的统一，增强了两种特质。", relEn: "Increases S (Strength) by clarifying distinction.", relZh: "通过阐明区别增加 S（强度）。", natureEn: "The bright bloom of a flower against dark foliage, or stark shadows on a canyon wall.", natureZh: "深色树叶衬托下明亮的花朵，或峡谷崖壁上鲜明的阴影。", exampleEn: "Light against dark, rough stone against smooth plaster.", exampleZh: "明与暗，粗糙石头与光滑灰泥。", imgPos: "/images/Contrast.png", imgNeg: "/images/CNEG.png", bookImg: "" },
+    { n: 9, tEn: "Contrast", tZh: "对比", quoteEn: "Life requires difference. Distinct parts should be visibly different in character.", quoteZh: "生命需要差异。独特部分在特征上应明显不同。", mechEn: "The mechanism is the unification of opposites, enhancing both qualities.", mechZh: "机制是对立面的统一，增强了两种特质。", relEn: "Increases S (Strength) by clarifying distinction.", relZh: "通过阐明区别增加 S（强度）。", natureEn: "The bright bloom of a flower against dark foliage, or stark shadows on a canyon wall.", natureZh: "深色树叶衬托下明亮的花朵，或峡谷崖壁上鲜明的阴影。", exampleEn: "Light against dark, rough stone against smooth plaster.", exampleZh: "明与暗，粗糙石头与光滑灰泥。", imgPos: "/images/Contrast.png", imgNeg: "/images/CNEG.jpg", bookImg: "" },
     { n: 10, tEn: "Gradients", tZh: "渐变", quoteEn: "A quality should slowly change across space to soften harshness.", quoteZh: "一种特质应该在空间中缓慢变化以柔化严酷。", mechEn: "The mechanism is the serialized progression of properties (A1, A2, A3...).", mechZh: "机制是属性的序列化推进（A1, A2, A3...）。", relEn: "Increases H (Hierarchy) by connecting scales.", relZh: "通过连接尺度增加 H（层级）。", natureEn: "The gradual thinning of a mountain atmosphere, or the color shift in a sunset.", natureZh: "高山大气的逐渐稀薄，或是日落时的色彩过渡。", exampleEn: "Steps of a staircase or diminishing sizes of arches.", exampleZh: "楼梯的台阶或逐渐缩小的拱门。", imgPos: "/images/Gradients.png", imgNeg: "/images/GRNEG.png", bookImg: "" },
     { n: 11, tEn: "Roughness", tZh: "粗糙性", quoteEn: "True order is not perfect; it is rough and adaptive to local conditions.", quoteZh: "真正的秩序不是完美的；它是粗糙的且适应局部条件。", mechEn: "The mechanism is local relaxation of the grid to minimize tension.", mechZh: "机制是网格的局部松弛以最小化张力。", relEn: "Increases S (Strength) by adapting to reality.", relZh: "通过适应现实增加 S（强度）。", natureEn: "Tree bark, mountain ridges, and coastlines derive their beauty from their unpolished, fractal roughness.", natureZh: "树皮、山脊和海岸线的美源于它们未经打磨的分形粗糙感。", exampleEn: "Hand-laid brick walls with slight irregularities.", exampleZh: "手工砌筑的略带不规则的砖墙。", imgPos: "/images/Roughness.png", imgNeg: "/images/RNEG.png", bookImg: "" },
     { n: 12, tEn: "Echoes", tZh: "共鸣", quoteEn: "The same structural logic appears at different scales throughout the design.", quoteZh: "相同结构逻辑出现在设计的不同尺度中。", mechEn: "The mechanism is the use of a 'generative seed' or fractal DNA recursively.", mechZh: "机制是递归使用“生成种子”或分形 DNA。", relEn: "Increases H (Hierarchy) through self-similarity.", relZh: "通过自相似性增加 H（层级）。", natureEn: "The branching of a river delta echoing the veins in a single leaf.", natureZh: "河流三角洲的分支与单片树叶的叶脉形成呼应。", exampleEn: "The curve of a dome echoed in the arches below it.", exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。", imgPos: "/images/Echoes.png", imgNeg: "/images/ENEG.png", bookImg: "" },
-    { n: 13, tEn: "The Void", tZh: "虚空", quoteEn: "In the most intense centers, there is often a moment of pure silence.", quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。", mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.", mechZh: "机制是特意保留一个由结构包围的空中心。", relEn: "Increases S (Strength) by creating a calm center.", relZh: "通过创造平静中心增加 S（强度）。", natureEn: "A clearing in a dense forest, or a perfectly still alpine lake.", natureZh: "茂密森林中的林间空地，或是一片平静的高山湖泊。", exampleEn: "An empty altar or a quiet central courtyard.", exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。", imgPos: "/images/The void.png", imgNeg: "/images/VNEG.png", bookImg: "" },
+    { n: 13, tEn: "The Void", tZh: "虚空", quoteEn: "In the most intense centers, there is often a moment of pure silence.", quoteZh: "在最强烈的中心里，通常有一刻纯粹的寂静。", mechEn: "The mechanism is the deliberate preservation of an empty center bounded by structure.", mechZh: "机制是特意保留一个由结构包围的空中心。", relEn: "Increases S (Strength) by creating a calm center.", relZh: "通过创造平静中心增加 S（强度）。", natureEn: "A clearing in a dense forest, or a perfectly still alpine lake.", natureZh: "茂密森林中的林间空地，或是平静的高山湖泊。", exampleEn: "An empty altar or a quiet central courtyard.", exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。", imgPos: "/images/The void.png", imgNeg: "/images/VNEG.png", bookImg: "" },
     { n: 14, tEn: "Simplicity and Inner Calm", tZh: "简洁与内在平静", quoteEn: "The form feels calm because everything is exactly where it needs to be.", quoteZh: "形式感觉平静，因为一切都在它应该在的地方。", mechEn: "The mechanism is the removal of structural noise (Occam's Razor).", mechZh: "机制是消除结构噪音（奥卡姆剃刀）。", relEn: "Increases S (Strength) by removing friction.", relZh: "通过消除摩擦增加 S（强度）。", natureEn: "A smooth expanse of untouched snow, or a clear blue sky.", natureZh: "广阔无垠的纯洁雪原，或是清澈湛蓝的天空。", exampleEn: "A Shaker chair or a Zen garden.", exampleZh: "震颤派椅子或禅宗花园。", imgPos: "/images/Simplicity and inner calm.png", imgNeg: "/images/SINEG.png", bookImg: "" },
     { n: 15, tEn: "Not-Separateness", tZh: "非分离性", quoteEn: "A living structure is not separate from its surroundings; it grows out of them.", quoteZh: "活力结构与其周围环境不是分离的；它是从中生长出来的。", mechEn: "The mechanism is the blurring of the outer boundary through interpenetration.", mechZh: "机制是通过相互渗透模糊外边界。", relEn: "Increases H (Hierarchy) by connecting to the largest whole.", relZh: "通过连接到最大整体增加 H（层级）。", natureEn: "A nest woven seamlessly into the branches of a tree.", natureZh: "无缝编织在树枝间的鸟巢。", exampleEn: "A building that steps down the hillside, merging with the terrain.", exampleZh: "顺山势而下的建筑，与地形融为一体。", imgPos: "/images/Not separateness.png", imgNeg: "/images/NSNEG.png", bookImg: "" }
 ];
@@ -547,32 +546,27 @@ const ChineseArchitecturalSystem = () => {
 
 export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
-  const [activeHowTo, setActiveHowTo] = useState<number | null>(null); 
+  // 💡 修改：将单选变为多选数组，支持多个卡片同时展开
+  const [activeHowToIds, setActiveHowToIds] = useState<number[]>([]); 
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
   
   const activeProp = properties.find(p => p.n === activePropId) || properties[0];
 
-  // 💡 提取观测相关的状态
   const { analyzeStructure, isThinking } = useGemini();
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<{property: string, choiceType: string}[]>([]);
   const [report, setReport] = useState<string | null>(null);
-  
-  // ✨ 修改点：存放题目的变量，改为固定 6 道
   const [activeQuestions, setActiveQuestions] = useState<typeof QUESTION_POOL>([]);
 
-  // ✨ 修改点：启动函数改为固定 6 道，且不再随机洗牌
   const startTest = () => {
-    // 1. 直接使用全部 6 道题
     setActiveQuestions(QUESTION_POOL); 
     setHasStarted(true);
     setCurrentStep(0);
     setAnswers([]);
     setReport(null);
   };
-
 
   const handleSelect = async (choiceType: string, property: string) => {
     const newAnswers = [...answers, { property, choiceType }];
@@ -642,7 +636,6 @@ export function Theory() {
     setReport(null);
   };
 
-
   const howToData = [
     {
       id: 1,
@@ -673,14 +666,19 @@ export function Theory() {
     }
   ];
 
+  // 💡 处理点击卡片展开/收起的逻辑
+  const toggleHowToCard = (id: number) => {
+    setActiveHowToIds((prev) => 
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFBF7] text-stone-800 pb-24">
       
       <div className="w-full max-w-7xl mx-auto p-8 md:p-16 pb-0">
 
-        {/* ========================================================================= */}
-        {/* Section 0: The Empirical Mirror (✨ 视觉升级：告别黑框，改为优雅浅色) */}
-        {/* ========================================================================= */}
+        {/* Section 0: The Empirical Mirror */}
         <div className="mb-32">
           
           <div className="max-w-4xl mx-auto mb-16 text-center px-4 pt-4 md:pt-8">
@@ -696,7 +694,6 @@ export function Theory() {
           </div>
 
           <Section title={isEn ? "Empirical Test" : "实证测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：观测与测量"} className="!pt-0 !border-0">
-            {/* ✨ 视觉点：这里去掉了 bg-stone-900，改成了带阴影的白/浅石色容器 */}
             <div className="w-full bg-white border border-stone-200 text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[600px] flex flex-col items-center justify-center p-8">
               
               <AnimatePresence mode="wait">
@@ -839,9 +836,6 @@ export function Theory() {
         </div>
 
 
-        {/* ========================================================================= */}
-        {/* 核心过渡：巨幅大标题 */}
-        {/* ========================================================================= */}
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -871,7 +865,6 @@ export function Theory() {
             {isEn ? "Vitality in Geometry & Architecture" : "几何与建筑中的生命力密码"}
           </p>
         </motion.div>
-
 
         {/* Section 1: Origin */}
         <Section title={trans.theory?.origin?.title || "Origin"}>
@@ -928,15 +921,21 @@ export function Theory() {
         </Section>
 
         {/* Section 3: How to See */}
-        <Section title={trans.theory?.howToSee?.title || "How to See"}>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Section 
+          title={trans.theory?.howToSee?.title || "How to Perceive Structure"} 
+          // 💡 增加导语
+          subTitle={isEn 
+            ? "Click on any card to reveal the three fundamental steps for observing living structure in the built environment." 
+            : "点击展开下方卡片，掌握感知建筑与空间生命力的三个核心步骤。"}
+        >
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
               {howToData.map((item) => {
-                const isActive = activeHowTo === item.id;
+                const isActive = activeHowToIds.includes(item.id);
                 return (
                   <motion.div 
                     layout
                     key={item.id}
-                    onClick={() => setActiveHowTo(isActive ? null : item.id)}
+                    onClick={() => toggleHowToCard(item.id)}
                     className={cn(
                       "border border-stone-200 rounded-2xl cursor-pointer transition-colors overflow-hidden",
                       isActive ? "bg-stone-900 text-white shadow-xl" : "bg-white text-stone-900 hover:bg-stone-50"
