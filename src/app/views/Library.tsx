@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Button, Input, Badge, Card } from "@/app/components/ui";
-import { Search, Book, FileText, Bookmark, Download, Video, Filter, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Search, Book, FileText, Bookmark, Download, Video, 
+  Filter, ExternalLink, X, Eye, Sparkles, PlayCircle
+} from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
 // ============================================================================
-// 📚 真实的文献数据库 (添加你想要展示的 PDF 路径即可)
-// 请确保把对应的 PDF 文件放在 public/papers/ 目录下
+// 📚 真实的文献数据库
 // ============================================================================
 const resources = [
   { 
@@ -18,10 +21,36 @@ const resources = [
     citations: 4520,
     abstractEn: "Introduces the concept of living structure and the 15 fundamental properties that characterize all living systems in nature and architecture.",
     abstractZh: "引入了生命力结构的概念以及构成自然界和建筑中所有生命系统的 15 个基本几何属性。",
-    pdfUrl: "/papers/Book1Chapter8+9.pdf" // 指向你 public 里的文件
+    fileUrl: "/pdfs/book1.pdf" 
   },
   { 
     id: 2, 
+    type: "book", 
+    titleEn: "Living Structure: Exploring the Beauty of Chinese Traditional Buildings Through the Lens of AI", 
+    titleZh: "活力结构：AI视角下的中国传统建筑之美",
+    author: "LivableCityLAB, HKUST (GZ)", 
+    year: 2025, 
+    citations: 0,
+    abstractEn: "A comprehensive exploration of traditional Chinese architecture through the lens of living structure theory and AI generation, written by the LivableCityLAB team under the guidance of Prof. Bin Jiang.",
+    abstractZh: "由香港科技大学（广州）宜居城市实验室团队编撰，在江斌教授的指导下，融合生命力结构理论与AI生成技术，探索并量化中国传统建筑之美。",
+    fileUrl: "/pdfs/LivingStructure.pdf"
+
+  },
+  { 
+    id: 5, 
+    type: "video", 
+    titleEn: "Living Structure", 
+    titleZh: "活力结构",
+    author: "LivableCityLAB", 
+    year: 2026, 
+    duration: "6m 47s",
+    citations: 0,
+    abstractEn: "An engaging video podcast explaining the core concepts of Living Structure, GeoAnalytics, and Alexander's 15 Properties.",
+    abstractZh: "一段生动的播客视频，深入浅出地解释了生命力结构、地理分析以及亚历山大 15 种几何属性的核心概念。",
+    fileUrl: "/videos/livingstructure.mp4" // 💡 换成你视频的名字
+  },
+  { 
+    id: 3, 
     type: "paper", 
     titleEn: "Head/Tail Breaks: A New Classification Scheme for Data with a Heavy-Tailed Distribution", 
     titleZh: "头/尾分布：一种针对重尾分布数据的新型分类方案",
@@ -30,32 +59,22 @@ const resources = [
     citations: 1205,
     abstractEn: "Proposes a novel classification scheme for data with a heavy-tailed distribution, which is the mathematical foundation for measuring living structure.",
     abstractZh: "提出了一种针对重尾分布数据的新型分类方案，这为量化测量“生命力结构”提供了坚实的数学和拓扑学基础。",
-    pdfUrl: "https://arxiv.org/ftp/arxiv/papers/1209/1209.2801.pdf" // 也可以指向外部链接
+    fileUrl: "https://arxiv.org/ftp/arxiv/papers/1209/1209.2801.pdf" 
   },
-  { 
-    id: 3, 
-    type: "patent", 
-    titleEn: "A Space Design Method, Device and Equipment based on the Integration of Skeleton and Skin", 
-    titleZh: "一种基于骨架与外皮一体化的空间设计方法、装置及设备 (专利)",
-    author: "Bin Jiang, et al.", 
-    year: 2024, 
-    citations: 0,
-    abstractEn: "A patent detailing the algorithmic generation of spatial designs by iteratively dividing a skeleton and applying stylistic skins based on the L=S*H formula.",
-    abstractZh: "一项详细介绍通过迭代划分骨架并应用风格表皮来算法化生成空间设计的专利，其核心逻辑基于 L=S×H 公式。",
-    pdfUrl: "/papers/【发明初稿】一种基于骨架与外皮一体化的空间设计方法、装置及设备4PDF.pdf"
-  },
+ 
   { 
     id: 4, 
-    type: "video", 
-    titleEn: "The Beauty of Architecture (Questionnaire & Lecture)", 
-    titleZh: "建筑结构美测试与讲座",
-    author: "LivableCityLAB, HKUST (GZ)", 
-    year: 2025, 
-    duration: "10m",
-    abstractEn: "An interactive lecture and questionnaire terminal exploring the subconscious perception of structural beauty.",
-    abstractZh: "探索对结构美潜意识感知的互动讲座与问卷终端。",
-    pdfUrl: "https://livablecitylab.hkust-gz.edu.cn/beautyofarchitecture"
+    type: "paper", 
+    titleEn: "Decision-Procedure for Quality in the Built Environment", 
+    titleZh: "建筑环境质量的决策流程",
+    author: "Greg Bryant (based on Christopher Alexander)", 
+    year: "2026", 
+    citations: 0,
+    abstractEn: "A step-by-step phenomenological procedure using feeling as a meter to evaluate and generate living structures.",
+    abstractZh: "一份指导如何将身体感受作为量尺，结合 15 种属性与强中心来评估和生成生命力结构的详细步骤指南。",
+    fileUrl: "/pdfs/Decision-Procedure for Quality in the Built Environment.pdf" 
   }
+  
 ];
 
 export function Library() {
@@ -63,8 +82,10 @@ export function Library() {
   const isEn = language === 'en';
   
   const [searchQuery, setSearchQuery] = useState("");
-  // 简易过滤状态，实际项目中可根据左侧 checkbox 进一步丰富逻辑
   const [filterType, setFilterType] = useState<string>("all"); 
+  
+  // 💡 升级：用 selectedItem 保存整个被点击的文献对象，以便判断它是 PDF 还是视频
+  const [selectedItem, setSelectedItem] = useState<typeof resources[0] | null>(null);
 
   const filteredResources = resources.filter(item => {
     const title = isEn ? item.titleEn : item.titleZh;
@@ -128,6 +149,10 @@ export function Library() {
                   <span className="group-hover:text-stone-900 transition-colors">{trans.library.books || "Books"}</span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer group">
+                  <input type="radio" name="type" className="w-4 h-4 text-teal-600 focus:ring-teal-500" checked={filterType === "video"} onChange={() => setFilterType("video")} />
+                  <span className="group-hover:text-stone-900 transition-colors">{isEn ? "Videos" : "视频"}</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer group">
                   <input type="radio" name="type" className="w-4 h-4 text-teal-600 focus:ring-teal-500" checked={filterType === "patent"} onChange={() => setFilterType("patent")} />
                   <span className="group-hover:text-stone-900 transition-colors">{isEn ? "Patents" : "专利"}</span>
                 </label>
@@ -146,7 +171,8 @@ export function Library() {
               filteredResources.map((item) => (
                 <Card 
                   key={item.id} 
-                  className="group flex flex-col sm:flex-row gap-6 p-6 hover:shadow-lg transition-all rounded-2xl border border-stone-200 border-l-4 border-l-transparent hover:border-l-teal-600 bg-white relative overflow-hidden"
+                  onClick={() => setSelectedItem(item)} // 💡 点击卡片触发弹窗，传入整个 item
+                  className="group flex flex-col sm:flex-row gap-6 p-6 hover:shadow-lg transition-all rounded-2xl border border-stone-200 border-l-4 border-l-transparent hover:border-l-teal-600 bg-white relative overflow-hidden cursor-pointer"
                 >
                   <div className="shrink-0 pt-1">
                     <div className="flex h-20 w-16 items-center justify-center rounded-lg bg-stone-100 text-stone-400 shadow-inner">
@@ -159,11 +185,18 @@ export function Library() {
                     <div>
                       <div className="flex items-start justify-between gap-4">
                         <h3 className="text-lg font-bold text-stone-900 leading-snug group-hover:text-teal-800 transition-colors">
-                          <a href={item.pdfUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                          <span className="hover:underline">
                             {isEn ? item.titleEn : item.titleZh}
-                          </a>
+                          </span>
                         </h3>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 shrink-0"><Bookmark className="h-4 w-4 text-stone-400 hover:text-stone-900 transition-colors" /></Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 w-8 p-0 shrink-0"
+                          onClick={(e) => e.stopPropagation()} 
+                        >
+                          <Bookmark className="h-4 w-4 text-stone-400 hover:text-stone-900 transition-colors" />
+                        </Button>
                       </div>
                       
                       <div className="mt-2 flex items-center gap-2 text-xs font-mono text-stone-500">
@@ -192,14 +225,23 @@ export function Library() {
                         <span>{trans.library.citations || "Citations"}: {item.citations.toLocaleString()}</span>
                       )}
                       
-                      {/* 直接在新标签页打开阅读 */}
-                      <a href={item.pdfUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-stone-900 hover:text-teal-600 transition-colors ml-auto md:ml-0">
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        {isEn ? "Read Document" : "在线阅读"}
-                      </a>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          setSelectedItem(item);
+                        }} 
+                        className="flex items-center gap-1.5 text-stone-900 hover:text-teal-600 transition-colors ml-auto md:ml-0"
+                      >
+                        {item.type === 'video' ? <PlayCircle className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        {isEn ? (item.type === 'video' ? "Watch Video" : "Read Document") : (item.type === 'video' ? "播放视频" : "阅读文档")}
+                      </button>
 
-                      {/* 下载属性 */}
-                      <a href={item.pdfUrl} download className="flex items-center gap-1 text-stone-500 hover:text-teal-600 transition-colors">
+                      <a 
+                        href={item.fileUrl} 
+                        download 
+                        onClick={(e) => e.stopPropagation()} 
+                        className="flex items-center gap-1 text-stone-500 hover:text-teal-600 transition-colors"
+                      >
                         <Download className="w-3.5 h-3.5" />
                         {trans.library.download || "Download"}
                       </a>
@@ -210,6 +252,73 @@ export function Library() {
             )}
           </div>
         </div>
+
+        {/* 📄 沉浸式 PDF / 视频 阅读器弹窗 */}
+        <AnimatePresence>
+          {selectedItem && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+              {/* 模糊背景 */}
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                exit={{ opacity: 0 }} 
+                onClick={() => setSelectedItem(null)} 
+                className="absolute inset-0 bg-stone-900/90 backdrop-blur-sm cursor-pointer" 
+              />
+              
+              {/* 媒体容器 */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+                animate={{ opacity: 1, scale: 1, y: 0 }} 
+                exit={{ opacity: 0, scale: 0.95, y: 20 }} 
+                className="relative w-full max-w-6xl h-[90vh] bg-stone-100 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-stone-700"
+              >
+                {/* 顶部工具栏 (智能切换标题和图标) */}
+                <div className="h-14 bg-white border-b border-stone-200 flex justify-between items-center px-6 shrink-0">
+                  <div className="flex items-center gap-2 text-stone-600 font-serif font-bold text-sm">
+                    {selectedItem.type === 'video' ? (
+                      <><Video className="w-4 h-4 text-teal-600" /> {isEn ? "Video Player" : "视频播放器"}</>
+                    ) : (
+                      <><FileText className="w-4 h-4 text-teal-600" /> {isEn ? "Document Viewer" : "文档阅读器"}</>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <a 
+                      href={selectedItem.fileUrl} 
+                      target="_blank" 
+                      rel="noreferrer"
+                      className="text-xs font-bold text-stone-500 hover:text-teal-600 uppercase tracking-widest flex items-center gap-1 transition-colors"
+                    >
+                      <Sparkles className="w-3 h-3" /> {isEn ? "Open in New Tab" : "在新标签页打开"}
+                    </a>
+                    <button onClick={() => setSelectedItem(null)} className="p-1.5 bg-stone-100 text-stone-500 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                {/* 核心：智能渲染 Video 标签 或 iframe */}
+                <div className="flex-1 w-full relative bg-stone-900 flex items-center justify-center">
+                  {selectedItem.type === 'video' ? (
+                    <video 
+                      src={selectedItem.fileUrl} 
+                      controls 
+                      autoPlay 
+                      className="w-full h-full object-contain bg-black"
+                    />
+                  ) : (
+                    <iframe 
+                      src={selectedItem.fileUrl.includes('.pdf') ? `${selectedItem.fileUrl}#toolbar=0` : selectedItem.fileUrl} 
+                      className="w-full h-full border-none bg-stone-200"
+                      title="Viewer"
+                    />
+                  )}
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
       </div>
     </div>
   );

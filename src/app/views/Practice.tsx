@@ -8,6 +8,11 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import OpenAI from "openai";
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface Message {
   id: string;
@@ -21,7 +26,6 @@ interface Message {
 const STORAGE_KEY = "vitality_healing_chat_history";
 const MOOD_STORAGE_KEY = "vitality_healing_mood_history";
 
-// 💡 空间心境选项配置
 const MOOD_OPTIONS = [
   { id: "living", icon: Sun, color: "text-teal-500", bg: "bg-teal-50", border: "border-teal-200", labelEn: "Living", labelZh: "充满生机" },
   { id: "calm", icon: Wind, color: "text-sky-500", bg: "bg-sky-50", border: "border-sky-200", labelEn: "Calm", labelZh: "宁静安和" },
@@ -33,8 +37,8 @@ export function Practice() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
-  const welcomeEn = "Welcome to the Healing Lab. Upload a photo of your current space, and I will use Christopher Alexander's decision-procedure to diagnose its 'Living Structure' and prescribe a spatial remedy for you.";
-  const welcomeZh = "欢迎来到疗愈实验室。上传一张你所在空间的照片，我将运用亚历山大的“建筑质量决策流程”为你诊断空间的生命力，并开出物理处方。";
+  const welcomeEn = "Welcome to the Healing Lab. Upload a photo of your current space, and I will strictly diagnose its geometry and generate a highly specific structural remedy.";
+  const welcomeZh = "欢迎来到疗愈实验室。上传一张你所在空间的照片，我将为你进行真实的视觉扫描，指出空间中具体的活力缺陷，并开出物理处方。";
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -62,25 +66,21 @@ export function Practice() {
   const recognitionRef = useRef<any>(null);
   const startTextRef = useRef("");
 
-  // 保存聊天记录
   useEffect(() => { 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); 
     } catch (e) {
-      console.warn("LocalStorage quota exceeded, saving without images...");
       const safeMessages = messages.map(m => ({ ...m, image: undefined }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(safeMessages));
     }
   }, [messages]);
 
-  // 保存心情记录
   useEffect(() => {
     localStorage.setItem(MOOD_STORAGE_KEY, JSON.stringify(moodHistory));
   }, [moodHistory]);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isTyping]);
 
-  // 语音识别初始化
   useEffect(() => {
     if (typeof window !== "undefined") {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -114,12 +114,11 @@ export function Practice() {
         recognitionRef.current.start();
         setIsListening(true);
       } else {
-        alert(isEn ? "Your browser does not support voice input." : "当前浏览器不支持语音识别功能。");
+        alert(isEn ? "Your browser does not support voice input." : "当前浏览器不支持语音识别。");
       }
     }
   };
 
-  // Canvas 压缩图片
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -163,6 +162,8 @@ export function Practice() {
     if (!inputText.trim() && !previewImage) return;
 
     const userBase64 = base64ImageRef.current;
+    const currentInput = inputText; 
+    
     const newUserMsg: Message = { 
       id: Date.now().toString(), 
       role: "user", 
@@ -190,42 +191,96 @@ export function Practice() {
         dangerouslyAllowBrowser: true 
       });
 
-      // 🧠 核心：将同门的 PDF 决策流程转化为 AI Prompt
+      // 🧠 终极疗愈视觉 Prompt：融合多模态视觉与深度共情
       const systemPrompt = `
-        You are an expert "Spatial Therapist" and architectural diagnostician. 
-        A user has provided an image or description of a space. You must use the "Decision-Procedure for Quality in the Built Environment" based on Christopher Alexander's work.
+        You are a profoundly empathetic "Spatial Therapist" blending Christopher Alexander's phenomenology with deep psychological healing.
+        You can see the user's uploaded image. Your goal is to heal them through gentle spatial awareness, not to coldly critique their room.
+
+        Follow this 3-step healing procedure:
+        1. Empathic Mirroring (The Hug): Gently acknowledge their stated emotion. Look at the image and name 1 subtle detail you actually see (e.g., "the soft light falling on your desk", "the quiet blank wall beside you", "the scattered objects") as a poetic reflection of their inner state. Do NOT judge the space as "messy", "bad", or "flawed". Everything is accepted.
+        2. Phenomenological Insight: Softly explain why the space feels this way using ONE of Alexander's 15 properties. (e.g., "The sharp edges here lack 'Roughness', which is why your body feels tense", "Without a 'Strong Center', it's natural that your focus drifts").
+        3. Effortless Remedy: Suggest ONE tiny, effortless physical adjustment to restore their connection to the space (e.g., "Bring a cup of warm tea to that corner to create a small center", "Turn the chair slightly to face the window").
+
+        CRITICAL: At the very end of your response, you MUST provide exactly 2 summary tags starting with a hashtag (e.g., #CreateCenter #AddWarmth). Do not put any text after the tags.
         
-        Follow this strict 3-step analytical procedure:
-        1. Feeling as the Meter (Felt Sense): Empathize and state how the body reads the space. Does it feel "alive", "exposed", "flat", or "sheltered"? What drives this feeling?
-        2. The 15 Properties & Centers: Analyze the structure. Name 1-2 specific properties (e.g., Boundaries, Levels of Scale, Gradients, Roughness) that are weak or missing.
-        3. The Timeless Way Prescription: Tell them how to gain "life". Do not just "add decoration", but create and thicken centers. Propose 2-3 specific, physical moves (e.g., "thicken the edge with a rug", "carve the space into smaller rooms", "create a real central thing"). Follow the rule: "Make one small center more intense, let that force the next step."
-        
-        Tone: Compassionate, phenomenological, highly practical. Max 150 words. Format with short paragraphs.
+        Tone: Poetic, incredibly gentle, forgiving, and deeply healing. Like a whisper from a wise, old friend. Max 150 words.
         Language: ${isEn ? 'ENGLISH' : 'CHINESE'}.
       `;
 
+      // 💡 构建真正的多模态视觉请求体
+      const userMessageContent: any[] = [];
+      if (currentInput) {
+        userMessageContent.push({ type: "text", text: currentInput });
+      } else {
+        userMessageContent.push({ type: "text", text: isEn ? "Please diagnose this space." : "请诊断这个空间。" });
+      }
+      
+      if (userBase64) {
+        userMessageContent.push({
+          type: "image_url",
+          image_url: { url: userBase64 }
+        });
+      }
+
+      // 注意：这里改用了 qwen-vl-max 视觉大模型！
       const response = await openai.chat.completions.create({
-        model: "qwen-max", 
+        model: "qwen-vl-max", 
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages.slice(-4).map(m => ({ role: m.role === "ai" ? "assistant" : "user", content: m.content })),
-          { role: "user", content: `${newUserMsg.image ? "[User uploaded an image of their room] " : ""}${newUserMsg.content}` }
+          { role: "user", content: userMessageContent }
         ]
       });
 
-      const aiContent = response.choices[0].message.content || "";
-      const mockPrescription = isEn ? ["Thicken Edges", "Create a Center"] : ["强化中心", "增厚边界"];
+      const aiRawContent = response.choices[0].message.content || "";
+      
+      // 🎯 动态正则提取：把 AI 回复末尾的 #标签 提取出来
+      const tagRegex = /#([^\s#]+)/g;
+      const extractedTags = [];
+      let match;
+      while ((match = tagRegex.exec(aiRawContent)) !== null) {
+        extractedTags.push(match[1]); // 获取 # 后面的词
+      }
+      
+      // 清除正文里的标签文本，保持界面干净
+      const cleanContent = aiRawContent.replace(tagRegex, '').trim();
+      const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Create Center", "Add Gradient"] : ["强化中心", "建立边界"]);
 
       setIsScanning(false);
       setMessages(prev => [...prev, { 
         id: Date.now().toString(), 
         role: "ai", 
-        content: aiContent, 
+        content: cleanContent, 
         timestamp: Date.now(),
-        prescription: mockPrescription
+        prescription: finalPrescription
       }]);
 
+      // Supabase 上传逻辑...
+      try {
+        let publicImageUrl = null;
+        if (userBase64) {
+          const res = await fetch(userBase64);
+          const blob = await res.blob();
+          const fileName = `space_${Date.now()}.jpg`;
+          const { data: uploadData, error: uploadError } = await supabase.storage.from('healing_images').upload(fileName, blob, { contentType: 'image/jpeg' });
+          if (!uploadError && uploadData) {
+            const { data } = supabase.storage.from('healing_images').getPublicUrl(fileName);
+            publicImageUrl = data.publicUrl;
+          }
+        }
+        const todayKey = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
+        const currentMood = moodHistory[todayKey] || 'Not Selected';
+        await supabase.from('healing_records').insert([{
+          user_mood: currentMood,
+          image_url: publicImageUrl,
+          user_text: currentInput,
+          ai_prescription: finalPrescription
+        }]);
+      } catch (err) {
+        console.error("Supabase Sync Failed:", err);
+      }
+
     } catch (error) {
+      console.error(error);
       setIsScanning(false);
       setIsTyping(false);
     } finally {
@@ -233,15 +288,13 @@ export function Practice() {
     }
   };
 
-  // 💡 视觉扫描文案：对齐教授的决策流程
   const getScanText = () => {
-    if (scanStep === 1) return isEn ? "1. Reading 'Felt Sense' as a meter..." : "1. 以身体感受作为量尺进行测度...";
-    if (scanStep === 2) return isEn ? "2. Analyzing 15 Properties & Strong Centers..." : "2. 分析 15 种属性与强中心缺陷...";
-    if (scanStep === 3) return isEn ? "3. Formulating Timeless Way Prescription..." : "3. 基于《永恒之道》生成物理处方...";
+    if (scanStep === 1) return isEn ? "1. Reading 'Felt Sense' as a meter..." : "1. 视觉解析与身体感受量测...";
+    if (scanStep === 2) return isEn ? "2. Analyzing 15 Properties & Strong Centers..." : "2. 基于 15 种属性诊断结构缺陷...";
+    if (scanStep === 3) return isEn ? "3. Formulating Timeless Way Prescription..." : "3. 生成物理空间修改处方...";
     return "";
   };
 
-  // 💡 生成最近 7 天的日期序列
   const generateLast7Days = () => {
     const days = [];
     const today = new Date();
@@ -280,13 +333,12 @@ export function Practice() {
           <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
             {isEn 
               ? "Upload a photo of your environment. Let the AI apply the Alexander decision-procedure to recalibrate your spatial wholeness." 
-              : "上传环境照片或通过语音描述。让 AI 运用亚历山大建筑质量决策流程，为你重新校准空间的整体性。"}
+              : "上传环境照片或通过语音描述。让真实的视觉 AI 运用亚历山大建筑质量决策流程，为你诊断空间。"}
           </p>
         </header>
 
         <div className="grid gap-8 lg:grid-cols-12 items-start">
           
-          {/* 左侧：呼吸与足迹 */}
           <div className="lg:col-span-4 space-y-6">
             <Card className="p-8 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center">
               <div className="mb-8 flex items-center gap-2 text-stone-400">
@@ -296,7 +348,6 @@ export function Practice() {
               <BreathingCircle isEn={isEn} />
             </Card>
 
-            {/* 💡 升级版：空间心境记录器 */}
             <Card className="p-6 bg-white/50 backdrop-blur border-stone-200 shadow-sm relative overflow-visible">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
@@ -309,7 +360,6 @@ export function Practice() {
                 {last7Days.map((day) => {
                   const moodId = moodHistory[day.dateKey];
                   const mood = MOOD_OPTIONS.find(m => m.id === moodId);
-
                   return (
                     <div key={day.dateKey} className="flex flex-col items-center gap-2 relative">
                       <div 
@@ -321,42 +371,24 @@ export function Practice() {
                           day.isToday && !mood && "animate-pulse border-dashed border-teal-300 bg-teal-50/50"
                         )}
                       >
-                        {mood ? (
-                          <mood.icon className={cn("w-4 h-4", mood.color)} />
-                        ) : (
-                          day.isToday ? <Plus className="w-4 h-4 text-teal-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-stone-300" />
-                        )}
+                        {mood ? <mood.icon className={cn("w-4 h-4", mood.color)} /> : (day.isToday ? <Plus className="w-4 h-4 text-teal-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-stone-300" />)}
                       </div>
-                      <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-600" : "text-stone-400")}>
-                        {day.dayName}
-                      </span>
+                      <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-600" : "text-stone-400")}>{day.dayName}</span>
                     </div>
                   );
                 })}
               </div>
 
-              {/* 心境选择浮层 */}
               <AnimatePresence>
                 {showMoodSelector && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     className="absolute top-full left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
                   >
-                    <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">
-                      {isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}
-                    </p>
+                    <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">{isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}</p>
                     <div className="grid grid-cols-2 gap-2">
                       {MOOD_OPTIONS.map(mood => (
-                        <button
-                          key={mood.id}
-                          onClick={() => handleMoodSelect(mood.id)}
-                          className={cn(
-                            "flex items-center gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02] active:scale-95",
-                            mood.bg, mood.border
-                          )}
-                        >
+                        <button key={mood.id} onClick={() => handleMoodSelect(mood.id)} className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02] active:scale-95", mood.bg, mood.border)}>
                           <mood.icon className={cn("w-4 h-4", mood.color)} />
                           <span className={cn("text-xs font-bold", mood.color)}>{isEn ? mood.labelEn : mood.labelZh}</span>
                         </button>
@@ -368,7 +400,6 @@ export function Practice() {
             </Card>
           </div>
 
-          {/* 右侧：诊断对话区 */}
           <div className="lg:col-span-8">
             <Card className="bg-white h-[750px] shadow-2xl border-stone-200 flex flex-col overflow-hidden relative">
               
@@ -382,7 +413,7 @@ export function Practice() {
                     <h3 className="font-serif font-bold text-stone-900">{isEn ? "Diagnostic Vision" : "诊断视界"}</h3>
                     <div className="flex items-center gap-2">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500" />
-                      <p className="text-[10px] text-stone-400 font-mono uppercase">AI Decision-Procedure Active</p>
+                      <p className="text-[10px] text-stone-400 font-mono uppercase">Qwen-VL Multimodal Active</p>
                     </div>
                   </div>
                 </div>
@@ -391,16 +422,10 @@ export function Practice() {
                 </Button>
               </div>
 
-              {/* 聊天记录 */}
               <div className="flex-1 overflow-y-auto p-8 space-y-10 scrollbar-hide bg-[url('https://www.transparenttextures.com/patterns/graphy.png')]">
                 <AnimatePresence initial={false}>
                   {messages.map((msg) => (
-                    <motion.div
-                      key={msg.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={cn("flex flex-col gap-3", msg.role === "user" ? "items-end" : "items-start")}
-                    >
+                    <motion.div key={msg.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={cn("flex flex-col gap-3", msg.role === "user" ? "items-end" : "items-start")}>
                       {msg.image && (
                         <div className="relative group max-w-sm rounded-2xl overflow-hidden border-4 border-white shadow-xl rotate-1">
                           <img src={msg.image} className="w-full h-auto object-cover" alt="Upload" />
@@ -416,7 +441,7 @@ export function Practice() {
                       )}>
                         <div className="whitespace-pre-line">{msg.content}</div>
 
-                        {msg.prescription && (
+                        {msg.prescription && msg.prescription.length > 0 && (
                           <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
                             {msg.prescription.map(p => (
                               <span key={p} className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider rounded border border-teal-100 flex items-center gap-1 shadow-sm">
@@ -431,7 +456,6 @@ export function Practice() {
                   ))}
                 </AnimatePresence>
 
-                {/* 💡 扫描动画与动态文字 */}
                 {isScanning && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
                     <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-100 border-2 border-stone-200">
@@ -450,7 +474,6 @@ export function Practice() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* 输入区域 */}
               <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-stone-200">
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto">
                   <div className="relative flex flex-col bg-white rounded-3xl border border-stone-200 shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
@@ -462,7 +485,7 @@ export function Practice() {
                               <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
                               <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
                            </div>
-                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready for procedure" : "图像已准备就绪"}</p>
+                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready for procedure" : "图像视觉接入就绪"}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
