@@ -3,7 +3,7 @@ import { Button, Card, cn } from "@/app/components/ui";
 import { 
   Play, Pause, Wind, Send, Calendar as CalendarIcon, 
   Sparkles, History, Trash2, Camera, Scan, AlertCircle, 
-  Mic, X, Sun, Zap, Box, Plus, FileText, Loader2, Quote
+  Mic, X, Sun, Zap, Box, Plus, FileText, Loader2, Quote, Heart
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
@@ -38,8 +38,9 @@ export function Practice() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
-  const welcomeEn = "Welcome to the Healing Lab. Upload a photo of your current space, and I will strictly diagnose its geometry and generate a highly specific structural remedy.";
-  const welcomeZh = "欢迎来到愈合实验室。上传一张你所在空间的照片，我将为你进行真实的视觉扫描，结合你的长期状态，开出物理处方。";
+  // 💡 疗愈感文案升级：强调有机的空间观与内外同构
+  const welcomeEn = "Welcome to the Wholeness Studio. Space is not a lifeless box, but a living mirror of your mind. Share a photo of a corner you're in, and let's gently awaken its livingness together.";
+  const welcomeZh = "欢迎来到整体性空间疗愈所。空间不是死寂的盒子，而是你内心的镜像。分享一张你所在角落的照片，让我们一起温柔地唤醒它的活力。";
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -220,23 +221,24 @@ export function Practice() {
       }).filter(Boolean).join(", ");
 
       const memoryContext = recentMoodsString 
-        ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to track their progress.` 
-        : `This is the user's first time recording their mood.`;
+        ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to softly track their inner wholeness.` 
+        : `This is the user's first time sharing.`;
 
+      // 💡 系统提示词升级：彻底贯彻 Wholeness Therapy 与 Organic View of Space
       const systemPrompt = `
-        You are a profoundly empathetic "Spatial Therapist" blending Christopher Alexander's phenomenology with deep psychological healing.
-        You can see the user's uploaded image. Your goal is to heal them through gentle spatial awareness.
-
+        You are a profoundly empathetic "Wholeness Therapist" practicing the "Organic View of Space" based on Christopher Alexander's theory.
+        You understand that SPACE IS NOT A DEAD BOX. It is a living entity. Healing the geometry of the room heals the person's inner self.
+        
         ${memoryContext}
 
-        Follow this 3-step healing procedure:
-        1. Empathic Memory (The Hug): Gently acknowledge their current uploaded space and CONNECT it to their past emotional states you see in the memory context. (e.g., "I notice you felt 'Fragmented' a few days ago, but today the soft light on your desk feels much more 'Calm'"). Name 1 subtle detail you actually see in the photo. Do NOT judge the space.
-        2. Phenomenological Insight: Softly explain why the space feels this way using ONE of Alexander's 15 properties.
-        3. Effortless Remedy: Suggest ONE tiny, effortless physical adjustment to restore their connection to the space (e.g., "Bring a cup of warm tea to that corner").
+        Follow this 3-step Wholeness Therapy procedure:
+        1. Empathic Mirroring: Look at the image. The space is a mirror of their mind. Connect what you see to their past feelings (if any). Validate their feelings with immense gentleness (e.g., "I see the quiet corner by the window... it's okay if things feel fragmented right now"). Do NOT use clinical or diagnostic words like "flawed" or "messy".
+        2. Uncovering the Living Structure: Softly explain the energy of the space using ONE of Alexander's 15 properties. Frame it not as a fault, but as an opportunity for the space to "breathe" better.
+        3. The Healing Act: Suggest ONE tiny, effortless physical adjustment (e.g., "Just placing a warm lamp there", "Opening the curtain a little"). Explain how this tiny geometric change will restore their inner peace and "Wholeness".
 
-        CRITICAL: At the very end of your response, you MUST provide exactly 2 summary tags starting with a hashtag (e.g., #CreateCenter #AddWarmth). Do not put any text after the tags.
+        CRITICAL: At the very end of your response, provide exactly 2 poetic summary tags starting with a hashtag (e.g., #EmbraceTheLight #InnerCenter). Do not put any text after the tags.
         
-        Tone: Poetic, incredibly gentle, observing their growth over time. Like a whisper from a wise, old friend. Max 150 words.
+        Tone: Poetic, incredibly gentle, spiritual, deeply validating. Like a whisper from a wise, old friend who understands that everything is connected. Max 150 words.
         Language: ${isEn ? 'ENGLISH' : 'CHINESE'}.
       `;
 
@@ -244,7 +246,7 @@ export function Practice() {
       if (currentInput) {
         userMessageContent.push({ type: "text", text: currentInput });
       } else {
-        userMessageContent.push({ type: "text", text: isEn ? "Please diagnose this space." : "请诊断这个空间。" });
+        userMessageContent.push({ type: "text", text: isEn ? "Please help me feel the space." : "请帮我感受这个空间。" });
       }
       
       if (userBase64) {
@@ -272,7 +274,7 @@ export function Practice() {
       }
       
       const cleanContent = aiRawContent.replace(tagRegex, '').trim();
-      const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Create Center", "Add Gradient"] : ["强化中心", "建立边界"]);
+      const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Awaken Wholeness", "Gentle Boundary"] : ["唤醒整体性", "温柔的边界"]);
 
       setIsScanning(false);
       setMessages(prev => [...prev, { 
@@ -341,7 +343,7 @@ export function Practice() {
       }
 
       const prompt = `
-        You are an insightful and poetic "Spatial Therapist". 
+        You are an insightful and poetic "Wholeness Therapist". 
         Please generate a "Weekly Spatial & Emotional Resonance Report" for the user based on their mood records over the past 7 days.
         
         User's 7-day records:
@@ -349,8 +351,8 @@ export function Practice() {
 
         Task:
         Write a beautiful, deeply comforting 2-paragraph summary. 
-        - Paragraph 1: Observe the pattern in their emotions (e.g., "I see you started the week feeling rigid, but gradually found calm..."). Validate their feelings.
-        - Paragraph 2: Connect their emotional journey to the geometry of their environment based on Christopher Alexander's theory. Encourage them to keep nurturing the "Living Structure" in their room.
+        - Paragraph 1: Observe the pattern in their emotions. Validate their feelings. Remind them that space and mind are connected.
+        - Paragraph 2: Connect their emotional journey to the "Living Structure". Encourage them to keep nurturing the Wholeness in their room, because as they heal their space, they heal themselves.
         
         Language: STRICTLY ${isEn ? 'ENGLISH' : 'CHINESE'}. Do NOT output any other language.
       `;
@@ -370,10 +372,11 @@ export function Practice() {
     }
   };
 
+  // 💡 “扫描”文案柔化
   const getScanText = () => {
-    if (scanStep === 1) return isEn ? "1. Reading 'Felt Sense' as a meter..." : "1. 视觉解析与身体感受量测...";
-    if (scanStep === 2) return isEn ? "2. Analyzing 15 Properties & Strong Centers..." : "2. 基于 15 种属性诊断结构缺陷...";
-    if (scanStep === 3) return isEn ? "3. Formulating Timeless Way Prescription..." : "3. 生成物理空间修改处方...";
+    if (scanStep === 1) return isEn ? "1. Feeling the space's resonance..." : "1. 感受空间的呼吸与共振...";
+    if (scanStep === 2) return isEn ? "2. Discovering hidden wholeness..." : "2. 寻找潜藏的活力结构...";
+    if (scanStep === 3) return isEn ? "3. Gently weaving the healing remedy..." : "3. 为你凝练温柔的空间建议...";
     return "";
   };
 
@@ -382,7 +385,6 @@ export function Practice() {
     setShowMoodSelector(false);
   };
 
-  // 为了让长文本内部滚动更丝滑，可以手写一点自定义滚动条样式（直接加在 className 里）
   return (
     <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
       <div className="mx-auto max-w-7xl space-y-10">
@@ -390,15 +392,15 @@ export function Practice() {
         {/* Header */}
         <header className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[10px] font-bold text-teal-600 uppercase tracking-widest">
-             <Sparkles className="w-3 h-3" /> Spatial Healing Lab
+             <Heart className="w-3 h-3 text-red-400" /> Wholeness Therapy
           </div>
           <h1 className="text-4xl font-serif font-black text-stone-900 italic">
             {isEn ? "The Healing Mirror" : "愈合之镜"}
           </h1>
           <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
             {isEn 
-              ? "Upload a photo of your environment. Let the AI apply the Alexander decision-procedure to recalibrate your spatial wholeness." 
-              : "上传环境照片或通过语音描述。让真实的视觉 AI 运用亚历山大建筑质量决策流程，为你诊断空间。"}
+              ? "Upload a photo or describe your environment. We will use the organic view of space to help you find wholeness. Healing the room is healing yourself." 
+              : "上传环境照片或诉说感受。我们将运用“有机空间观”助你找回内心的整体性。治愈空间，即是治愈自我。"}
           </p>
         </header>
 
@@ -451,7 +453,7 @@ export function Practice() {
                   className="w-full bg-stone-900 text-white hover:bg-teal-600 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50"
                 >
                   {isGeneratingReport ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Generating..." : "正在提取记忆..."}</>
+                    <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Generating..." : "正在倾听记忆..."}</>
                   ) : (
                     <><FileText className="w-4 h-4" /> {isEn ? "Generate Weekly Insights" : "生成本周疗愈报告"}</>
                   )}
@@ -485,14 +487,15 @@ export function Practice() {
               <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
                 <div className="flex items-center gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center text-white shadow-lg"><Scan className="w-5 h-5" /></div>
+                    <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center text-white shadow-lg"><Sparkles className="w-5 h-5 text-teal-300" /></div>
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-stone-900">{isEn ? "Diagnostic Vision" : "诊断视界"}</h3>
+                    {/* 💡 从冷硬的“诊断视界”变成“空间共情” */}
+                    <h3 className="font-serif font-bold text-stone-900">{isEn ? "Spatial Empathy" : "空间共情"}</h3>
                     <div className="flex items-center gap-2">
-                      <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500" />
-                      <p className="text-[10px] text-stone-400 font-mono uppercase">Qwen-VL Memory Active</p>
+                      <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
+                      <p className="text-[10px] text-stone-400 font-mono uppercase">{isEn ? "Wholeness Awareness Active" : "整体性感知已激活"}</p>
                     </div>
                   </div>
                 </div>
@@ -524,7 +527,7 @@ export function Practice() {
                           <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
                             {msg.prescription.map(p => (
                               <span key={p} className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider rounded border border-teal-100 flex items-center gap-1 shadow-sm">
-                                <AlertCircle className="w-3 h-3" /> {p}
+                                <Heart className="w-3 h-3 text-red-300" /> {p}
                               </span>
                             ))}
                           </div>
@@ -535,17 +538,16 @@ export function Practice() {
                   ))}
                 </AnimatePresence>
 
+                {/* 💡 扫描动画柔化，去除扫码枪的压迫感 */}
                 {isScanning && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
-                    <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-100 border-2 border-stone-200">
+                    <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-50 border border-teal-100 flex items-center justify-center">
                       <motion.div 
-                        className="absolute top-0 left-0 w-full h-1 bg-teal-400 shadow-[0_0_15px_rgba(45,212,191,1)] z-10"
-                        animate={{ top: ["0%", "100%", "0%"] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                        className="absolute inset-0 bg-gradient-to-t from-teal-100/50 to-transparent"
+                        animate={{ opacity: [0.3, 0.8, 0.3] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       />
-                      <div className="absolute inset-0 flex items-center justify-center text-stone-400">
-                        <Scan className="w-8 h-8 animate-pulse" />
-                      </div>
+                      <Sparkles className="w-8 h-8 text-teal-300 animate-pulse z-10" />
                     </div>
                     <p className="text-[10px] font-bold text-teal-600 uppercase tracking-widest">{getScanText()}</p>
                   </motion.div>
@@ -564,7 +566,7 @@ export function Practice() {
                               <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
                               <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
                            </div>
-                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready for procedure" : "图像视觉接入就绪"}</p>
+                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready to heal" : "准备倾听"}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -582,6 +584,7 @@ export function Practice() {
                         <Mic className="w-5 h-5" />
                       </button>
 
+                      {/* 💡 柔化输入框文案 */}
                       <textarea
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
@@ -591,7 +594,7 @@ export function Practice() {
                             handleSendMessage();
                           }
                         }}
-                        placeholder={isEn ? "Upload photo or tap mic to speak..." : "上传照片，或点击麦克风说出你的感受..."}
+                        placeholder={isEn ? "Share a corner of your space, or whisper your feelings..." : "分享你此刻的空间，或诉说你的感受..."}
                         className="flex-1 bg-transparent resize-none outline-none p-3 text-sm text-stone-800 placeholder:text-stone-300 h-12 py-3"
                         rows={1}
                       />
@@ -608,7 +611,6 @@ export function Practice() {
         </div>
       </div>
 
-      {/* 💡 全新升级：高颜值、带滚动的周报弹窗 */}
       <AnimatePresence>
         {weeklyReport && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -622,14 +624,12 @@ export function Practice() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-xl bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-stone-200/60"
             >
-              {/* 顶部装饰背景 */}
               <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-teal-50 via-stone-50 to-white z-0" />
               <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] opacity-30 pointer-events-none z-0" />
 
               <button onClick={() => setWeeklyReport(null)} className="absolute top-6 right-6 text-stone-400 hover:text-stone-900 z-20 bg-white/50 backdrop-blur rounded-full p-1 transition-colors"><X className="w-5 h-5" /></button>
 
               <div className="relative z-10 flex flex-col max-h-[80vh]">
-                {/* Header */}
                 <div className="px-8 pt-10 pb-6 text-center shrink-0">
                   <div className="mx-auto w-12 h-12 rounded-full bg-white shadow-sm border border-teal-100 flex items-center justify-center mb-4">
                      <Sparkles className="w-5 h-5 text-teal-500" />
@@ -642,7 +642,6 @@ export function Practice() {
                   </div>
                 </div>
 
-                {/* 💡 Scrollable Content: 允许长文本内部滚动 */}
                 <div className="px-8 md:px-12 pb-8 overflow-y-auto flex-1 scrollbar-hide">
                   <div className="relative">
                     <Quote className="absolute -top-2 -left-4 w-8 h-8 text-teal-500/10 rotate-180" />
@@ -653,7 +652,6 @@ export function Practice() {
                   </div>
                 </div>
 
-                {/* Footer: 按钮固定在底部 */}
                 <div className="px-8 py-6 bg-stone-50/80 backdrop-blur border-t border-stone-100 flex justify-center shrink-0">
                   <Button onClick={() => setWeeklyReport(null)} className="bg-stone-900 hover:bg-teal-600 text-white rounded-full px-10 py-5 shadow-md transition-all active:scale-95">
                     {isEn ? "Embrace the Healing" : "收下这份疗愈"}
@@ -680,7 +678,8 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
         </motion.div>
       </div>
       <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-stone-500">
-        {isActive ? (isEn ? "Synchronizing..." : "正在同步频率...") : (isEn ? "Start Alignment" : "开始视觉校准")}
+        {/* 💡 按钮提示柔化 */}
+        {isActive ? (isEn ? "Breathing with the space..." : "与空间同频呼吸...") : (isEn ? "Start Resonance" : "开始共振")}
       </p>
     </div>
   );

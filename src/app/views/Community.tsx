@@ -191,7 +191,7 @@ export default function Community() {
             <Sparkles className="w-3 h-3 text-amber-500" /> {isEn ? 'Global Observation Network' : '全球实证观测网络'}
           </div>
           <h1 className="text-5xl md:text-7xl font-serif font-black mb-6 tracking-tight text-stone-900 leading-[1.1]">
-            {isEn ? (<>Reclaiming the <br/><span className="font-serif italic font-light text-amber-700">Living Structure</span> of Cities</>) : (<>重构城市空间的 <br/><span className="font-serif italic font-light text-amber-700">生命力结构</span></>)}
+            {isEn ? (<>Reclaiming the <br/><span className="font-serif italic font-light text-amber-700">Living Structure</span> of Cities</>) : (<>重构城市空间的 <br/><span className="font-serif italic font-light text-amber-700">活力结构</span></>)}
           </h1>
           <button onClick={() => setIsCreateModalOpen(true)} className="bg-stone-900 text-white hover:bg-amber-600 px-8 py-3.5 rounded-full font-bold tracking-widest uppercase text-xs transition-all flex items-center gap-2 mx-auto shadow-lg active:scale-95 mt-8">
             <Plus className="w-4 h-4" /> {isEn ? 'Post Observation' : '发布观测记录'}

@@ -421,7 +421,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           roleEn="Architect & Design Theorist"
           roleZh="建筑师与设计理论家"
           descEn="Renowned for 'A Pattern Language' and 'The Nature of Order'. He identified the 15 fundamental properties of living structures, proposing that space itself has a degree of life derived from geometric coherence."
-          descZh="以《建筑模式语言》和《秩序的本质》闻名于世。他界定了活力结构的15个基本属性，提出空间本身具有一种源于几何连贯性的‘生命力’。"
+          descZh="以《建筑模式语言》和《秩序的本质》闻名于世。他界定了活力结构的15个基本属性，提出空间本身具有一种源于几何连贯性的‘活力’。"
           image="/images/A.png"
           align="left"
         />
@@ -463,7 +463,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
             titleEn="Analyze"
             titleZh="结构分析"
             descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)."
-            descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构生命力指标 (L = S × H)。"
+            descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。"
             icon={ScanEye}
             onClick={() => onNavigate("analyze")}
             color="teal"

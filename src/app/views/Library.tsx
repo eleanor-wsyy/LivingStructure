@@ -20,7 +20,7 @@ const resources = [
     year: 2002, 
     citations: 4520,
     abstractEn: "Introduces the concept of living structure and the 15 fundamental properties that characterize all living systems in nature and architecture.",
-    abstractZh: "引入了生命力结构的概念以及构成自然界和建筑中所有生命系统的 15 个基本几何属性。",
+    abstractZh: "引入了活力结构的概念以及构成自然界和建筑中所有生命系统的 15 个基本几何属性。",
     fileUrl: "/pdfs/book1.pdf" 
   },
   { 
@@ -32,7 +32,7 @@ const resources = [
     year: 2025, 
     citations: 0,
     abstractEn: "A comprehensive exploration of traditional Chinese architecture through the lens of living structure theory and AI generation, written by the LivableCityLAB team under the guidance of Prof. Bin Jiang.",
-    abstractZh: "由香港科技大学（广州）宜居城市实验室团队编撰，在江斌教授的指导下，融合生命力结构理论与AI生成技术，探索并量化中国传统建筑之美。",
+    abstractZh: "由香港科技大学（广州）宜居城市实验室团队编撰，在江斌教授的指导下，融合活力结构理论与AI生成技术，探索并量化中国传统建筑之美。",
     fileUrl: "/pdfs/LivingStructure.pdf"
 
   },
@@ -46,7 +46,7 @@ const resources = [
     duration: "6m 47s",
     citations: 0,
     abstractEn: "An engaging video podcast explaining the core concepts of Living Structure, GeoAnalytics, and Alexander's 15 Properties.",
-    abstractZh: "一段生动的播客视频，深入浅出地解释了生命力结构、地理分析以及亚历山大 15 种几何属性的核心概念。",
+    abstractZh: "一段生动的播客视频，深入浅出地解释了活力结构、地理分析以及亚历山大 15 种几何属性的核心概念。",
     fileUrl: "/videos/livingstructure.mp4" // 💡 换成你视频的名字
   },
   { 
@@ -58,7 +58,7 @@ const resources = [
     year: 2013, 
     citations: 1205,
     abstractEn: "Proposes a novel classification scheme for data with a heavy-tailed distribution, which is the mathematical foundation for measuring living structure.",
-    abstractZh: "提出了一种针对重尾分布数据的新型分类方案，这为量化测量“生命力结构”提供了坚实的数学和拓扑学基础。",
+    abstractZh: "提出了一种针对重尾分布数据的新型分类方案，这为量化测量“活力结构”提供了坚实的数学和拓扑学基础。",
     fileUrl: "https://arxiv.org/ftp/arxiv/papers/1209/1209.2801.pdf" 
   },
  
@@ -71,7 +71,7 @@ const resources = [
     year: "2026", 
     citations: 0,
     abstractEn: "A step-by-step phenomenological procedure using feeling as a meter to evaluate and generate living structures.",
-    abstractZh: "一份指导如何将身体感受作为量尺，结合 15 种属性与强中心来评估和生成生命力结构的详细步骤指南。",
+    abstractZh: "一份指导如何将身体感受作为量尺，结合 15 种属性与强中心来评估和生成活力结构的详细步骤指南。",
     fileUrl: "/pdfs/Decision-Procedure for Quality in the Built Environment.pdf" 
   }
   

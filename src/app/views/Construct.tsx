@@ -46,7 +46,7 @@ export function Construct() {
           <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-2xl leading-snug">
             {isEn 
               ? "Observe the discrete evolution of a classical structure. The livingness (L) is calculated by multiplying the cumulative number of substructures (ΣS) with the hierarchy depth (H)." 
-              : "观察建筑结构的离散演化过程。随着层级 (H) 的加深，所有层级的子结构数量不断累加构成总数 (ΣS)，两者共同决定了整体的生命力 (L)。"}
+              : "观察建筑结构的离散演化过程。随着层级 (H) 的加深，所有层级的子结构数量不断累加构成总数 (ΣS)，两者共同决定了整体的活力 (L)。"}
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export function Construct() {
             <Card className="bg-white p-0 h-[420px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden w-full">
               <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
                 <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                {isEn ? "Living Structure" : "生命力结构"}
+                {isEn ? "Living Structure" : "活力结构"}
               </div>
               
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
@@ -114,7 +114,7 @@ export function Construct() {
             <Card className="bg-stone-100 border-none p-5 md:p-8 text-center relative overflow-hidden shadow-inner">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
               <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 md:mb-6">
-                {isEn ? "Livingness Formula" : "生命力计算公式"}
+                {isEn ? "Livingness Formula" : "活力计算公式"}
               </div>
               
               <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4">
@@ -188,7 +188,7 @@ export function Construct() {
                   <p className="text-xs text-stone-600 leading-relaxed">
                     {isEn 
                       ? "Slide to progress through the 7 discrete stages of structural evolution. The cumulative sub-structures (ΣS) dictate the overall vitality." 
-                      : "拖动滑块查看 7 个离散的结构演化阶段。每一层级产生的新结构将不断累加形成 ΣS，共同决定最终的生命力指数 (L)。"}
+                      : "拖动滑块查看 7 个离散的结构演化阶段。每一层级产生的新结构将不断累加形成 ΣS，共同决定最终的活力指数 (L)。"}
                   </p>
                 </div>
               </div>
