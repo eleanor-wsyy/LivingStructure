@@ -3,13 +3,14 @@ import { Button, Card, cn } from "@/app/components/ui";
 import { 
   Play, Pause, Wind, Send, Calendar as CalendarIcon, 
   Sparkles, History, Trash2, Camera, Scan, AlertCircle, 
-  Mic, X, Sun, Zap, Box, Plus 
+  Mic, X, Sun, Zap, Box, Plus, FileText, Loader2, Quote
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import OpenAI from "openai";
 import { createClient } from '@supabase/supabase-js';
 
+// 初始化 Supabase 客户端
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -38,7 +39,7 @@ export function Practice() {
   const isEn = language === 'en';
 
   const welcomeEn = "Welcome to the Healing Lab. Upload a photo of your current space, and I will strictly diagnose its geometry and generate a highly specific structural remedy.";
-  const welcomeZh = "欢迎来到疗愈实验室。上传一张你所在空间的照片，我将为你进行真实的视觉扫描，指出空间中具体的活力缺陷，并开出物理处方。";
+  const welcomeZh = "欢迎来到愈合实验室。上传一张你所在空间的照片，我将为你进行真实的视觉扫描，结合你的长期状态，开出物理处方。";
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -52,6 +53,9 @@ export function Practice() {
     return {};
   });
   const [showMoodSelector, setShowMoodSelector] = useState(false);
+
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [weeklyReport, setWeeklyReport] = useState<string | null>(null);
 
   const [inputText, setInputText] = useState("");
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -158,6 +162,24 @@ export function Practice() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const generateLast7Days = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+      const dayName = isEn 
+        ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()]
+        : ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+      days.push({ dateKey, dayName, isToday: i === 0 });
+    }
+    return days;
+  };
+
+  const last7Days = generateLast7Days();
+  const todayKey = last7Days[last7Days.length - 1].dateKey;
+
   const handleSendMessage = async () => {
     if (!inputText.trim() && !previewImage) return;
 
@@ -191,23 +213,33 @@ export function Practice() {
         dangerouslyAllowBrowser: true 
       });
 
-      // 🧠 终极疗愈视觉 Prompt：融合多模态视觉与深度共情
+      const recentMoodsString = last7Days.map(day => {
+        const moodId = moodHistory[day.dateKey];
+        const mood = MOOD_OPTIONS.find(m => m.id === moodId);
+        return mood ? `${day.dayName}: ${isEn ? mood.labelEn : mood.labelZh}` : null;
+      }).filter(Boolean).join(", ");
+
+      const memoryContext = recentMoodsString 
+        ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to track their progress.` 
+        : `This is the user's first time recording their mood.`;
+
       const systemPrompt = `
         You are a profoundly empathetic "Spatial Therapist" blending Christopher Alexander's phenomenology with deep psychological healing.
-        You can see the user's uploaded image. Your goal is to heal them through gentle spatial awareness, not to coldly critique their room.
+        You can see the user's uploaded image. Your goal is to heal them through gentle spatial awareness.
+
+        ${memoryContext}
 
         Follow this 3-step healing procedure:
-        1. Empathic Mirroring (The Hug): Gently acknowledge their stated emotion. Look at the image and name 1 subtle detail you actually see (e.g., "the soft light falling on your desk", "the quiet blank wall beside you", "the scattered objects") as a poetic reflection of their inner state. Do NOT judge the space as "messy", "bad", or "flawed". Everything is accepted.
-        2. Phenomenological Insight: Softly explain why the space feels this way using ONE of Alexander's 15 properties. (e.g., "The sharp edges here lack 'Roughness', which is why your body feels tense", "Without a 'Strong Center', it's natural that your focus drifts").
-        3. Effortless Remedy: Suggest ONE tiny, effortless physical adjustment to restore their connection to the space (e.g., "Bring a cup of warm tea to that corner to create a small center", "Turn the chair slightly to face the window").
+        1. Empathic Memory (The Hug): Gently acknowledge their current uploaded space and CONNECT it to their past emotional states you see in the memory context. (e.g., "I notice you felt 'Fragmented' a few days ago, but today the soft light on your desk feels much more 'Calm'"). Name 1 subtle detail you actually see in the photo. Do NOT judge the space.
+        2. Phenomenological Insight: Softly explain why the space feels this way using ONE of Alexander's 15 properties.
+        3. Effortless Remedy: Suggest ONE tiny, effortless physical adjustment to restore their connection to the space (e.g., "Bring a cup of warm tea to that corner").
 
         CRITICAL: At the very end of your response, you MUST provide exactly 2 summary tags starting with a hashtag (e.g., #CreateCenter #AddWarmth). Do not put any text after the tags.
         
-        Tone: Poetic, incredibly gentle, forgiving, and deeply healing. Like a whisper from a wise, old friend. Max 150 words.
+        Tone: Poetic, incredibly gentle, observing their growth over time. Like a whisper from a wise, old friend. Max 150 words.
         Language: ${isEn ? 'ENGLISH' : 'CHINESE'}.
       `;
 
-      // 💡 构建真正的多模态视觉请求体
       const userMessageContent: any[] = [];
       if (currentInput) {
         userMessageContent.push({ type: "text", text: currentInput });
@@ -222,7 +254,6 @@ export function Practice() {
         });
       }
 
-      // 注意：这里改用了 qwen-vl-max 视觉大模型！
       const response = await openai.chat.completions.create({
         model: "qwen-vl-max", 
         messages: [
@@ -233,15 +264,13 @@ export function Practice() {
 
       const aiRawContent = response.choices[0].message.content || "";
       
-      // 🎯 动态正则提取：把 AI 回复末尾的 #标签 提取出来
       const tagRegex = /#([^\s#]+)/g;
       const extractedTags = [];
       let match;
       while ((match = tagRegex.exec(aiRawContent)) !== null) {
-        extractedTags.push(match[1]); // 获取 # 后面的词
+        extractedTags.push(match[1]); 
       }
       
-      // 清除正文里的标签文本，保持界面干净
       const cleanContent = aiRawContent.replace(tagRegex, '').trim();
       const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Create Center", "Add Gradient"] : ["强化中心", "建立边界"]);
 
@@ -254,7 +283,6 @@ export function Practice() {
         prescription: finalPrescription
       }]);
 
-      // Supabase 上传逻辑...
       try {
         let publicImageUrl = null;
         if (userBase64) {
@@ -267,7 +295,6 @@ export function Practice() {
             publicImageUrl = data.publicUrl;
           }
         }
-        const todayKey = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;
         const currentMood = moodHistory[todayKey] || 'Not Selected';
         await supabase.from('healing_records').insert([{
           user_mood: currentMood,
@@ -288,6 +315,61 @@ export function Practice() {
     }
   };
 
+  const generateWeeklyReport = async () => {
+    setIsGeneratingReport(true);
+    setWeeklyReport(null);
+
+    try {
+      const openai = new OpenAI({
+        apiKey: import.meta.env.VITE_ALIYUN_API_KEY,
+        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        dangerouslyAllowBrowser: true 
+      });
+
+      const recentMoodsString = last7Days.map(day => {
+        const moodId = moodHistory[day.dateKey];
+        const mood = MOOD_OPTIONS.find(m => m.id === moodId);
+        return mood ? `${day.dateKey} (${day.dayName}): ${isEn ? mood.labelEn : mood.labelZh}` : null;
+      }).filter(Boolean).join("\n");
+
+      if (!recentMoodsString) {
+        setWeeklyReport(isEn 
+          ? "You haven't recorded enough moods this week. Try recording how your space feels today!" 
+          : "你这周还没有记录过空间心境哦。去点亮今天的状态，再来生成报告吧！");
+        setIsGeneratingReport(false);
+        return;
+      }
+
+      const prompt = `
+        You are an insightful and poetic "Spatial Therapist". 
+        Please generate a "Weekly Spatial & Emotional Resonance Report" for the user based on their mood records over the past 7 days.
+        
+        User's 7-day records:
+        ${recentMoodsString}
+
+        Task:
+        Write a beautiful, deeply comforting 2-paragraph summary. 
+        - Paragraph 1: Observe the pattern in their emotions (e.g., "I see you started the week feeling rigid, but gradually found calm..."). Validate their feelings.
+        - Paragraph 2: Connect their emotional journey to the geometry of their environment based on Christopher Alexander's theory. Encourage them to keep nurturing the "Living Structure" in their room.
+        
+        Language: STRICTLY ${isEn ? 'ENGLISH' : 'CHINESE'}. Do NOT output any other language.
+      `;
+
+      const response = await openai.chat.completions.create({
+        model: "qwen-max", 
+        messages: [{ role: "user", content: prompt }]
+      });
+
+      setWeeklyReport(response.choices[0].message.content || "");
+
+    } catch (error) {
+      console.error(error);
+      setWeeklyReport(isEn ? "Failed to generate report. Please try again later." : "生成报告失败，请稍后再试。");
+    } finally {
+      setIsGeneratingReport(false);
+    }
+  };
+
   const getScanText = () => {
     if (scanStep === 1) return isEn ? "1. Reading 'Felt Sense' as a meter..." : "1. 视觉解析与身体感受量测...";
     if (scanStep === 2) return isEn ? "2. Analyzing 15 Properties & Strong Centers..." : "2. 基于 15 种属性诊断结构缺陷...";
@@ -295,29 +377,12 @@ export function Practice() {
     return "";
   };
 
-  const generateLast7Days = () => {
-    const days = [];
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      const dayName = isEn 
-        ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()]
-        : ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
-      days.push({ dateKey, dayName, isToday: i === 0 });
-    }
-    return days;
-  };
-
-  const last7Days = generateLast7Days();
-  const todayKey = last7Days[last7Days.length - 1].dateKey;
-
   const handleMoodSelect = (moodId: string) => {
     setMoodHistory(prev => ({ ...prev, [todayKey]: moodId }));
     setShowMoodSelector(false);
   };
 
+  // 为了让长文本内部滚动更丝滑，可以手写一点自定义滚动条样式（直接加在 className 里）
   return (
     <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
       <div className="mx-auto max-w-7xl space-y-10">
@@ -328,7 +393,7 @@ export function Practice() {
              <Sparkles className="w-3 h-3" /> Spatial Healing Lab
           </div>
           <h1 className="text-4xl font-serif font-black text-stone-900 italic">
-            {isEn ? "The Healing Mirror" : "疗愈之镜"}
+            {isEn ? "The Healing Mirror" : "愈合之镜"}
           </h1>
           <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
             {isEn 
@@ -356,7 +421,7 @@ export function Practice() {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center gap-2 relative z-10">
+              <div className="flex justify-between items-center gap-2 relative z-10 mb-8">
                 {last7Days.map((day) => {
                   const moodId = moodHistory[day.dateKey];
                   const mood = MOOD_OPTIONS.find(m => m.id === moodId);
@@ -379,11 +444,25 @@ export function Practice() {
                 })}
               </div>
 
+              <div className="border-t border-stone-100 pt-6">
+                <button
+                  onClick={generateWeeklyReport}
+                  disabled={isGeneratingReport}
+                  className="w-full bg-stone-900 text-white hover:bg-teal-600 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50"
+                >
+                  {isGeneratingReport ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Generating..." : "正在提取记忆..."}</>
+                  ) : (
+                    <><FileText className="w-4 h-4" /> {isEn ? "Generate Weekly Insights" : "生成本周疗愈报告"}</>
+                  )}
+                </button>
+              </div>
+
               <AnimatePresence>
                 {showMoodSelector && (
                   <motion.div 
                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
+                    className="absolute top-20 left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
                   >
                     <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">{isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}</p>
                     <div className="grid grid-cols-2 gap-2">
@@ -413,7 +492,7 @@ export function Practice() {
                     <h3 className="font-serif font-bold text-stone-900">{isEn ? "Diagnostic Vision" : "诊断视界"}</h3>
                     <div className="flex items-center gap-2">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500" />
-                      <p className="text-[10px] text-stone-400 font-mono uppercase">Qwen-VL Multimodal Active</p>
+                      <p className="text-[10px] text-stone-400 font-mono uppercase">Qwen-VL Memory Active</p>
                     </div>
                   </div>
                 </div>
@@ -528,6 +607,64 @@ export function Practice() {
 
         </div>
       </div>
+
+      {/* 💡 全新升级：高颜值、带滚动的周报弹窗 */}
+      <AnimatePresence>
+        {weeklyReport && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+              className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" 
+              onClick={() => setWeeklyReport(null)}
+            />
+            
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-xl bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-stone-200/60"
+            >
+              {/* 顶部装饰背景 */}
+              <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-teal-50 via-stone-50 to-white z-0" />
+              <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] opacity-30 pointer-events-none z-0" />
+
+              <button onClick={() => setWeeklyReport(null)} className="absolute top-6 right-6 text-stone-400 hover:text-stone-900 z-20 bg-white/50 backdrop-blur rounded-full p-1 transition-colors"><X className="w-5 h-5" /></button>
+
+              <div className="relative z-10 flex flex-col max-h-[80vh]">
+                {/* Header */}
+                <div className="px-8 pt-10 pb-6 text-center shrink-0">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-white shadow-sm border border-teal-100 flex items-center justify-center mb-4">
+                     <Sparkles className="w-5 h-5 text-teal-500" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-serif font-black text-stone-800 tracking-wide">
+                    {isEn ? "Weekly Resonance" : "空间与心灵共振周报"}
+                  </h2>
+                  <div className="flex items-center justify-center gap-2 mt-3 text-[10px] font-mono text-stone-400 uppercase tracking-widest">
+                    <CalendarIcon className="w-3 h-3" /> {new Date().toLocaleDateString()}
+                  </div>
+                </div>
+
+                {/* 💡 Scrollable Content: 允许长文本内部滚动 */}
+                <div className="px-8 md:px-12 pb-8 overflow-y-auto flex-1 scrollbar-hide">
+                  <div className="relative">
+                    <Quote className="absolute -top-2 -left-4 w-8 h-8 text-teal-500/10 rotate-180" />
+                    <div className="text-stone-600 leading-loose font-serif whitespace-pre-line text-sm md:text-base text-justify relative z-10">
+                      {weeklyReport}
+                    </div>
+                    <Quote className="absolute -bottom-4 -right-4 w-8 h-8 text-teal-500/10" />
+                  </div>
+                </div>
+
+                {/* Footer: 按钮固定在底部 */}
+                <div className="px-8 py-6 bg-stone-50/80 backdrop-blur border-t border-stone-100 flex justify-center shrink-0">
+                  <Button onClick={() => setWeeklyReport(null)} className="bg-stone-900 hover:bg-teal-600 text-white rounded-full px-10 py-5 shadow-md transition-all active:scale-95">
+                    {isEn ? "Embrace the Healing" : "收下这份疗愈"}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
