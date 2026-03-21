@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import OpenAI from "openai";
 import { createClient } from '@supabase/supabase-js';
+import { createPortal } from 'react-dom'; 
 
 // 初始化 Supabase 客户端
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -38,7 +39,6 @@ export function Practice() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
-  // 💡 疗愈感文案升级：强调有机的空间观与内外同构
   const welcomeEn = "Welcome to the Wholeness Studio. Space is not a lifeless box, but a living mirror of your mind. Share a photo of a corner you're in, and let's gently awaken its livingness together.";
   const welcomeZh = "欢迎来到整体性空间疗愈所。空间不是死寂的盒子，而是你内心的镜像。分享一张你所在角落的照片，让我们一起温柔地唤醒它的活力。";
 
@@ -224,7 +224,6 @@ export function Practice() {
         ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to softly track their inner wholeness.` 
         : `This is the user's first time sharing.`;
 
-      // 💡 系统提示词升级：彻底贯彻 Wholeness Therapy 与 Organic View of Space
       const systemPrompt = `
         You are a profoundly empathetic "Wholeness Therapist" practicing the "Organic View of Space" based on Christopher Alexander's theory.
         You understand that SPACE IS NOT A DEAD BOX. It is a living entity. Healing the geometry of the room heals the person's inner self.
@@ -372,7 +371,6 @@ export function Practice() {
     }
   };
 
-  // 💡 “扫描”文案柔化
   const getScanText = () => {
     if (scanStep === 1) return isEn ? "1. Feeling the space's resonance..." : "1. 感受空间的呼吸与共振...";
     if (scanStep === 2) return isEn ? "2. Discovering hidden wholeness..." : "2. 寻找潜藏的活力结构...";
@@ -389,7 +387,6 @@ export function Practice() {
     <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
       <div className="mx-auto max-w-7xl space-y-10">
         
-        {/* Header */}
         <header className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[10px] font-bold text-teal-600 uppercase tracking-widest">
              <Heart className="w-3 h-3 text-red-400" /> Wholeness Therapy
@@ -407,11 +404,8 @@ export function Practice() {
         <div className="grid gap-8 lg:grid-cols-12 items-start">
           
           <div className="lg:col-span-4 space-y-6">
-            <Card className="p-8 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center">
-              <div className="mb-8 flex items-center gap-2 text-stone-400">
-                <Wind className="h-4 w-4" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{isEn ? "Visual Resonance" : "视觉共振"}</span>
-              </div>
+            
+            <Card className="p-0 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center overflow-hidden h-72 group cursor-pointer hover:border-teal-300 transition-all duration-500">
               <BreathingCircle isEn={isEn} />
             </Card>
 
@@ -491,7 +485,6 @@ export function Practice() {
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
-                    {/* 💡 从冷硬的“诊断视界”变成“空间共情” */}
                     <h3 className="font-serif font-bold text-stone-900">{isEn ? "Spatial Empathy" : "空间共情"}</h3>
                     <div className="flex items-center gap-2">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
@@ -538,7 +531,6 @@ export function Practice() {
                   ))}
                 </AnimatePresence>
 
-                {/* 💡 扫描动画柔化，去除扫码枪的压迫感 */}
                 {isScanning && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
                     <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-50 border border-teal-100 flex items-center justify-center">
@@ -584,7 +576,6 @@ export function Practice() {
                         <Mic className="w-5 h-5" />
                       </button>
 
-                      {/* 💡 柔化输入框文案 */}
                       <textarea
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
@@ -613,7 +604,10 @@ export function Practice() {
 
       <AnimatePresence>
         {weeklyReport && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div 
+            key="weekly-report-modal"
+            className="fixed inset-0 z-[5000] flex items-center justify-center p-4"
+          >
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
               className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" 
@@ -659,7 +653,7 @@ export function Practice() {
                 </div>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -667,20 +661,263 @@ export function Practice() {
   );
 }
 
-function BreathingCircle({ isEn }: { isEn: boolean }) {
-  const [isActive, setIsActive] = useState(false);
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative h-44 w-44 flex items-center justify-center">
-        <motion.div className="absolute inset-0 rounded-full border border-teal-100 bg-teal-50/30" animate={isActive ? { scale: [1, 1.3, 1], opacity: [0.6, 0.2, 0.6] } : {}} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }} />
-        <motion.div className="w-24 h-24 rounded-full bg-stone-900 flex items-center justify-center text-white cursor-pointer shadow-2xl z-10" onClick={() => setIsActive(!isActive)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-          {isActive ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
-        </motion.div>
+// ============================================================================
+// 🧘‍♀️ 全新模块：空间正念冥想 (Spatial Zen Meditation) - 终极沉浸版
+// ============================================================================
+function ZenMeditationMode({ isEn, onClose }: { isEn: boolean, onClose: () => void }) {
+  const [step, setStep] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // 💡 SSR 安全检查：确保仅仅在客户端挂载 Portal
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const meditationSteps = isEn ? [
+    "Relax your gaze.\nTake a deep, slow breath.",
+    "Let go of the labels.\nThis is not a 'room'...",
+    "It is a living space,\nholding you right now.",
+    "Now, squint gently.\nLet the details blur.",
+    "Let sharp edges melt.\nSee the underlying wholeness.",
+    "Feel the space.\nWhere does light gather?",
+    "Find the quietest,\nstrongest center here.",
+    "Breathe in wholeness.\nBreathe out fragmentation."
+  ] : [
+    "放松你的视线。\n跟着光晕，深吸一口气。",
+    "放下脑海中的标签。\n这里不是一间物理的屋子...",
+    "这是一个有生命的容器，\n在此刻，温柔地托举着你。",
+    "现在，微微半眯着双眼。\n让表面的细节开始模糊。",
+    "让生硬的边界融化。\n去感受底层的整体性。",
+    "用身体去感受。\n光线在哪里汇聚？",
+    "在你眼前，找到那个\n最安静的强中心。",
+    "吸入整体的宁静；\n呼出内心的割裂。"
+  ];
+
+  // 🎵 播放预先准备好的 MP3 音乐
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    audioRef.current = new Audio('/meditation-audio.mp3'); 
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0; // 初始音量设为0，准备淡入
+
+    // 音乐淡入效果
+    const fadeAudioIn = () => {
+      if (audioRef.current && audioRef.current.volume < 0.6) { // 最高音量 0.6
+        audioRef.current.volume += 0.05;
+        setTimeout(fadeAudioIn, 200);
+      }
+    };
+
+    // 尝试播放 (需要用户有点击交互才能成功)
+    audioRef.current.play().then(() => {
+        fadeAudioIn();
+    }).catch(error => {
+        console.log("浏览器限制了自动播放，请确保用户有交互行为。", error);
+    });
+
+    return () => {
+      // 组件卸载时，音乐淡出
+      if (audioRef.current) {
+        const fadeAudioOut = () => {
+             if (audioRef.current && audioRef.current.volume > 0.05) {
+                 audioRef.current.volume -= 0.05;
+                 setTimeout(fadeAudioOut, 100);
+             } else if(audioRef.current) {
+                 audioRef.current.pause();
+                 audioRef.current = null;
+             }
+        }
+        fadeAudioOut();
+      }
+    };
+  }, []);
+
+  // 文字步骤控制
+  useEffect(() => {
+    if (step < meditationSteps.length) {
+      const timer = setTimeout(() => setStep(s => s + 1), 6000); 
+      return () => clearTimeout(timer);
+    }
+  }, [step, meditationSteps.length]);
+
+  // 如果是在服务端渲染（Next.js SSR）或者还没挂载，返回 null 防爆
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
+    <motion.div 
+      key="meditation-portal-overlay"
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      transition={{ duration: 1.5 }}
+      // 🎨 治愈系背景色：从深邃的藏蓝渐变到暗青色
+      className="fixed inset-0 z-[9999] bg-gradient-to-b from-slate-900 via-[#0f3531] to-slate-900 flex flex-col items-center justify-between overflow-hidden"
+    >
+      {/* ✨ 唯美粒子与光晕背景 (视觉层，不影响排版) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* 中央呼吸光晕 */}
+          <motion.div 
+            animate={{ 
+                scale: [1, 1.2, 1], 
+                opacity: [0.15, 0.35, 0.15],
+            }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] max-w-[800px] max-h-[800px] rounded-full bg-teal-600/30 blur-[100px]"
+          />
+          {/* 副光晕 */}
+          <motion.div 
+            animate={{ 
+                scale: [1.2, 1, 1.2], 
+                opacity: [0.1, 0.2, 0.1] 
+            }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] max-w-[600px] max-h-[600px] rounded-full bg-amber-500/10 blur-[80px]"
+          />
+          
+          {/* 粒子效果：15个随机上升的星光点 */}
+          {[...Array(15)].map((_, i) => (
+             <motion.div
+                key={`particle-${i}`}
+                className="absolute w-1.5 h-1.5 bg-teal-100/50 rounded-full blur-[1px]"
+                initial={{
+                    x: `${Math.random() * 100}vw`,
+                    y: `${100 + Math.random() * 20}vh`, 
+                    opacity: 0
+                }}
+                animate={{
+                    y: [`${100 + Math.random() * 20}vh`, `-20vh`], 
+                    x: `${Math.random() * 100}vw`,
+                    opacity: [0, 0.7, 0]
+                }}
+                transition={{
+                    duration: Math.random() * 15 + 15,
+                    repeat: Infinity,
+                    ease: "linear",
+                    delay: Math.random() * 10
+                }}
+             />
+          ))}
       </div>
-      <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-stone-500">
-        {/* 💡 按钮提示柔化 */}
-        {isActive ? (isEn ? "Breathing with the space..." : "与空间同频呼吸...") : (isEn ? "Start Resonance" : "开始共振")}
-      </p>
-    </div>
+
+      {/* 顶部区域：专门放关闭按钮，避免和文字重叠 */}
+      <div className="w-full flex justify-end p-6 z-20 h-24 shrink-0">
+        <button onClick={onClose} className="text-teal-100/50 hover:text-white transition-colors p-3 bg-white/5 rounded-full backdrop-blur-md h-fit">
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* 中间核心文字区域：占据最大空间，文字换行处理，防止过大 */}
+      <div className="flex-1 flex flex-col justify-center items-center w-full px-6 md:px-12 z-10 max-w-4xl mx-auto">
+        <AnimatePresence mode="wait">
+          {step < meditationSteps.length ? (
+            <motion.h2
+              key={`text-${step}`}
+              initial={{ opacity: 0, y: 15, filter: "blur(8px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -15, filter: "blur(8px)" }}
+              transition={{ duration: 2.5, ease: "easeOut" }}
+              className="text-3xl md:text-5xl lg:text-6xl font-serif font-light text-[#f8fafc] tracking-wide leading-relaxed md:leading-normal text-center drop-shadow-2xl whitespace-pre-line"
+            >
+              {meditationSteps[step]}
+            </motion.h2>
+          ) : (
+            <motion.div
+              key="meditation-complete"
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              transition={{ duration: 2 }}
+              className="flex flex-col items-center gap-10"
+            >
+              <p className="text-2xl md:text-3xl font-serif text-teal-200/90 italic tracking-widest text-center px-4">
+                {isEn ? "You are now in resonance." : "此刻，你已与空间同频共振。"}
+              </p>
+              <Button 
+                onClick={onClose} 
+                variant="outline" 
+                className="border-teal-500/40 text-teal-50 hover:bg-teal-500/30 hover:border-teal-400 rounded-full px-10 py-6 text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase transition-all duration-500 backdrop-blur-lg"
+              >
+                {isEn ? "Return to Healing Lab" : "带着觉知返回"}
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* 底部呼吸锚点区域：固定在最下方，不再和主文字打架 */}
+      <div className="h-32 w-full flex flex-col items-center justify-end pb-12 z-10 shrink-0">
+         <AnimatePresence>
+            {step < meditationSteps.length && (
+                <motion.div 
+                    key="breathing-anchor"
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="flex flex-col items-center gap-5"
+                >
+                    <motion.div 
+                      animate={{ scale: [1, 2.5, 1], opacity: [0.4, 1, 0.4] }} 
+                      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-2.5 h-2.5 rounded-full bg-teal-400 shadow-[0_0_20px_rgba(45,212,191,0.8)]"
+                    />
+                    <motion.span 
+                        animate={{ opacity: [0.3, 0.8, 0.3] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                        className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-teal-100/60 font-medium"
+                    >
+                      {isEn ? "Breathe Slowly" : "随光影深呼吸"}
+                    </motion.span>
+                </motion.div>
+            )}
+         </AnimatePresence>
+      </div>
+    </motion.div>,
+    document.body // 挂载到 body
+  );
+}
+
+// 💡 替换为整张卡片可点击的交互方式
+function BreathingCircle({ isEn }: { isEn: boolean }) {
+  const [isMeditating, setIsMeditating] = useState(false);
+
+  return (
+    <>
+      <div className="flex w-full h-full items-center justify-center p-8">
+        {/* 💡 整个区域现在都是可点击的 (cursor-pointer 和 hover 效果) */}
+        <div 
+          className="flex flex-col items-center justify-center w-full h-full cursor-pointer group rounded-2xl transition-colors duration-500 hover:bg-stone-50/50"
+          onClick={() => setIsMeditating(true)}
+        >
+          <div className="mb-6 flex items-center gap-2 text-stone-400 group-hover:text-teal-600 transition-colors">
+            <Wind className="h-4 w-4" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{isEn ? "Visual Resonance" : "视觉共振"}</span>
+          </div>
+
+          <div className="relative h-32 w-32 md:h-44 md:w-44 flex items-center justify-center">
+            {/* 外圈光晕，在 hover 时会稍微放大 */}
+            <motion.div 
+              className="absolute inset-0 rounded-full border border-teal-100 bg-teal-50/30 transition-transform duration-500 group-hover:scale-110" 
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.3, 0.6] }} 
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
+            />
+            {/* 内圈实心按钮 */}
+            <motion.div 
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-stone-900 flex flex-col items-center justify-center text-white shadow-xl z-10 transition-colors duration-500 group-hover:bg-teal-600" 
+              whileTap={{ scale: 0.95 }}
+            >
+              <Wind className="w-5 h-5 md:w-6 md:h-6 mb-1 opacity-80" />
+              <span className="text-[8px] md:text-[9px] uppercase tracking-widest font-bold opacity-80">{isEn ? "Zen" : "入定"}</span>
+            </motion.div>
+          </div>
+          <p className="mt-6 md:mt-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-stone-400 text-center leading-relaxed transition-colors duration-500 group-hover:text-teal-600">
+            {isEn ? "Click to Enter\nSpatial Mindfulness" : "点击卡片·进入空间正念"}
+          </p>
+        </div>
+      </div>
+
+      {/* 这里的 AnimatePresence 负责管理模态框的出现和消失 */}
+      <AnimatePresence>
+        {isMeditating && <ZenMeditationMode isEn={isEn} onClose={() => setIsMeditating(false)} />}
+      </AnimatePresence>
+    </>
   );
 }
