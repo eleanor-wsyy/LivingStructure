@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Badge } from "@/app/components/ui";
 import { 
   ArrowRight, BookOpen, ScanEye, PenTool, 
-  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User 
+  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User, X, Microscope
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion"; // 注意这里我改回了标准的 framer-motion 引入
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { cn } from "@/app/components/ui";
@@ -20,7 +20,7 @@ const QuickStartCard = ({
 }: { 
   titleEn: string, titleZh: string, descEn: string, descZh: string, icon: any, onClick: () => void, color?: "stone" | "teal" | "amber" 
 }) => {
-  const { language } = useLanguage(); // 加入语言开关
+  const { language } = useLanguage(); 
 
   return (
     <motion.div 
@@ -51,7 +51,6 @@ const QuickStartCard = ({
           {language === 'en' ? 'Start Now' : '立即开始'} <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
         </div>
 
-        {/* Decorative Background Icon */}
         <Icon className="absolute -bottom-4 -right-4 w-32 h-32 text-stone-50 opacity-50 group-hover:scale-110 transition-transform duration-500 pointer-events-none" />
       </button>
     </motion.div>
@@ -59,7 +58,7 @@ const QuickStartCard = ({
 };
 
 const ProgressIndicator = () => {
-  const { language } = useLanguage(); // 加入语言开关
+  const { language } = useLanguage(); 
   const learned = 3;
   const total = 15;
   const percentage = (learned / total) * 100;
@@ -104,7 +103,6 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
   const [randomId, setRandomId] = useState<number>(1);
 
   useEffect(() => {
-    // 随机抽取 1-15 中的一个属性
     setRandomId(Math.floor(Math.random() * 15) + 1);
   }, []);
 
@@ -114,7 +112,6 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
   return (
     <div className="bg-white border border-stone-200 text-stone-900 overflow-hidden relative rounded-sm shadow-sm transition-shadow hover:shadow-md">
       <div className="grid grid-cols-1 lg:grid-cols-2">
-        {/* 左侧：明亮的文字区域 */}
         <div className="p-10 lg:p-16 flex flex-col justify-center relative z-10">
            <div className="mb-6 flex items-center gap-2">
              <div className="p-1.5 bg-amber-50 rounded-full">
@@ -142,15 +139,12 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
            </Button>
         </div>
 
-        {/* 右侧：清晰的图片区域 */}
         <div className="relative h-64 lg:h-auto overflow-hidden bg-stone-100">
            <ImageWithFallback 
-             // 这里可以换成你更喜欢的建筑图片的在线链接，或者本地路径如 "/images/your-pic.jpg"
              src="https://images.unsplash.com/photo-1754873313580-5d70c8fa2b29?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxUaGUlMjBBbGhhbWJyYSUyMEdyYW5hZGElMjBpbnRyaWNhdGUlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzcxNjQ3OTYzfDA&ixlib=rb-4.1.0&q=80&w=1080"
              alt="Featured Concept Example"
              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
            />
-           {/* 用柔和的白色渐变替代原来的黑色渐变，让文字区和图片区过渡更自然 */}
            <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-white via-white/40 to-transparent lg:w-1/3" />
         </div>
       </div>
@@ -159,20 +153,18 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
 };
 
 const InteractivePreview = () => {
-  const { language } = useLanguage(); // 加入语言开关
+  const { language } = useLanguage(); 
   const [isHovering, setIsHovering] = useState(false);
 
   return (
     <div className="border border-stone-200 bg-white rounded-sm overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 h-full min-h-[400px]">
-        {/* Interactive Side */}
         <div 
           className="relative h-64 md:h-full cursor-pointer group overflow-hidden"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
           onClick={() => setIsHovering(!isHovering)}
         >
-           {/* Dead Image (Default) */}
            <motion.div 
              className="absolute inset-0"
              animate={{ opacity: isHovering ? 0 : 1 }}
@@ -196,7 +188,6 @@ const InteractivePreview = () => {
              </div>
            </motion.div>
 
-           {/* Living Image (Revealed) */}
            <motion.div 
              className="absolute inset-0"
              initial={{ opacity: 0 }}
@@ -214,7 +205,6 @@ const InteractivePreview = () => {
            </motion.div>
         </div>
 
-        {/* Text Side */}
         <div className="p-10 flex flex-col justify-center bg-stone-50">
            <h3 className="text-2xl font-serif font-bold text-stone-900 mb-4">
              {language === 'en' ? 'See the Difference' : '观察差异'}
@@ -261,7 +251,7 @@ const InteractivePreview = () => {
 };
 
 const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, align = "left" }: { nameEn: string, nameZh: string, roleEn: string, roleZh: string, descEn: string, descZh: string, image: string, align?: "left" | "right" }) => {
-  const { language } = useLanguage(); // 加入语言开关
+  const { language } = useLanguage(); 
   return (
     <div className={`flex flex-col md:flex-row items-center gap-8 ${align === "right" ? "md:flex-row-reverse" : ""}`}>
       <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 relative rounded-full overflow-hidden border border-stone-200 shadow-sm group">
@@ -282,10 +272,215 @@ const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, 
   );
 };
 
+// ============================================================================
+// 📚 全新高度融合模块：新书发布 & 行为经济学诱饵实验
+// ============================================================================
+const BookLaunchExperiment = () => {
+  const { language } = useLanguage();
+  const isEn = language === 'en';
+  const [showDecoy, setShowDecoy] = useState(false);
+
+  return (
+    <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
+      <div className="bg-stone-950 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-2xl border border-stone-800 flex flex-col">
+        
+        {/* 🌟 上半部：高级质感的新书视觉发布区 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 relative">
+          
+          {/* 背景氛围 */}
+          <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-10 mix-blend-overlay pointer-events-none" />
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
+
+          {/* 左侧文字信息 (占据7列) */}
+          <div className="lg:col-span-7 p-10 md:p-16 lg:p-20 relative z-10 flex flex-col justify-center">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <Badge variant="outline" className="mb-6 border-amber-500/50 text-amber-400 bg-amber-950/30 uppercase tracking-widest backdrop-blur-sm w-fit">
+                {isEn ? "Major Publication Release" : "重磅学术著作首发"}
+              </Badge>
+              
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif font-black text-white mb-4 leading-tight tracking-wide">
+                {isEn ? "Living Structure" : "活力结构"}
+              </h2>
+              <h3 className="text-xl md:text-2xl font-serif text-amber-200/90 mb-8 leading-snug">
+                {isEn ? "Exploring the Beauty of Chinese Traditional Buildings Through the Lens of AI" : "AI视角下的中国传统建筑之美"}
+              </h3>
+              
+              <div className="h-1 w-16 bg-amber-500 mb-8 rounded-full" />
+
+              <p className="text-stone-300 leading-relaxed mb-8 text-sm md:text-base font-light max-w-xl text-justify">
+                {isEn 
+                  ? "Prof. Bin Jiang bridges the gap between Christopher Alexander's phenomenological theory and modern artificial intelligence. This masterpiece reveals the computable, objective beauty hidden within traditional Chinese architecture, transforming subjective aesthetics into rigorous science."
+                  : "江斌教授跨越了亚历山大现象学理论与现代人工智能的鸿沟。这部开创性著作，深度揭示了隐藏在中国传统建筑基因中、可被计算的客观结构之美，将主观的建筑美学升华为严谨的科学。"}
+              </p>
+            </motion.div>
+          </div>
+
+          {/* 右侧 3D 渲染图 (占据5列) */}
+          <div className="lg:col-span-5 relative h-[350px] lg:h-auto min-h-[400px] flex items-center justify-center p-8 z-10">
+             <motion.div 
+               initial={{ y: 20, opacity: 0 }}
+               whileInView={{ y: 0, opacity: 1 }}
+               transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+               className="relative w-full h-full flex items-center justify-center perspective-[1200px]"
+             >
+                {/* 💡 确保你上传的图片已放入 public 文件夹并命名为 book-cover.jpg */}
+                <img 
+                  src="/book-cover.jpg" 
+                  alt="Living Structure Book Cover" 
+                  className="w-auto h-full max-h-[350px] md:max-h-[450px] object-contain shadow-[-30px_30px_40px_rgba(0,0,0,0.8)] rotate-y-[-15deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-700 ease-out"
+                />
+             </motion.div>
+          </div>
+        </div>
+
+        {/* 🧪 下半部：无缝衔接的“诱饵效应”定价实验区 */}
+        <div className="bg-stone-50 rounded-t-3xl md:rounded-t-[3rem] p-8 md:p-12 lg:p-16 border-t border-stone-800 relative z-20 mt-[-2rem]">
+          
+          <div className="text-center mb-12">
+            <h3 className="text-xs md:text-sm font-bold text-stone-400 uppercase tracking-[0.2em] mb-6 flex items-center justify-center gap-2">
+              <Microscope className="w-4 h-4 text-amber-500" />
+              {isEn ? "Interactive Behavioral Experiment: The Decoy Effect" : "交互式行为经济学实验：诱饵效应"}
+            </h3>
+            
+            {/* 动态 Toggle 开关 */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 bg-white w-fit mx-auto p-3 md:p-4 rounded-full shadow-sm border border-stone-200">
+              <span className={`text-xs md:text-sm font-bold transition-colors ${!showDecoy ? 'text-stone-900' : 'text-stone-400'}`}>
+                {isEn ? "Control (2 Options)" : "控制组 (无诱饵)"}
+              </span>
+              <button 
+                onClick={() => setShowDecoy(!showDecoy)}
+                className={`relative w-12 md:w-14 h-7 md:h-8 rounded-full transition-colors duration-500 shadow-inner shrink-0 ${showDecoy ? 'bg-amber-500' : 'bg-stone-300'}`}
+              >
+                <motion.div 
+                  className="absolute top-1 left-1 w-5 h-5 md:w-6 md:h-6 bg-white rounded-full shadow-md"
+                  animate={{ x: showDecoy ? (typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 24) : 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              </button>
+              <span className={`text-xs md:text-sm font-bold flex items-center gap-1 transition-colors ${showDecoy ? 'text-amber-700' : 'text-stone-400'}`}>
+                {isEn ? "Decoy Active (3 Options)" : "实验组 (植入诱饵)"} <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
+              </span>
+            </div>
+            
+            <div className="h-16 flex items-center justify-center">
+              <AnimatePresence mode="wait">
+                {showDecoy && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                    className="text-amber-600 text-xs md:text-sm max-w-xl mx-auto italic font-serif"
+                  >
+                    {isEn 
+                      ? "Notice how the introduction of the 'Book Only' option shifts your perception. It forces your brain into a relative comparison, making the bundle feel like an irresistible deal."
+                      : "观察：当中间“毫无性价比”的诱饵出现时，你的大脑会瞬间放弃对绝对价格（199元）的抵抗，转而觉得右侧的“全家桶”极具吸引力。这就是丹·艾瑞里的经典商业实证。"}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* 定价卡片矩阵 */}
+          <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 max-w-5xl mx-auto relative">
+            
+            {/* 选项 A：单买 App */}
+            <Card className="flex-1 p-8 bg-white border-stone-200 flex flex-col relative z-10 transition-all duration-300 hover:shadow-md rounded-2xl">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "Digital Pioneer" : "数字先锋版"}</h3>
+                <p className="text-sm text-stone-500">{isEn ? "Healing Mirror App Access" : "愈合之镜 App 年度高级订阅"}</p>
+              </div>
+              <div className="mb-8">
+                <span className="text-4xl font-serif font-bold text-stone-900">¥99</span><span className="text-stone-500">/yr</span>
+              </div>
+              <ul className="space-y-4 mb-8 flex-1">
+                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Unlimited Spatial Resonance Scans" : "无限制的视觉共振诊断"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
+              </ul>
+              <Button variant="outline" className="w-full text-stone-600 border-stone-300 hover:bg-stone-100 rounded-full">{isEn ? "Get App Only" : "仅订阅 App"}</Button>
+            </Card>
+
+            {/* 选项 B：诱饵 (仅单买书) */}
+            <AnimatePresence>
+              {showDecoy && (
+                <motion.div 
+                  initial={{ width: 0, opacity: 0, scale: 0.9, margin: 0, display: "none" }}
+                  animate={{ width: "auto", opacity: 1, scale: 1, margin: "0", display: "flex" }}
+                  exit={{ width: 0, opacity: 0, scale: 0.9, margin: 0, transitionEnd: { display: "none" } }}
+                  transition={{ duration: 0.5, type: "spring", bounce: 0.15 }}
+                  className="flex-1 lg:flex-[0.8] flex overflow-hidden origin-center lg:origin-left"
+                >
+                  <Card className="w-full p-8 bg-[#fffbfa] border-stone-200 flex flex-col relative overflow-hidden ring-2 ring-red-400/30 opacity-90 shadow-sm mx-auto lg:mx-2 mt-6 lg:mt-0 rounded-2xl">
+                    <div className="absolute top-4 right-4 bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm border border-red-200 shadow-sm">
+                      {isEn ? "The Decoy" : "商业诱饵"}
+                    </div>
+                    <div className="mb-6">
+                      <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "Theory Scholar" : "学术典藏版"}</h3>
+                      <p className="text-sm text-stone-500">{isEn ? "Physical Book Only" : "单买实体书"}</p>
+                    </div>
+                    <div className="mb-8">
+                      <span className="text-4xl font-serif font-bold text-stone-900">¥199</span>
+                    </div>
+                    <ul className="space-y-4 mb-8 flex-1">
+                      <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
+                      <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Healing Mirror App Access" : "愈合之镜 App 高级订阅权"}</li>
+                      <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
+                    </ul>
+                    <Button variant="outline" className="w-full bg-stone-100 text-stone-400 border-none cursor-not-allowed rounded-full">
+                      {isEn ? "Irrational Choice" : "不合理的选项"}
+                    </Button>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 选项 C：终极目标套餐 (书 + App) */}
+            <Card className="flex-1 p-8 bg-stone-900 border-stone-800 text-white flex flex-col relative z-10 shadow-2xl transform lg:-translate-y-4 ring-4 ring-amber-500/30 mt-6 lg:mt-0 rounded-2xl">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-400 to-amber-600 text-stone-950 text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                {isEn ? "The True Target" : "我们真正的主推目标"}
+              </div>
+              <div className="mb-6 mt-2">
+                <h3 className="text-xl font-bold text-white mb-2">{isEn ? "The Wholeness Bundle" : "完整生态套餐"}</h3>
+                <p className="text-sm text-stone-400">{isEn ? "Book + App Subscription" : "新书 ＋ App 年度高级订阅"}</p>
+              </div>
+              <div className="mb-8 flex items-baseline gap-3">
+                <span className="text-4xl font-serif font-bold text-amber-400">¥199</span>
+                <AnimatePresence>
+                  {showDecoy && (
+                    <motion.span 
+                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
+                      className="text-sm text-stone-500 line-through font-medium"
+                    >
+                      ¥298
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </div>
+              <ul className="space-y-4 mb-8 flex-1">
+                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Unlimited Spatial Resonance Scans" : "无限制的视觉共振诊断"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
+              </ul>
+              <Button className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold shadow-lg hover:shadow-xl transition-all rounded-full">
+                {isEn ? "Get the Bundle" : "获取完整生态"}
+              </Button>
+            </Card>
+
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+
 // --- Main Page Component ---
 
 export function Discover({ onNavigate }: DiscoverProps) {
-  const { trans, language } = useLanguage(); // 提取了 language 变量
+  const { trans, language } = useLanguage(); 
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-24">
@@ -317,80 +512,11 @@ export function Discover({ onNavigate }: DiscoverProps) {
           </Button>
         </motion.div>
       </section>
-      {/* ✨✨✨ 新增 v2：江斌教授新书 - 现代分栏无渐变版 ✨✨✨ */}
-      <section className="w-full mb-32 bg-stone-50 border-y border-stone-200 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px]">
-            
-            {/* 左侧：文字内容区 (占据7/12) */}
-            <div className="lg:col-span-7 p-10 md:p-16 lg:p-24 flex flex-col justify-center relative z-10 order-2 lg:order-1">
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
-              >
-                <Badge variant="outline" className="mb-6 border-amber-500 text-amber-700 bg-amber-50 uppercase tracking-widest">
-                  {language === 'en' ? 'Major Publication' : '重磅著作'}
-                </Badge>
-                
-                <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-4 leading-tight">
-                  {language === 'en' ? 'A New Kind of Geometry' : '一种新的几何学'}
-                </h2>
-                <p className="text-2xl md:text-3xl font-serif text-stone-500 mb-8">
-                  {language === 'en' ? 'The Science of Living Structure' : '活力结构的科学'}
-                </p>
-                
-                <div className="h-1 w-20 bg-amber-500 mb-8"></div>
 
-                <p className="text-lg text-stone-700 leading-relaxed mb-10 max-w-xl">
-                  {language === 'en' 
-                    ? 'Prof. Bin Jiang presents a groundbreaking mathematical framework that redefines architecture. This book establishes the scientific foundation required to perceive, analyze, and design true living structures.'
-                    : '江斌教授提出了一项重新定义建筑学的突破性数学框架。本书为感知、分析和设计真正的“活力结构”奠定了坚实的科学基础。'}
-                </p>
+      {/* 💡 2. 全新融合版：新书发布 & 诱饵效应实验 */}
+      <BookLaunchExperiment />
 
-                {/* 按钮组 */}
-                <div className="flex flex-wrap gap-4 items-center">
-                  <Button 
-                    size="lg"
-                    className="bg-stone-900 hover:bg-stone-800 text-white font-bold px-8 rounded-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
-                    onClick={() => window.open('https://www.amazon.com/Your-Book-Link', '_blank')} // 👈 记得替换链接
-                  >
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    {language === 'en' ? 'Order Now' : '立即订购'}
-                  </Button>
-                  <a 
-                    href="#" 
-                    className="text-stone-600 font-bold hover:text-stone-900 hover:underline underline-offset-4 transition-colors px-4"
-                  >
-                    {language === 'en' ? 'View Table of Contents' : '查看目录'}
-                  </a>
-                </div>
-              </motion.div>
-            </div>
-
-            {/* 右侧：图片展示区 (占据5/12) */}
-            {/* 在手机上图片会在上面 (order-1)，电脑上在右边 (order-2) */}
-            <div className="lg:col-span-5 relative h-[400px] lg:h-auto bg-stone-200/50 order-1 lg:order-2 overflow-hidden">
-               {/* 装饰性背景元素 */}
-               <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-10 mix-blend-overlay"></div>
-               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-amber-100/30 to-transparent blur-3xl rounded-full opacity-50"></div>
-
-               {/* 书本图片 */}
-               <ImageWithFallback 
-                  src="/images/book.png"  // 👈 【重要】确认路径和文件名
-                  alt={language === 'en' ? "A New Kind of Geometry Book Cover" : "《一种新的几何学》书封"}
-                  // 这里去掉了 brightness-50，图片是原色的
-                  // 增加了 shadow-2xl 让书看起来是立体的
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-auto h-[85%] max-w-[90%] object-contain shadow-2xl shadow-stone-900/20 rotate-[-2deg] hover:rotate-0 hover:scale-105 transition-all duration-700 ease-out"
-               />
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* ✨✨✨ 新书横幅结束 v2 ✨✨✨ */}
-
-      {/* 2. Platform Statement (Simplified) */}
+      {/* 3. Platform Statement */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-32">
         <div className="bg-stone-50 border border-stone-200 p-12 md:p-16 relative">
           <Quote className="absolute top-8 left-8 w-6 h-6 text-stone-300" />
@@ -404,7 +530,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </div>
       </section>
 
-      {/* 3. Theory Founders */}
+      {/* 4. Theory Founders */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto mb-32 space-y-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-serif font-bold text-stone-900">
@@ -414,33 +540,24 @@ export function Discover({ onNavigate }: DiscoverProps) {
             {language === 'en' ? 'Pioneers of Structural Wholeness' : '结构整体性的先驱'}
           </p>
         </div>
-        
         <TheoryFounder 
-          nameEn="Christopher Alexander"
-          nameZh="克里斯托弗·亚历山大 (Christopher Alexander)"
-          roleEn="Architect & Design Theorist"
-          roleZh="建筑师与设计理论家"
+          nameEn="Christopher Alexander" nameZh="克里斯托弗·亚历山大 (Christopher Alexander)"
+          roleEn="Architect & Design Theorist" roleZh="建筑师与设计理论家"
           descEn="Renowned for 'A Pattern Language' and 'The Nature of Order'. He identified the 15 fundamental properties of living structures, proposing that space itself has a degree of life derived from geometric coherence."
           descZh="以《建筑模式语言》和《秩序的本质》闻名于世。他界定了活力结构的15个基本属性，提出空间本身具有一种源于几何连贯性的‘活力’。"
-          image="/images/A.png"
-          align="left"
+          image="/images/A.png" align="left"
         />
-        
         <div className="w-16 h-px bg-stone-200 mx-auto" />
-
         <TheoryFounder 
-          nameEn="Bin Jiang"
-          nameZh="江斌 (Bin Jiang)"
-          roleEn="Professor of Urban Design & Computational Media Arts"
-          roleZh="城市治理与设计和计算媒体与艺术双聘教授"
+          nameEn="Bin Jiang" nameZh="江斌 (Bin Jiang)"
+          roleEn="Professor of Urban Design & Computational Media Arts" roleZh="城市治理与设计和计算媒体与艺术双聘教授"
           descEn="Creator of the 'Living Structure' mathematical framework (L = S × H). His work transforms Alexander's qualitative concepts into computable metrics, utilizing topological analysis and head/tail breaks to quantify structural beauty."
           descZh="“活力结构”数学框架（L = S × H）的创立者。他的研究将亚历山大的定性概念转化为可计算的指标，利用拓扑分析和头尾断裂法（head/tail breaks）来精准量化结构之美。"
-          image="/images/BJ.png"
-          align="right"
+          image="/images/BJ.png" align="right"
         />
       </section>
 
-      {/* 4. Quick Start Dashboard */}
+      {/* 5. Quick Start Dashboard */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
         <div className="flex items-center gap-4 mb-12">
           <div className="h-px bg-stone-200 flex-1" />
@@ -450,57 +567,30 @@ export function Discover({ onNavigate }: DiscoverProps) {
           <div className="h-px bg-stone-200 flex-1" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <QuickStartCard 
-            titleEn="Learn Theory"
-            titleZh="理论学习"
-            descEn="Master the 15 fundamental properties of living structure through interactive definitions and case studies."
-            descZh="通过交互式定义与真实案例分析，深入掌握活力结构的15个基本属性。"
-            icon={BookOpen}
-            onClick={() => onNavigate("theory")}
-            color="stone"
-          />
-          <QuickStartCard 
-            titleEn="Analyze"
-            titleZh="结构分析"
-            descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)."
-            descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。"
-            icon={ScanEye}
-            onClick={() => onNavigate("analyze")}
-            color="teal"
-          />
-          <QuickStartCard 
-            titleEn="Practice Lab"
-            titleZh="实践沙盒"
-            descEn="Experiment with generative tools to create your own living geometries in a 2D/3D sandbox."
-            descZh="在2D/3D交互实验室内使用生成工具，尝试创造属于你自己的生命几何图形。"
-            icon={PenTool}
-            onClick={() => onNavigate("practice")}
-            color="amber"
-          />
+          <QuickStartCard titleEn="Learn Theory" titleZh="理论学习" descEn="Master the 15 fundamental properties of living structure through interactive definitions and case studies." descZh="通过交互式定义与真实案例分析，深入掌握活力结构的15个基本属性。" icon={BookOpen} onClick={() => onNavigate("theory")} color="stone" />
+          <QuickStartCard titleEn="Analyze" titleZh="结构分析" descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)." descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。" icon={ScanEye} onClick={() => onNavigate("analyze")} color="teal" />
+          <QuickStartCard titleEn="Practice Lab" titleZh="实践沙盒" descEn="Experiment with generative tools to create your own living geometries in a 2D/3D sandbox." descZh="在2D/3D交互实验室内使用生成工具，尝试创造属于你自己的生命几何图形。" icon={PenTool} onClick={() => onNavigate("practice")} color="amber" />
         </div>
       </section>
 
-      {/* 5. Progress Indicator */}
+      {/* 6. Progress Indicator */}
       <ProgressIndicator />
 
-      {/* 6. Featured Concept */}
+      {/* 7. Featured Concept */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16 flex items-baseline justify-between">
            <h2 className="text-3xl font-serif font-bold text-stone-900">
              {trans.discover.featuredConcept?.title || (language === 'en' ? "Featured Concept" : "精选概念")}
            </h2>
-           <button 
-             onClick={() => onNavigate("theory")}
-             className="text-stone-400 hover:text-stone-900 text-xs font-medium uppercase tracking-widest flex items-center gap-2 transition-colors"
-           >
+           <button onClick={() => onNavigate("theory")} className="text-stone-400 hover:text-stone-900 text-xs font-medium uppercase tracking-widest flex items-center gap-2 transition-colors">
              {language === 'en' ? 'View All 15 Properties' : '查看全部15个属性'} <ChevronRight className="w-3 h-3" />
            </button>
         </div>
         <FeaturedConcept onNavigate={onNavigate} />
       </section>
 
-      {/* 7. Interactive Preview */}
-      <section className="pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* 8. Interactive Preview */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16">
            <h2 className="text-3xl font-serif font-bold text-stone-900">
              {language === 'en' ? 'Interactive Preview' : '互动预览'}
@@ -512,8 +602,8 @@ export function Discover({ onNavigate }: DiscoverProps) {
         <InteractivePreview />
       </section>
 
-      {/* 8. Footer Quote (Preserved) */}
-      <section className="border-t border-stone-200 bg-white py-24 text-center">
+      {/* 9. Footer Quote */}
+      <section className="border-t border-stone-200 bg-white py-24 text-center mt-12">
         <div className="max-w-3xl mx-auto px-4">
           <Quote className="h-6 w-6 text-stone-300 mx-auto mb-8" />
           <p className="text-xl font-serif italic text-stone-800 leading-relaxed mb-6">
