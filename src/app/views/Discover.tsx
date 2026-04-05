@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Badge } from "@/app/components/ui";
 import { 
   ArrowRight, BookOpen, ScanEye, PenTool, 
-  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User, X, Microscope
+  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User, X, Microscope, Box, Leaf
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion"; // 注意这里我改回了标准的 framer-motion 引入
+import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { cn } from "@/app/components/ui";
@@ -272,13 +272,10 @@ const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, 
   );
 };
 
-// ============================================================================
-// 📚 全新高度融合模块：新书发布 & 行为经济学诱饵实验
-// ============================================================================
 const BookLaunchExperiment = () => {
   const { language } = useLanguage();
   const isEn = language === 'en';
-  const [showDecoy, setShowDecoy] = useState(false);
+  const [organicView, setOrganicView] = useState(false);
 
   return (
     <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
@@ -286,12 +283,10 @@ const BookLaunchExperiment = () => {
         
         {/* 🌟 上半部：高级质感的新书视觉发布区 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 relative">
-          
-          {/* 背景氛围 */}
           <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-10 mix-blend-overlay pointer-events-none" />
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
 
-          {/* 左侧文字信息 (占据7列) */}
+          {/* 左侧文字信息 */}
           <div className="lg:col-span-7 p-10 md:p-16 lg:p-20 relative z-10 flex flex-col justify-center">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
@@ -320,7 +315,7 @@ const BookLaunchExperiment = () => {
             </motion.div>
           </div>
 
-          {/* 右侧 3D 渲染图 (占据5列) */}
+          {/* 右侧 3D 渲染图 */}
           <div className="lg:col-span-5 relative h-[350px] lg:h-auto min-h-[400px] flex items-center justify-center p-8 z-10">
              <motion.div 
                initial={{ y: 20, opacity: 0 }}
@@ -328,7 +323,6 @@ const BookLaunchExperiment = () => {
                transition={{ duration: 1, type: "spring", bounce: 0.4 }}
                className="relative w-full h-full flex items-center justify-center perspective-[1200px]"
              >
-                {/* 💡 确保你上传的图片已放入 public 文件夹并命名为 book-cover.jpg */}
                 <img 
                   src="/book-cover.jpg" 
                   alt="Living Structure Book Cover" 
@@ -338,134 +332,143 @@ const BookLaunchExperiment = () => {
           </div>
         </div>
 
-        {/* 🧪 下半部：无缝衔接的“诱饵效应”定价实验区 */}
-        <div className="bg-stone-50 rounded-t-3xl md:rounded-t-[3rem] p-8 md:p-12 lg:p-16 border-t border-stone-800 relative z-20 mt-[-2rem]">
-          
-          <div className="text-center mb-12">
+        {/* 🧪 下半部：空间哲学与整体性悖论实验区 */}
+        <div className="bg-stone-50 rounded-t-3xl md:rounded-t-[3rem] p-8 md:p-12 lg:p-16 border-t border-stone-800 relative z-20 mt-[-2rem] overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-5 mix-blend-overlay pointer-events-none" />
+
+          {/* 控制台 */}
+          <div className="text-center mb-16 relative z-10">
             <h3 className="text-xs md:text-sm font-bold text-stone-400 uppercase tracking-[0.2em] mb-6 flex items-center justify-center gap-2">
               <Microscope className="w-4 h-4 text-amber-500" />
-              {isEn ? "Interactive Behavioral Experiment: The Decoy Effect" : "交互式行为经济学实验：诱饵效应"}
+              {isEn ? "Philosophical Experiment: The Wholeness Paradox" : "空间哲学与定价实验：整体性悖论"}
             </h3>
             
-            {/* 动态 Toggle 开关 */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 bg-white w-fit mx-auto p-3 md:p-4 rounded-full shadow-sm border border-stone-200">
-              <span className={`text-xs md:text-sm font-bold transition-colors ${!showDecoy ? 'text-stone-900' : 'text-stone-400'}`}>
-                {isEn ? "Control (2 Options)" : "控制组 (无诱饵)"}
+            <p className="text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed text-sm md:text-base">
+              {isEn 
+                ? "In a Cartesian market, knowledge and tools are sold as fragmented, isolated parts. Toggle the switch to apply the 'Organic View of Space' and witness how fragmented options collapse into an indivisible living structure."
+                : "在机械论的消费主义中，理论与工具总是被当作割裂的零件孤立售卖。请切换至“有机空间观”，观察那些毫无意义的‘割裂选项’，是如何在整体性的视角下坍缩，最终融合成一个不可分割的生命力结构的。"}
+            </p>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 bg-white w-fit mx-auto p-3 md:p-4 rounded-full shadow-sm border border-stone-200 relative overflow-hidden">
+              <div className={`absolute inset-0 bg-teal-50/30 transition-opacity duration-700 ${organicView ? 'opacity-100' : 'opacity-0'}`} />
+              
+              <span className={`relative z-10 text-xs md:text-sm font-bold transition-colors flex items-center gap-1 ${!organicView ? 'text-stone-900' : 'text-stone-400'}`}>
+                <Box className="w-4 h-4" />
+                {isEn ? "Cartesian Market (Fragmented)" : "笛卡尔市场 (割裂态)"}
               </span>
+              
               <button 
-                onClick={() => setShowDecoy(!showDecoy)}
-                className={`relative w-12 md:w-14 h-7 md:h-8 rounded-full transition-colors duration-500 shadow-inner shrink-0 ${showDecoy ? 'bg-amber-500' : 'bg-stone-300'}`}
+                onClick={() => setOrganicView(!organicView)}
+                className={`relative z-10 w-12 md:w-14 h-7 md:h-8 rounded-full transition-colors duration-500 shadow-inner shrink-0 ${organicView ? 'bg-teal-600' : 'bg-stone-300'}`}
               >
                 <motion.div 
                   className="absolute top-1 left-1 w-5 h-5 md:w-6 md:h-6 bg-white rounded-full shadow-md"
-                  animate={{ x: showDecoy ? (typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 24) : 0 }}
+                  animate={{ x: organicView ? (typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 24) : 0 }}
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               </button>
-              <span className={`text-xs md:text-sm font-bold flex items-center gap-1 transition-colors ${showDecoy ? 'text-amber-700' : 'text-stone-400'}`}>
-                {isEn ? "Decoy Active (3 Options)" : "实验组 (植入诱饵)"} <Sparkles className="w-3 h-3 md:w-4 md:h-4" />
+              
+              <span className={`relative z-10 text-xs md:text-sm font-bold flex items-center gap-1 transition-colors ${organicView ? 'text-teal-700' : 'text-stone-400'}`}>
+                 <Leaf className="w-4 h-4" />
+                {isEn ? "Organic View (Wholeness)" : "有机空间观 (整体态)"} 
               </span>
-            </div>
-            
-            <div className="h-16 flex items-center justify-center">
-              <AnimatePresence mode="wait">
-                {showDecoy && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                    className="text-amber-600 text-xs md:text-sm max-w-xl mx-auto italic font-serif"
-                  >
-                    {isEn 
-                      ? "Notice how the introduction of the 'Book Only' option shifts your perception. It forces your brain into a relative comparison, making the bundle feel like an irresistible deal."
-                      : "观察：当中间“毫无性价比”的诱饵出现时，你的大脑会瞬间放弃对绝对价格（199元）的抵抗，转而觉得右侧的“全家桶”极具吸引力。这就是丹·艾瑞里的经典商业实证。"}
-                  </motion.p>
-                )}
-              </AnimatePresence>
             </div>
           </div>
 
-          {/* 定价卡片矩阵 */}
-          <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 max-w-5xl mx-auto relative">
+          <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 max-w-5xl mx-auto relative z-10">
             
-            {/* 选项 A：单买 App */}
-            <Card className="flex-1 p-8 bg-white border-stone-200 flex flex-col relative z-10 transition-all duration-300 hover:shadow-md rounded-2xl">
+            <Card className={`flex-1 p-8 flex flex-col relative transition-all duration-700 rounded-2xl ${organicView ? 'bg-stone-100 border-stone-200 opacity-60 scale-95 grayscale' : 'bg-white border-stone-200 shadow-md'}`}>
               <div className="mb-6">
-                <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "Digital Pioneer" : "数字先锋版"}</h3>
-                <p className="text-sm text-stone-500">{isEn ? "Healing Mirror App Access" : "愈合之镜 App 年度高级订阅"}</p>
+                <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "The Isolated Tool" : "孤立的数字工具"}</h3>
+                <p className="text-xs text-stone-500 font-mono uppercase tracking-wider">{isEn ? "Property: Local Symmetries" : "属性：局部对称 (碎片)"}</p>
               </div>
               <div className="mb-8">
                 <span className="text-4xl font-serif font-bold text-stone-900">¥99</span><span className="text-stone-500">/yr</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Unlimited Spatial Resonance Scans" : "无限制的视觉共振诊断"}</li>
-                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
-                <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Healing Mirror App Access" : "愈合之镜 App 年度诊断权"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-400 italic"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Lacks theoretical foundation" : "剥离了深层的理论底蕴 (无实体书)"}</li>
               </ul>
-              <Button variant="outline" className="w-full text-stone-600 border-stone-300 hover:bg-stone-100 rounded-full">{isEn ? "Get App Only" : "仅订阅 App"}</Button>
+              <Button variant="outline" className="w-full text-stone-600 border-stone-300 hover:bg-stone-200 rounded-full">
+                {isEn ? "Select Fragment" : "选择割裂的局部"}
+              </Button>
             </Card>
 
-            {/* 选项 B：诱饵 (仅单买书) */}
             <AnimatePresence>
-              {showDecoy && (
+              {!organicView && (
                 <motion.div 
                   initial={{ width: 0, opacity: 0, scale: 0.9, margin: 0, display: "none" }}
                   animate={{ width: "auto", opacity: 1, scale: 1, margin: "0", display: "flex" }}
-                  exit={{ width: 0, opacity: 0, scale: 0.9, margin: 0, transitionEnd: { display: "none" } }}
-                  transition={{ duration: 0.5, type: "spring", bounce: 0.15 }}
+                  exit={{ width: 0, opacity: 0, scale: 0.8, filter: "blur(10px)", margin: 0, transitionEnd: { display: "none" } }}
+                  transition={{ duration: 0.6, type: "spring" }}
                   className="flex-1 lg:flex-[0.8] flex overflow-hidden origin-center lg:origin-left"
                 >
-                  <Card className="w-full p-8 bg-[#fffbfa] border-stone-200 flex flex-col relative overflow-hidden ring-2 ring-red-400/30 opacity-90 shadow-sm mx-auto lg:mx-2 mt-6 lg:mt-0 rounded-2xl">
-                    <div className="absolute top-4 right-4 bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-sm border border-red-200 shadow-sm">
-                      {isEn ? "The Decoy" : "商业诱饵"}
-                    </div>
+                  <Card className="w-full p-8 bg-[#fffbfa] border-stone-200 flex flex-col relative overflow-hidden shadow-sm mx-auto lg:mx-2 mt-6 lg:mt-0 rounded-2xl">
                     <div className="mb-6">
-                      <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "Theory Scholar" : "学术典藏版"}</h3>
-                      <p className="text-sm text-stone-500">{isEn ? "Physical Book Only" : "单买实体书"}</p>
+                      <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "The Isolated Theory" : "孤立的抽象理论"}</h3>
+                      <p className="text-xs text-stone-500 font-mono uppercase tracking-wider text-red-500/80">{isEn ? "Property: Isolated Center" : "属性：失效的中心 (诱饵)"}</p>
                     </div>
                     <div className="mb-8">
                       <span className="text-4xl font-serif font-bold text-stone-900">¥199</span>
                     </div>
                     <ul className="space-y-4 mb-8 flex-1">
                       <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
-                      <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Healing Mirror App Access" : "愈合之镜 App 高级订阅权"}</li>
-                      <li className="flex items-start gap-3 text-sm text-stone-300"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
+                      <li className="flex items-start gap-3 text-sm text-stone-400 italic"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Disconnected from tools" : "缺乏实证实操工具 (无 App)"}</li>
                     </ul>
                     <Button variant="outline" className="w-full bg-stone-100 text-stone-400 border-none cursor-not-allowed rounded-full">
-                      {isEn ? "Irrational Choice" : "不合理的选项"}
+                      {isEn ? "A Cartesian Illusion" : "笛卡尔式的幻觉选项"}
                     </Button>
                   </Card>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* 选项 C：终极目标套餐 (书 + App) */}
-            <Card className="flex-1 p-8 bg-stone-900 border-stone-800 text-white flex flex-col relative z-10 shadow-2xl transform lg:-translate-y-4 ring-4 ring-amber-500/30 mt-6 lg:mt-0 rounded-2xl">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-400 to-amber-600 text-stone-950 text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-full shadow-lg whitespace-nowrap">
-                {isEn ? "The True Target" : "我们真正的主推目标"}
+            <Card className={`flex-1 lg:flex-[1.2] p-8 flex flex-col relative z-10 shadow-2xl transform transition-all duration-700 rounded-2xl mt-6 lg:mt-0 ${organicView ? 'bg-[#0f3531] border-teal-800 scale-105 ring-4 ring-teal-500/30' : 'bg-stone-900 border-stone-800 lg:-translate-y-4 ring-4 ring-amber-500/30'}`}>
+              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-full shadow-lg whitespace-nowrap transition-colors duration-700 ${organicView ? 'bg-teal-400 text-teal-950' : 'bg-amber-500 text-stone-950'}`}>
+                {isEn ? "Property 15: Not-Separateness" : "属性 15：非分离性"}
               </div>
+              
               <div className="mb-6 mt-2">
-                <h3 className="text-xl font-bold text-white mb-2">{isEn ? "The Wholeness Bundle" : "完整生态套餐"}</h3>
-                <p className="text-sm text-stone-400">{isEn ? "Book + App Subscription" : "新书 ＋ App 年度高级订阅"}</p>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{isEn ? "The Indivisible Wholeness" : "不可分割的整体"}</h3>
+                <p className={`text-sm transition-colors ${organicView ? 'text-teal-200' : 'text-stone-400'}`}>
+                  {isEn ? "Theory + Practice deeply interlocked" : "理论与实践的深度交织 (Deep Interlock)"}
+                </p>
               </div>
+              
               <div className="mb-8 flex items-baseline gap-3">
-                <span className="text-4xl font-serif font-bold text-amber-400">¥199</span>
+                <span className={`text-4xl font-serif font-bold transition-colors ${organicView ? 'text-white' : 'text-amber-400'}`}>¥199</span>
                 <AnimatePresence>
-                  {showDecoy && (
-                    <motion.span 
-                      initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                      className="text-sm text-stone-500 line-through font-medium"
-                    >
+                  {!organicView && (
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm text-stone-500 line-through font-medium">
                       ¥298
                     </motion.span>
                   )}
                 </AnimatePresence>
               </div>
+              
               <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
-                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Unlimited Spatial Resonance Scans" : "无限制的视觉共振诊断"}</li>
-                <li className="flex items-start gap-3 text-sm text-stone-200"><CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" /> {isEn ? "Weekly Wholeness Reports" : "专属空间与心灵周报"}</li>
+                <li className="flex items-start gap-3 text-sm text-stone-200">
+                   <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 transition-colors ${organicView ? 'text-teal-400' : 'text-amber-400'}`} /> 
+                   {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装著作 (右脑感知)"}
+                </li>
+                <li className="flex items-start gap-3 text-sm text-stone-200">
+                   <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 transition-colors ${organicView ? 'text-teal-400' : 'text-amber-400'}`} /> 
+                   {isEn ? "Healing Mirror App Annual Access" : "愈合之镜 App 算法引擎 (左脑量化)"}
+                </li>
+                <AnimatePresence>
+                  {organicView && (
+                     <motion.li 
+                       initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0 }}
+                       className="flex items-start gap-3 text-sm text-teal-200 font-serif italic mt-6 p-4 bg-teal-900/50 rounded-lg"
+                     >
+                       {isEn ? '"In a living structure, the theory and the tool cannot exist without each other."' : '“在真正的生命力结构中，道（理论）与器（工具）互为支撑，不可割裂。”'}
+                     </motion.li>
+                  )}
+                </AnimatePresence>
               </ul>
-              <Button className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold shadow-lg hover:shadow-xl transition-all rounded-full">
-                {isEn ? "Get the Bundle" : "获取完整生态"}
+              
+              <Button className={`w-full font-bold shadow-lg hover:shadow-xl transition-all rounded-full ${organicView ? 'bg-teal-500 hover:bg-teal-400 text-teal-950' : 'bg-amber-500 hover:bg-amber-400 text-stone-950'}`}>
+                {isEn ? "Embrace Wholeness" : "拥抱完整的生命力"}
               </Button>
             </Card>
 
@@ -481,39 +484,46 @@ const BookLaunchExperiment = () => {
 
 export function Discover({ onNavigate }: DiscoverProps) {
   const { trans, language } = useLanguage(); 
+  const isEn = language === 'en';
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] pb-24">
       
-      {/* 1. Manifesto Block (Refined Hero) */}
-      <section className="pt-32 pb-32 px-4 max-w-2xl mx-auto text-center">
+      {/* 💡 1. 全新重构的 Hero Section (包含你的电梯演讲与核心功能简介) */}
+      <section className="pt-32 pb-24 px-4 max-w-5xl mx-auto text-center">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 tracking-tight mb-6">
-            {language === 'en' ? 'Understanding Wholeness Through Living Structure' : '透过活力结构理解整体性'}
+          <Badge variant="outline" className="mb-6 border-teal-500/50 text-teal-700 bg-teal-50 uppercase tracking-widest px-5 py-2 rounded-full font-bold">
+             {isEn ? "AI Spatial Diagnosis & Healing Tool" : "AI 空间诊断与疗愈工具"}
+          </Badge>
+          
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-stone-900 tracking-tight mb-6">
+            {isEn ? "Healing Mirror" : "愈合之镜"}
           </h1>
-          <div className="space-y-2 mb-10">
-            <p className="text-lg text-stone-600 font-light leading-relaxed">
-              {language === 'en' ? 'Living Structure explores hierarchical order in architecture.' : '“活力结构”理论致力于探索建筑与空间中的层级秩序。'}
-            </p>
-            <p className="text-lg text-stone-600 font-light leading-relaxed">
-              {language === 'en' ? 'This platform presents its theory and architectural embodiment.' : '本平台旨在展示该理论的核心思想及其在建筑设计中的具象体现。'}
-            </p>
-          </div>
+          
+          <h2 className="text-xl md:text-2xl font-serif text-stone-500 mb-10 italic">
+            {isEn ? "Quantifying the life of space, awakening inner wholeness." : "量化空间的生命力，照见内心的整体性。"}
+          </h2>
+          
+          <p className="text-base md:text-lg text-stone-600 font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
+            {isEn
+              ? "Space is not a dead box, but a true mirror of your inner state. Upload an image, and our structural algorithm (L = S × H) will measure the objective 'Livingness' of your environment. By applying the 15 properties of life for spatial micro-interventions, we help you repair fragmentation and rediscover profound inner peace."
+              : "这是一款基于「活力结构」理论的 AI 空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。只需上传一张照片，「愈合之镜」将通过底层结构算法（L = S × H）精准测算你所在空间的客观生命力。我们基于15种属性为你提供空间“微介入”处方，通过极简的物理调整，修补环境的割裂，助你找回内心的平静与完整。"}
+          </p>
+          
           <Button 
-            onClick={() => onNavigate("theory")}
-            variant="outline"
-            className="px-8 py-6 text-sm uppercase tracking-widest border-stone-900 text-stone-900 hover:bg-stone-900 hover:text-white transition-all rounded-sm"
+            onClick={() => onNavigate("analyze")}
+            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-7 text-sm uppercase tracking-widest transition-all rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 font-bold"
           >
-            {language === 'en' ? 'Explore Theory' : '探索理论'}
+            {isEn ? 'Begin Spatial Diagnosis' : '开启空间实证诊断'}
           </Button>
         </motion.div>
       </section>
 
-      {/* 💡 2. 全新融合版：新书发布 & 诱饵效应实验 */}
+      {/* 2. 新书发布 & 整体性悖论实验 */}
       <BookLaunchExperiment />
 
       {/* 3. Platform Statement */}
