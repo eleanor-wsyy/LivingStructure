@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-import OpenAI from "openai";
 import { createClient } from '@supabase/supabase-js';
 import { createPortal } from 'react-dom'; 
 
@@ -35,7 +34,6 @@ const MOOD_OPTIONS = [
   { id: "rigid", icon: Box, color: "text-stone-500", bg: "bg-stone-100", border: "border-stone-300", labelEn: "Rigid", labelZh: "死板压抑" }
 ];
 
-// 💡 提取 Logo 资产，确保中英文文本一致
 const LiveableLabLogo = ({ isEn, className }: { isEn: boolean, className?: string }) => (
     <div className={cn("flex items-center gap-3", className)}>
         <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 shadow-sm flex items-center justify-center p-2 group-hover:bg-amber-700 transition-colors">
@@ -198,6 +196,7 @@ export function Practice() {
   const last7Days = generateLast7Days();
   const todayKey = last7Days[last7Days.length - 1].dateKey;
 
+  // 👇 修改一：对话处理逻辑替换为 Gemini (通过 Supabase Gateway)
   const handleSendMessage = async () => {
     if (!inputText.trim() && !previewImage) return;
 
@@ -225,12 +224,6 @@ export function Practice() {
     }
 
     try {
-      const openai = new OpenAI({
-        apiKey: import.meta.env.VITE_ALIYUN_API_KEY,
-        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        dangerouslyAllowBrowser: true 
-      });
-
       const recentMoodsString = last7Days.map(day => {
         const moodId = moodHistory[day.dateKey];
         const mood = MOOD_OPTIONS.find(m => m.id === moodId);
@@ -241,7 +234,8 @@ export function Practice() {
         ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to softly track their inner wholeness.` 
         : `This is the user's first time sharing.`;
 
-      const systemPrompt = `
+      // 将 System Prompt 和 User Input 组合成 Gemini 接受的单段 Prompt
+      const finalPrompt = `
         You are a profoundly empathetic "Wholeness Therapist" practicing the "Organic View of Space" based on Christopher Alexander's theory.
         You understand that SPACE IS NOT A DEAD BOX. It is a living entity. Healing the geometry of the room heals the person's inner self.
         
@@ -255,32 +249,34 @@ export function Practice() {
         CRITICAL: At the very end of your response, provide exactly 2 poetic summary tags starting with a hashtag (e.g., #EmbraceTheLight #InnerCenter). Do not put any text after the tags.
         
         Tone: Poetic, incredibly gentle, spiritual, deeply validating. Like a whisper from a wise, old friend who understands that everything is connected. Max 150 words.
-        Language: ${isEn ? 'ENGLISH' : 'CHINESE'}.
+        Language: STRICTLY ${isEn ? 'ENGLISH' : 'CHINESE'}.
+
+        [User Input / Question]:
+        ${currentInput || (isEn ? "Please help me feel the space." : "请帮我感受这个空间。")}
       `;
 
-      const userMessageContent: any[] = [];
-      if (currentInput) {
-        userMessageContent.push({ type: "text", text: currentInput });
-      } else {
-        userMessageContent.push({ type: "text", text: isEn ? "Please help me feel the space." : "请帮我感受这个空间。" });
-      }
-      
+      // 处理可能存在的图片
+      let imagePayloads: { mimeType: string, base64Data: string }[] = [];
       if (userBase64) {
-        userMessageContent.push({
-          type: "image_url",
-          image_url: { url: userBase64 }
-        });
+        const [header, base64Data] = userBase64.split(',');
+        const mimeType = header.split(':')[1].split(';')[0];
+        imagePayloads.push({ mimeType, base64Data });
       }
 
-      const response = await openai.chat.completions.create({
-        model: "qwen-vl-max", 
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userMessageContent }
-        ]
+      // 请求 Supabase 中转站
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
+        body: { 
+          prompt: finalPrompt,
+          images: imagePayloads,
+          model: 'gemini' 
+        }
       });
 
-      const aiRawContent = response.choices[0].message.content || "";
+      if (error) {
+        throw new Error(error.message || "Gateway request failed");
+      }
+
+      const aiRawContent = data.reply || "";
       
       const tagRegex = /#([^\s#]+)/g;
       const extractedTags = [];
@@ -301,6 +297,7 @@ export function Practice() {
         prescription: finalPrescription
       }]);
 
+      // 同步数据到 Supabase 数据库
       try {
         let publicImageUrl = null;
         if (userBase64) {
@@ -324,26 +321,22 @@ export function Practice() {
         console.error("Supabase Sync Failed:", err);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       setIsScanning(false);
       setIsTyping(false);
+      alert(`${isEn ? 'Analysis failed' : '对话失败'}：${error.message}`);
     } finally {
       setIsTyping(false);
     }
   };
 
+  // 👇 修改二：生成周报逻辑替换为 Gemini (通过 Supabase Gateway)
   const generateWeeklyReport = async () => {
     setIsGeneratingReport(true);
     setWeeklyReport(null);
 
     try {
-      const openai = new OpenAI({
-        apiKey: import.meta.env.VITE_ALIYUN_API_KEY,
-        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        dangerouslyAllowBrowser: true 
-      });
-
       const recentMoodsString = last7Days.map(day => {
         const moodId = moodHistory[day.dateKey];
         const mood = MOOD_OPTIONS.find(m => m.id === moodId);
@@ -373,16 +366,23 @@ export function Practice() {
         Language: STRICTLY ${isEn ? 'ENGLISH' : 'CHINESE'}. Do NOT output any other language.
       `;
 
-      const response = await openai.chat.completions.create({
-        model: "qwen-max", 
-        messages: [{ role: "user", content: prompt }]
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
+        body: { 
+          prompt: prompt,
+          images: [], 
+          model: 'gemini' 
+        }
       });
 
-      setWeeklyReport(response.choices[0].message.content || "");
+      if (error) {
+        throw new Error(error.message || "Gateway request failed");
+      }
 
-    } catch (error) {
+      setWeeklyReport(data.reply || "");
+
+    } catch (error: any) {
       console.error(error);
-      setWeeklyReport(isEn ? "Failed to generate report. Please try again later." : "生成报告失败，请稍后再试。");
+      setWeeklyReport(isEn ? `Failed to generate report: ${error.message}` : `生成报告失败：${error.message}`);
     } finally {
       setIsGeneratingReport(false);
     }
@@ -679,7 +679,7 @@ export function Practice() {
 }
 
 // ============================================================================
-// 🪞 全新模块：自我之镜观测 (The Mirror of the Self) - 基于《秩序的本质》第8章
+// 🪞 全新模块：自我之镜观测 (The Mirror of the Self) - 保持不变
 // ============================================================================
 function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => void }) {
   const [step, setStep] = useState(0);
@@ -710,7 +710,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
     "请温柔地记住这份灵魂的共振。\n现在，让我们一起为你重塑生命力的整体。"
   ];
 
-  // 🎵 播放预先准备好的 MP3 音乐
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -718,7 +717,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
     audioRef.current.loop = true;
     audioRef.current.volume = 0; 
 
-    // 音乐淡入效果
     const fadeAudioIn = () => {
       if (audioRef.current && audioRef.current.volume < 0.6) {
         audioRef.current.volume += 0.05;
@@ -726,7 +724,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
       }
     };
 
-    // 尝试播放
     audioRef.current.play().then(() => {
         fadeAudioIn();
     }).catch(error => {
@@ -734,7 +731,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
     });
 
     return () => {
-      // 组件卸载时，音乐淡出
       if (audioRef.current) {
         const fadeAudioOut = () => {
              if (audioRef.current && audioRef.current.volume > 0.05) {
@@ -750,7 +746,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
     };
   }, []);
 
-  // 💡 调整文字停留速度：从 6秒 改为 9秒
   useEffect(() => {
     if (step < observationSteps.length) {
       const timer = setTimeout(() => setStep(s => s + 1), 9000); 
@@ -767,12 +762,9 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
       animate={{ opacity: 1 }} 
       exit={{ opacity: 0 }} 
       transition={{ duration: 1.5 }}
-      // 🎨 背景色改为更具深邃感和科学观测感的暗金/深灰渐变
       className="fixed inset-0 z-[9999] bg-gradient-to-b from-stone-900 via-[#292524] to-stone-950 flex flex-col items-center justify-between overflow-hidden"
     >
-      {/* ✨ 唯美粒子与光晕背景 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* 💡 水印 Logo：巨大的、半透明的 logo 水印 */}
           <motion.div 
             animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.03, 0.06, 0.03] }}
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
@@ -781,7 +773,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
              <img src="/logo.jpg" alt="Logo Watermark" className="w-full h-full object-contain blur-[1px] opacity-20 grayscale" />
           </motion.div>
 
-          {/* 中央呼吸光晕 */}
           <motion.div 
             animate={{ 
                 scale: [1, 1.2, 1], 
@@ -791,7 +782,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] max-w-[800px] max-h-[800px] rounded-full bg-amber-600/20 blur-[120px]"
           />
           
-          {/* 萤火虫/星光粒子效果 */}
           {[...Array(20)].map((_, i) => (
              <motion.div
                 key={`particle-${i}`}
@@ -803,9 +793,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
           ))}
       </div>
 
-      {/* 顶部区域 */}
       <div className="w-full flex p-6 z-20 h-24 shrink-0 items-center justify-between px-6 md:px-10">
-        {/* 💡 顶部栏 Logo */}
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center gap-3 opacity-90">
             <div className="w-10 h-10 rounded-full bg-stone-950/80 backdrop-blur flex items-center justify-center border border-stone-800 overflow-hidden shadow-xl p-0.5">
                 <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-full" />
@@ -823,7 +811,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
         </button>
       </div>
 
-      {/* 中间核心文字区域 */}
       <div className="flex-1 flex flex-col justify-center items-center w-full px-6 md:px-12 z-10 max-w-4xl mx-auto py-4">
         <AnimatePresence mode="wait">
           {step < observationSteps.length ? (
@@ -832,7 +819,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
               initial={{ opacity: 0, y: 15, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -15, filter: "blur(8px)" }}
-              transition={{ duration: 3.5, ease: "easeOut" }} // 💡 动画速度放缓到 3.5秒
+              transition={{ duration: 3.5, ease: "easeOut" }} 
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-[#f8fafc] tracking-wide leading-loose md:leading-relaxed text-center drop-shadow-2xl whitespace-pre-line px-2"
             >
               {observationSteps[step]}
@@ -860,7 +847,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
         </AnimatePresence>
       </div>
 
-      {/* 底部呼吸锚点区域 */}
       <div className="h-32 md:h-40 w-full flex flex-col items-center justify-end pb-12 md:pb-16 z-10 shrink-0">
          <AnimatePresence>
             {step < observationSteps.length && (
@@ -890,7 +876,6 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
   );
 }
 
-// 💡 卡片入口重构：加入 Logo，整卡可点击
 function BreathingCircle({ isEn }: { isEn: boolean }) {
   const [isObserving, setIsObserving] = useState(false);
 
@@ -901,7 +886,6 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
           className="flex flex-col items-center justify-center w-full h-full cursor-pointer group rounded-2xl transition-colors duration-500 hover:bg-stone-50/50"
           onClick={() => setIsObserving(true)}
         >
-          {/* 💡 卡片上的 Logo 区域 */}
           <div className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-3">
               <motion.div whileHover={{ x: 3 }} className="flex items-center gap-3">
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-stone-200 shadow-sm flex items-center justify-center overflow-hidden bg-stone-900 group-hover:border-amber-400 transition-colors p-0.5">

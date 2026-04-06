@@ -1,47 +1,38 @@
 import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-// 🛑 直接把你的千问 Key 填在这里！不用管 .env，不用管梯子！
-const QWEN_API_KEY = "sk-752976b46cb041bfaf8c952f0777cd83"; 
+// 初始化 Supabase 客户端 (安全读取 .env)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export function useGemini() {
   const [isThinking, setIsThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const analyzeStructure = async (prompt: string) => {
+  // 接收纯文本 prompt，调用 Supabase 里的 Gemini 代理
+  const analyzeStructure = async (prompt: string): Promise<string | null> => {
     setIsThinking(true);
     setError(null);
-    
+
     try {
-      // 呼叫国内阿里云的千问接口，绝对不超时，速度秒回！
-      const response = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${QWEN_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: "qwen-plus", // 调用千问的高级模型
-          messages: [
-            {
-              role: "system",
-              content: "You are a phenomenological scientist and expert in Christopher Alexander's living structure."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ]
-        })
+      const { data, error: supaError } = await supabase.functions.invoke('ai-gateway', {
+        body: { 
+          prompt: prompt,
+          images: [], // 纯文本请求不传图片
+          model: 'gemini' 
+        }
       });
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const data = await response.json();
-      return data.choices[0].message.content;
-      
+      if (supaError) {
+        throw new Error(supaError.message || "Gateway request failed");
+      }
+
+      return data.reply || null;
+
     } catch (err: any) {
-      console.error("AI API Error:", err);
-      setError(err.message || "请求 AI 时发生未知错误");
+      console.error('AI Request Error:', err);
+      setError(err.message || 'An error occurred during AI analysis.');
       return null;
     } finally {
       setIsThinking(false);

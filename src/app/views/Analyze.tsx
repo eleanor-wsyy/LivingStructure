@@ -3,7 +3,14 @@ import { Button, Card, cn } from "@/app/components/ui";
 import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
-import OpenAI from "openai";
+
+// 👇 引入 Supabase 客户端
+import { createClient } from '@supabase/supabase-js';
+
+// 初始化 Supabase 客户端 (安全读取 .env)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export function Analyze() {
   const [step, setStep] = useState<"upload" | "processing" | "results">("upload");
@@ -11,6 +18,8 @@ export function Analyze() {
   const [userIntent, setUserIntent] = useState<string>(""); 
   const [analysisResult, setAnalysisResult] = useState<any>(null); 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  
+  // 获取当前的语言状态
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
@@ -47,7 +56,8 @@ export function Analyze() {
       }));
       
       setImages(base64Images);
-      setUserIntent("请帮我对比这两张图，哪一张更符合活力与美感的标准？");
+      // 根据语言设置默认的提示语
+      setUserIntent(isEn ? "Please compare these two images: which one has a higher degree of living structure?" : "请帮我对比这两张图，哪一张更符合活力与美感的标准？");
     } catch (error) {
       console.warn("未找到默认图片，等待用户自行上传。");
     }
@@ -55,7 +65,7 @@ export function Analyze() {
 
   useEffect(() => {
     loadDefaultExamples();
-  }, []); 
+  }, [isEn]); // 当语言切换时，也可以重新加载默认 intent
 
   const safeText = (val: any, fallback = "暂无数据...") => {
     if (val === undefined || val === null) return fallback;
@@ -74,69 +84,75 @@ export function Analyze() {
     }
   };
 
+  // 👇 动态双语的 startAnalysis 函数
   const startAnalysis = async () => {
     if (images.length === 0) return;
     setStep("processing");
     setSelectedIndex(0); 
 
     try {
-      const openai = new OpenAI({
-        apiKey: import.meta.env.VITE_ALIYUN_API_KEY,
-        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-        dangerouslyAllowBrowser: true 
+      // 处理前端 Base64 图片
+      const imagePayloads = images.map(img => {
+        const [header, base64Data] = img.split(',');
+        const mimeType = header.split(':')[1].split(';')[0];
+        return { mimeType, base64Data };
       });
-
-      const imageContents = images.map(img => ({
-        type: "image_url",
-        image_url: { url: img }
-      }));
 
       const isCompare = images.length === 2;
 
+      // 🏆 动态语言变量
+      const targetLanguage = isEn ? "English" : "Simplified Chinese (简体中文)";
+      
+      // 🏆 动态属性名称（确保前端 UI 显示的语言也是对的）
+      const attributeNames = isEn 
+        ? "1. Levels of Scale  2. Strong Centers  3. Boundaries  4. Alternating Repetition  5. Positive Space  6. Good Shape  7. Local Symmetries  8. Deep Interlock and Ambiguity  9. Contrast  10. Gradients  11. Roughness  12. Echoes  13. The Void  14. Simplicity and Inner Calm  15. Not Separateness"
+        : "1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性";
+
+      // 核心 Prompt：学术内核用英文定义，输出要求根据 targetLanguage 动态切换
       const promptText = `
-        [角色定义]
-        你是一位深谙克里斯托弗·亚历山大“15个几何属性”与空间“美度 (Degree of Beauty)”理论的诊断专家。
+        [Role Definition]
+        You are an expert architectural theorist and diagnostician specializing in Christopher Alexander's "The Nature of Order", "Living Structure", and "Degree of Beauty". 
+        Your analysis MUST be deep, academic, and rooted in the concepts of "Wholeness" and overlapping "Centers". Do not just describe shapes; analyze how spatial relationships create a profound sense of life.
 
-        🚨 [核心判定铁律] 🚨
-        1. 空间的“美度” (B) 取决于其包含15个几何属性的数量。
-        2. 对于每个属性，采用绝对二元判定：具备（积1分），不具备（积0分）。不存在中间分！
-        
-        [15个强制打分属性名称（必须完全使用以下中文词汇）]
-        1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 
-        6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 
-        11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性
+        🚨 [Core Judgement Rules] 🚨
+        1. "Degree of Beauty" (B) strictly depends on the presence of the 15 geometric properties.
+        2. STRICT BINARY SCORING: 1 (Present, strengthening the Wholeness), 0 (Absent or disjointed). No partial scores!
+        3. 🌐 LANGUAGE RULE: ALL your generated JSON values (analysis, explanations, advice, and attribute names) MUST be written in fluent ${targetLanguage}.
 
-        [用户特定意图/提问]
-        用户的提问是：“${userIntent || '无特定提问，请进行标准客观分析'}”。
-        你必须在“核心评估结论”中直接且明确地回答用户的这个疑问！
+        [The 15 Properties Map (You MUST use these exact terms for the "name" field in your JSON)]
+        ${attributeNames}
 
-        [任务要求]
-        ${isCompare ? "用户上传了两张图进行对比。请基于上述二元判定理论，分别判断每张图具备哪几个属性，并对比它们的美度差异！" : "请客观挖掘该图具备的属性并得出美度总分。"}
+        [User Specific Intent]
+        User asks: "${userIntent || 'Please provide a standard objective analysis.'}"
+        You must directly answer this intent in your "core_evaluation".
 
-        必须返回纯 JSON 对象。结构严格如下：
+        [Task]
+        ${isCompare ? "The user uploaded 2 images for comparison. Analyze which one possesses a higher degree of life and why." : "Analyze the living structure of this single image and calculate its degree of beauty."}
+
+        OUTPUT STRICTLY AS A JSON OBJECT. STRUCTURE EXACTLY AS FOLLOWS (but translate the values into ${targetLanguage}):
         {
-          "winner_declaration": "${isCompare ? '直面用户提问，指出哪张图美度更高，直接给出客观结论。' : '直面用户提问，给出核心判定结论。'}",
-          "core_evaluation": "结合用户的提问，对比或分析产生这种美度差异的核心原因。",
-          "expert_footnote": "专家注脚：引用亚历山大的“客观美”或“15种结构保持转换”概念进行解释。",
-          "visual_decoding": "视觉特征与结构解码...",
-          "personal_perspective": "空间情绪与疗愈体验...",
-          "action_advice_urban": "宏观改善策略...",
-          "action_advice_personal": "微观空间优化建议...",
-          "summary": "一句简明的学术总结。",
+          "winner_declaration": "${isCompare ? 'State which image has a higher degree of life.' : 'State the core theoretical verdict.'}",
+          "core_evaluation": "Deep architectural analysis addressing the user's intent. Focus on Centers and Wholeness.",
+          "expert_footnote": "Quote or reference a specific concept from 'The Nature of Order' to support your claim.",
+          "visual_decoding": "Decode the visual and structural patterns...",
+          "personal_perspective": "Emotional, spatial feeling, and psychological impact...",
+          "action_advice_urban": "Macro-level structural improvement strategy...",
+          "action_advice_personal": "Micro-level geometric optimization advice...",
+          "summary": "One concise, profound academic summary.",
           "image_stats": [
             {
               "all_attributes": [
-                {"name": "尺度层次", "score": 1, "desc": "1表示具备。简述其体现..."},
-                {"name": "强中心", "score": 0, "desc": "0表示不具备。简述为何缺失..."},
-                {"name": "边界", "score": 1, "desc": "..."}
-                // ... 必须严格输出完整的 15 个属性，score 只能是 0 或 1
+                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain how it manifests in ${targetLanguage}]"},
+                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain why the center is weak in ${targetLanguage}]"},
+                {"name": "${isEn ? 'Boundaries' : '边界'}", "score": 1, "desc": "..."}
+                // ... Output ALL 15 properties.
               ]
             }${isCompare ? `,
             {
               "all_attributes": [
-                {"name": "尺度层次", "score": 0, "desc": "..."},
-                {"name": "强中心", "score": 1, "desc": "..."}
-                // ... 必须严格输出完整的 15 个属性，score 只能是 0 或 1
+                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 0, "desc": "..."},
+                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 1, "desc": "..."}
+                // ... Output all 15.
               ]
             }
             ` : ""}
@@ -144,24 +160,21 @@ export function Analyze() {
         }
       `;
 
-      const response = await openai.chat.completions.create({
-        model: "qwen-vl-max", 
-        messages: [
-          {
-            role: "system",
-            content: "你是一位精通分形几何与‘美度’评价体系的学术专家。必须严格进行 0 或 1 的二元打分。必须严格按照提供的 JSON 格式模板输出，不允许省略任何一个属性数组。"
-          },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: promptText },
-              ...imageContents 
-            ] as any
-          }
-        ]
+      // 通过 Supabase 中转站调用 Gemini
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
+        body: { 
+          prompt: promptText,
+          images: imagePayloads,
+          model: 'gemini' 
+        }
       });
 
-      const responseText = response.choices[0].message.content || "{}";
+      if (error) {
+        throw new Error(error.message || "请求中转站失败");
+      }
+
+      // 提取回复内容并进行 JSON 解析
+      const responseText = data.reply || "{}";
       const parsedData = safeExtractJSON(responseText);
       
       if (!parsedData) throw new Error("AI 数据格式错乱");
@@ -171,7 +184,7 @@ export function Analyze() {
 
     } catch (error: any) {
       console.error("AI 分析失败:", error);
-      alert(`诊断中断：${error.message} \n请检查网络或 API Key 设置。`);
+      alert(`${isEn ? 'Analysis interrupted' : '诊断中断'}：${error.message} \n${isEn ? 'Please check your network.' : '请检查网络或服务运行状态。'}`);
       setStep("upload");
     }
   };
@@ -212,7 +225,7 @@ export function Analyze() {
                     <textarea 
                       value={userIntent}
                       onChange={(e) => setUserIntent(e.target.value)}
-                      placeholder="告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具活力？）"
+                      placeholder={isEn ? "Tell the expert your analysis intent... (e.g., Which layout has more living structure?)" : "告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具活力？）"}
                       className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-stone-400 text-sm md:text-base h-16"
                     />
                   </div>
@@ -223,7 +236,7 @@ export function Analyze() {
                     <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-stone-50/50 bg-white")}>
                       {images[index] ? (
                         <>
-                          <img src={images[index]} alt={`上传 ${index + 1}`} className="h-full w-full object-cover" />
+                          <img src={images[index]} alt={`Upload ${index + 1}`} className="h-full w-full object-cover" />
                           <button onClick={() => removeImage(index)} className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 backdrop-blur-sm transition-all"><X className="h-4 w-4" /></button>
                         </>
                       ) : (
@@ -232,9 +245,9 @@ export function Analyze() {
                             {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-stone-400" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-stone-400" />}
                           </div>
                           <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
-                            {index === 0 ? "上传主场景" : "上传对比场景 (可选)"}
+                            {index === 0 ? (isEn ? "Upload Main Scene" : "上传主场景") : (isEn ? "Upload Comparison (Optional)" : "上传对比场景 (可选)")}
                           </span>
-                          <span className="text-xs text-stone-500 mt-1">支持 JPG, PNG</span>
+                          <span className="text-xs text-stone-500 mt-1">Supports JPG, PNG</span>
                           <input type="file" hidden onChange={handleFileChange} accept="image/*" multiple={index === 0} />
                         </label>
                       )}
@@ -245,14 +258,16 @@ export function Analyze() {
                 {images.length === 0 && (
                   <div className="text-center mt-4">
                     <button onClick={loadDefaultExamples} className="text-xs md:text-sm text-teal-600 font-medium hover:text-teal-800 transition-colors border-b border-teal-600/30 hover:border-teal-800 border-dashed pb-0.5">
-                      没有图片？点击一键载入《秩序的本质》正反面对比图演示
+                      {isEn ? "No images? Click to load 'The Nature of Order' example" : "没有图片？点击一键载入《秩序的本质》对比图演示"}
                     </button>
                   </div>
                 )}
 
                 <div className="flex justify-center mt-8 md:mt-12">
                   <Button className="bg-stone-900 px-8 py-6 md:px-16 md:py-7 text-base md:text-xl rounded-full shadow-lg hover:scale-105 transition-transform w-full md:w-auto mx-4 md:mx-0" onClick={startAnalysis} disabled={images.length === 0}>
-                    {images.length === 2 ? "开始深度对比诊断" : "开始美度提取与诊断"}
+                    {images.length === 2 
+                      ? (isEn ? "Start Deep Comparison" : "开始深度对比诊断") 
+                      : (isEn ? "Extract Beauty & Analyze" : "开始美度提取与诊断")}
                   </Button>
                 </div>
               </motion.div>
@@ -265,8 +280,12 @@ export function Analyze() {
                    <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
                    <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">正在感知空间的 15 个几何属性...</h2>
-                <p className="mt-3 text-sm md:text-base text-stone-600">计算美度 (Beauty) 及其活力指标...</p>
+                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
+                  {isEn ? "Perceiving the 15 geometric properties..." : "正在感知空间的 15 个几何属性..."}
+                </h2>
+                <p className="mt-3 text-sm md:text-base text-stone-600">
+                  {isEn ? "Calculating Degree of Beauty and life vitality..." : "计算美度 (Beauty) 及其活力指标..."}
+                </p>
               </div>
             )}
 
@@ -293,13 +312,13 @@ export function Analyze() {
                             : "opacity-60 hover:opacity-90 hover:ring-2 hover:ring-stone-300"
                         )}
                       >
-                        <img src={img} alt={`场景 ${idx + 1}`} className="w-full h-full object-cover" />
+                        <img src={img} alt={`Scene ${idx + 1}`} className="w-full h-full object-cover" />
                         {images.length === 2 && (
                           <div className={cn(
                             "absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold transition-colors",
                             selectedIndex === idx ? "bg-teal-500 text-white" : "bg-black/50 text-white backdrop-blur-md"
                           )}>
-                            图 {idx + 1} {selectedIndex === idx && " (当前)"}
+                            {isEn ? `Image ${idx + 1}` : `图 ${idx + 1}`} {selectedIndex === idx && (isEn ? " (Current)" : " (当前)")}
                           </div>
                         )}
                       </div>
@@ -309,10 +328,10 @@ export function Analyze() {
                   <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-stone-100 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
                     <div className="mb-4 inline-block bg-stone-100 px-3 py-1 rounded-md text-xs text-stone-500 font-medium">
-                      🎯 针对您的问题：{userIntent || "整体评估"}
+                      🎯 {isEn ? "Targeting your intent: " : "针对您的问题："}{userIntent || (isEn ? "Overall Assessment" : "整体评估")}
                     </div>
                     <h2 className="text-xl md:text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
-                      🏆 {safeText(analysisResult.winner_declaration, "美度提取完成")}
+                      🏆 {safeText(analysisResult.winner_declaration, isEn ? "Beauty extraction complete" : "美度提取完成")}
                     </h2>
                     <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
                       {safeText(analysisResult.core_evaluation)}
@@ -325,17 +344,17 @@ export function Analyze() {
 
                   <div className="space-y-4 md:space-y-6">
                     <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
-                      🔍 深度多维诊断报告
+                      🔍 {isEn ? "Multi-dimensional Diagnostic Report" : "深度多维诊断报告"}
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                       <div className="bg-stone-50 rounded-2xl p-5 md:p-6 border border-stone-100">
-                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 视觉与结构解码</h4>
+                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 {isEn ? "Visual & Structural Decoding" : "视觉与结构解码"}</h4>
                         <p className="text-stone-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.visual_decoding)}
                         </p>
                       </div>
                       <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
-                        <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 情绪与疗愈体验</h4>
+                        <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 {isEn ? "Emotional & Healing Experience" : "情绪与疗愈体验"}</h4>
                         <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.personal_perspective)}
                         </p>
@@ -345,17 +364,17 @@ export function Analyze() {
 
                   <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
                     <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
-                      🛠️ 结构改进指南
+                      🛠️ {isEn ? "Structural Improvement Guide" : "结构改进指南"}
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
                       <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
-                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ 宏观尺度策略</h4>
+                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ {isEn ? "Macro-scale Strategy" : "宏观尺度策略"}</h4>
                         <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_urban)}
                         </p>
                       </div>
                       <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
-                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 微观尺度优化</h4>
+                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 {isEn ? "Micro-scale Optimization" : "微观尺度优化"}</h4>
                         <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.action_advice_personal)}
                         </p>
@@ -365,7 +384,7 @@ export function Analyze() {
 
                   <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
                     <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
-                      "{safeText(analysisResult.summary, "15个属性共同塑造了空间的生命感。")}"
+                      "{safeText(analysisResult.summary, isEn ? "The 15 properties collectively shape the sense of life in space." : "15个属性共同塑造了空间的生命感。")}"
                     </p>
                   </div>
                 </div>
@@ -386,7 +405,7 @@ export function Analyze() {
                             <div className="absolute top-3 left-0 w-full flex justify-center">
                               <span className="bg-stone-100 text-stone-500 text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
                                 <ImageIcon className="w-3 h-3" />
-                                正在查看图 {selectedIndex + 1} 数据
+                                {isEn ? `Viewing Image ${selectedIndex + 1} Data` : `正在查看图 ${selectedIndex + 1} 数据`}
                               </span>
                             </div>
                           )}
@@ -398,7 +417,7 @@ export function Analyze() {
                         
                         <div className="p-4 md:p-6 bg-white">
                           <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> 15项几何属性鉴定矩阵
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> {isEn ? "15 Properties Matrix" : "15项几何属性鉴定矩阵"}
                           </h4>
                           
                           {Array.isArray(currentStats?.all_attributes) ? (
@@ -408,7 +427,7 @@ export function Analyze() {
                                 return (
                                   <div 
                                     key={idx} 
-                                    title={safeText(attr.desc, "无详细描述")} 
+                                    title={safeText(attr.desc, isEn ? "No detailed description" : "无详细描述")} 
                                     className={cn(
                                       "flex flex-col items-center justify-center p-2.5 md:p-3 rounded-xl border transition-all cursor-help",
                                       isPresent 
@@ -420,7 +439,7 @@ export function Analyze() {
                                       "text-[10px] md:text-xs font-bold text-center leading-tight truncate w-full",
                                       isPresent ? "text-teal-800" : "text-stone-500 line-through"
                                     )}>
-                                      {safeText(attr.name, "未知")}
+                                      {safeText(attr.name, isEn ? "Unknown" : "未知")}
                                     </span>
                                     
                                     <div className={cn(
@@ -434,14 +453,18 @@ export function Analyze() {
                               })}
                             </div>
                           ) : (
-                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">正在为您加载矩阵数据...</p>
+                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">
+                              {isEn ? "Loading matrix data..." : "正在为您加载矩阵数据..."}
+                            </p>
                           )}
-                          <p className="text-center text-[10px] text-stone-400 mt-4 italic">💡 提示：将鼠标悬停在方块上可查看判定原因</p>
+                          <p className="text-center text-[10px] text-stone-400 mt-4 italic">
+                            💡 {isEn ? "Hint: Hover over the blocks to see the reasoning" : "提示：将鼠标悬停在方块上可查看判定原因"}
+                          </p>
                         </div>
                         
                         <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
                           <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
-                            重新分析下一个空间
+                            {isEn ? "Analyze Another Space" : "重新分析下一个空间"}
                           </Button>
                         </div>
 
@@ -460,7 +483,7 @@ export function Analyze() {
 }
 
 // ----------------------------------------------------------------------
-// 🏆 终极防Bug版：SVG 美度计仪表盘 (Beauty Gauge)
+// 🏆 终极防Bug版：SVG 美度计仪表盘 (Beauty Gauge) 保持不变
 // ----------------------------------------------------------------------
 function BeautyGauge({ n }: { n: number }) {
   const percentage = n / 15;
@@ -484,13 +507,8 @@ function BeautyGauge({ n }: { n: number }) {
             </linearGradient>
           </defs>
 
-          {/* 背景灰色轨道 */}
-          <path 
-            d="M 39.4 135 A 70 70 0 1 1 160.6 135" 
-            fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" 
-          />
+          <path d="M 39.4 135 A 70 70 0 1 1 160.6 135" fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" />
           
-          {/* 动态彩色填充轨道 */}
           <motion.path 
             d="M 39.4 135 A 70 70 0 1 1 160.6 135" 
             fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" 
@@ -500,18 +518,15 @@ function BeautyGauge({ n }: { n: number }) {
             transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
           />
           
-          {/* 两端刻度 */}
           <text x="22" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
           <text x="178" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
 
-          {/* 🚀 核心修复：添加不可见的 rect 强制统一分组基准，彻底规避浏览器渲染偏心问题 */}
           <motion.g
             initial={{ rotate: -120 }}
             animate={{ rotate: rotation }}
             transition={{ type: "spring", stiffness: 45, damping: 15, delay: 0.4 }}
             style={{ originX: "50%", originY: "50%" }}
           >
-            {/* 这个透明矩形是修复 Safari 等浏览器偏心旋转的秘诀！ */}
             <rect x="0" y="0" width="200" height="200" fill="transparent" pointerEvents="none" />
             <polygon points="97,100 103,100 100,28" fill="#292524" />
             <circle cx="100" cy="100" r="9" fill="#292524" />
@@ -521,9 +536,7 @@ function BeautyGauge({ n }: { n: number }) {
       </div>
 
       <div className="-mt-8 flex items-baseline justify-center relative z-10">
-        <span className="text-5xl md:text-6xl font-black text-stone-800 font-mono tracking-tighter leading-none">
-          {n}
-        </span>
+        <span className="text-5xl md:text-6xl font-black text-stone-800 font-mono tracking-tighter leading-none">{n}</span>
         <span className="text-lg md:text-xl text-stone-400 font-medium tracking-normal ml-1">/15</span>
       </div>
     </div>

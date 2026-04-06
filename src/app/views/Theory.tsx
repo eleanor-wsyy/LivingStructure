@@ -9,7 +9,6 @@ import {
   Heart, Box, Brain, Activity
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-
 import { useGemini } from '../hooks/useGemini'; 
 
 // --- Data ---
@@ -224,10 +223,10 @@ const properties = [
 ];
 
 interface CenterNode {
-  x: number; // 百分比坐标 0-100
-  y: number; // 百分比坐标 0-100
-  r: number; // 圈的大小 (px)
-  label: string; // 节点说明文字
+  x: number; 
+  y: number; 
+  r: number; 
+  label: string; 
 }
 
 interface CaseStudy {
@@ -322,7 +321,8 @@ const cases: CaseStudy[] = [
   }
 ];
 
-const QUESTION_POOL = [
+// 本地经典题库 (作为回退机制)
+const STATIC_QUESTION_POOL = [
   {
     id: 1, property: "Roughness vs. Perfection",
     optionA: { id: "A1", type: "strong", img: "/images/Roughness.png", descEn: "Adapting to the local environment", descZh: "适应局部环境的粗糙生长" },
@@ -671,17 +671,12 @@ const ChineseArchitecturalSystem = () => {
   );
 };
 
-
-// ============================================================================
-// 💡 全新理论模块：The Organic View & Brain Hemisphere Mapping (有机空间观与左右脑映射)
-// ============================================================================
 const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
   <Section 
     title={isEn ? "The Organic Paradigm" : "有机空间范式"} 
     subTitle={isEn ? "Mapping Physical Geometry to Human Cognition" : "物理几何与人类认知的深度映射"}
     className="!pt-12 !border-0"
   >
-    {/* 顶部：打破笛卡尔机械论 */}
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       <div className="p-8 md:p-10 bg-white rounded-3xl border border-stone-200 grayscale hover:grayscale-0 transition-all duration-500 shadow-sm group">
         <div className="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center mb-6 border border-stone-200 group-hover:bg-stone-900 group-hover:text-white transition-colors">
@@ -709,9 +704,7 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
       </div>
     </div>
 
-    {/* 核心：左右脑映射图解 (Brain Hemisphere Mapping) */}
     <div className="bg-stone-950 p-8 md:p-14 rounded-[2.5rem] border border-stone-800 shadow-2xl relative overflow-hidden">
-      {/* 装饰网格背景 */}
       <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-10 mix-blend-overlay" />
       
       <div className="text-center mb-12 relative z-10">
@@ -724,8 +717,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
       </div>
 
       <div className="flex flex-col md:flex-row gap-8 items-center relative z-10">
-        
-        {/* Left Brain (Physical/Objective) */}
         <div className="flex-1 bg-stone-900/80 p-8 rounded-3xl border border-stone-700 backdrop-blur-md hover:border-stone-500 transition-colors h-full w-full">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-stone-300">
@@ -747,7 +738,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
           </div>
         </div>
 
-        {/* Connection/Bridge */}
         <div className="hidden md:flex flex-col items-center justify-center shrink-0 w-24">
           <motion.div 
             animate={{ height: ["0%", "100%", "0%"], opacity: [0, 1, 0] }}
@@ -766,7 +756,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
            <ArrowRight className="w-6 h-6 text-amber-500 rotate-90 md:rotate-0" />
         </div>
 
-        {/* Right Brain (Psychological/Subjective) */}
         <div className="flex-1 bg-[#0f3531]/80 p-8 rounded-3xl border border-teal-800 backdrop-blur-md hover:border-teal-600 transition-colors h-full w-full">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-teal-100">
@@ -790,7 +779,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
 
       </div>
       
-      {/* 底部小字解释 */}
       <div className="mt-12 text-center relative z-10">
          <p className="text-stone-400 text-xs max-w-3xl mx-auto leading-relaxed">
            {isEn 
@@ -801,7 +789,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
     </div>
   </Section>
 );
-
 
 // --- Main Page Component ---
 
@@ -818,14 +805,115 @@ export function Theory() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<{property: string, choiceType: string}[]>([]);
   const [report, setReport] = useState<string | null>(null);
-  const [activeQuestions, setActiveQuestions] = useState<typeof QUESTION_POOL>([]);
+  
+  // 💡 用于存放动态生成的题库
+  const [activeQuestions, setActiveQuestions] = useState<typeof STATIC_QUESTION_POOL>([]);
+  const [isLoadingDataset, setIsLoadingDataset] = useState(false);
 
-  const startTest = () => {
-    setActiveQuestions(QUESTION_POOL); 
+  // 💡 核心改造：通过 GitHub Tree API 动态抓取图库并配对
+  const startTest = async () => {
+    setIsLoadingDataset(true);
+    let questions = STATIC_QUESTION_POOL; // 默认使用本地经典题库兜底
+
+    try {
+      // 1. 获取整个仓库的文件树 (recursive=1 解决任何文件夹嵌套问题)
+      const treeRes = await fetch("https://api.github.com/repos/yq1ngz/before-after-streetscape/git/trees/main?recursive=1");
+      
+      if (treeRes.ok) {
+        const treeData = await treeRes.json();
+        
+        // 2. 筛选出目标文件夹 ("2_Seperate images without watermarks") 下的所有图片
+        const imagePaths = treeData.tree
+          .map((item: any) => item.path)
+          .filter((path: string) => 
+            path.includes("2_Seperate images without watermarks") && 
+            path.match(/\.(jpg|jpeg|png|webp)$/i)
+          );
+
+        // 3. 将图片配对分组 (根据路径中的数字)
+        const pairsMap = new Map<string, any[]>();
+        
+        imagePaths.forEach((path: string) => {
+           const parts = path.split('/');
+           const filename = parts[parts.length - 1];
+           const folderPath = parts.slice(0, -1).join('/');
+           
+           // 提取文件名或文件夹名中的数字作为配对 ID
+           const numMatch = filename.match(/\d+/) || folderPath.match(/\d+$/);
+           if (numMatch) {
+             const id = `${folderPath}-${numMatch[0]}`; 
+             if (!pairsMap.has(id)) pairsMap.set(id, []);
+             
+             // 构建 raw 真实图片下载地址
+             const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
+             pairsMap.get(id)!.push({
+               name: filename,
+               url: `https://raw.githubusercontent.com/yq1ngz/before-after-streetscape/main/${encodedPath}`
+             });
+           }
+        });
+
+        // 4. 筛选出完整的 Before & After 对
+        const validPairs = Array.from(pairsMap.values())
+          .filter(arr => arr.length >= 2) 
+          .map(arr => {
+             arr.sort((a, b) => a.name.localeCompare(b.name));
+             
+             let beforeUrl = arr[0].url;
+             let afterUrl = arr[1].url;
+             
+             const n1 = arr[0].name.toLowerCase();
+             const n2 = arr[1].name.toLowerCase();
+             
+             // 根据常见关键词自动识别改造前与改造后
+             if (n1.includes('after') || n1.includes('new') || n2.includes('before') || n2.includes('old') || n2.includes('original')) {
+               afterUrl = arr[0].url;
+               beforeUrl = arr[1].url;
+             } else if (n2.includes('after') || n2.includes('new') || n1.includes('before') || n1.includes('old') || n1.includes('original')) {
+               afterUrl = arr[1].url;
+               beforeUrl = arr[0].url;
+             }
+             
+             return { before: beforeUrl, after: afterUrl };
+          });
+
+        // 5. 随机抽取 10 对，打乱 A 和 B 选项的位置
+        if (validPairs.length >= 5) {
+          const shuffled = validPairs.sort(() => 0.5 - Math.random()).slice(0, 10);
+          
+          questions = shuffled.map((pair, index) => {
+            const isStrongA = Math.random() > 0.5; // 50% 概率 A 是正确的 (改造后)
+            return {
+              id: index + 1,
+              property: `Streetscape Transformation ${index + 1}`,
+              optionA: { 
+                id: `A${index+1}`, 
+                type: isStrongA ? "strong" : "weak", 
+                img: isStrongA ? pair.after : pair.before, 
+                descEn: isStrongA ? "Living Structure (Transformed)" : "Mechanistic Space (Original)", 
+                descZh: isStrongA ? "具备生命感的有机空间 (改造后)" : "机械、割裂的现代空间 (改造前)" 
+              },
+              optionB: { 
+                id: `B${index+1}`, 
+                type: !isStrongA ? "strong" : "weak", 
+                img: !isStrongA ? pair.after : pair.before, 
+                descEn: !isStrongA ? "Living Structure (Transformed)" : "Mechanistic Space (Original)", 
+                descZh: !isStrongA ? "具备生命感的有机空间 (改造后)" : "机械、割裂的现代空间 (改造前)" 
+              }
+            };
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to load GitHub dataset via Tree API, using local fallback", e);
+    }
+
+    setActiveQuestions(questions); 
     setHasStarted(true);
     setCurrentStep(0);
     setAnswers([]);
     setReport(null);
+    setIsLoadingDataset(false);
   };
 
   const handleSelect = async (choiceType: string, property: string) => {
@@ -872,7 +960,7 @@ export function Theory() {
       if (aiResponse) {
         setReport(aiResponse);
       } else {
-        setReport("⚠️ 获取报告失败：AI 返回了空值。请按 F12 打开浏览器控制台 (Console) 查看具体网络或 Key 报错。");
+        setReport("⚠️ 获取报告失败：AI 返回了空值。请检查网络状态或 Supabase 后端日志。");
       }
     } catch (error) {
       setReport(`⚠️ 发生错误：${error}`);
@@ -978,12 +1066,19 @@ export function Theory() {
                         ? "Please quiet your mind. When the images appear, use your inner feeling as a precision instrument. Ask yourself: Which of these two geometries is a truer, more encompassing picture of your whole self?" 
                         : "请平静你的大脑。当画面出现时，请将你内心的深刻感受作为一把精密的科学量尺。问问你自己：哪一种几何形态，能更准确、更完整地映照出你作为一个人的全部本质？"}
                     </p>
+                    
                     <button 
                       onClick={startTest}
-                      className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold tracking-widest uppercase text-sm hover:bg-amber-500 transition-colors flex items-center gap-2 mx-auto shadow-md"
+                      disabled={isLoadingDataset}
+                      className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold tracking-widest uppercase text-sm hover:bg-amber-500 transition-colors flex items-center gap-2 mx-auto shadow-md disabled:opacity-50"
                     >
-                      {isEn ? "Begin Observation" : "启动观测实验"} <ArrowRight className="w-4 h-4" />
+                      {isLoadingDataset ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Fetching Dataset..." : "正在抽取云端图库..."}</>
+                      ) : (
+                        <>{isEn ? "Begin Observation" : "启动观测实验"} <ArrowRight className="w-4 h-4" /></>
+                      )}
                     </button>
+                    
                   </motion.div>
                 )}
 
@@ -1316,7 +1411,6 @@ export function Theory() {
                         {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
                       </p>
                       
-                      {/* 💡 移除了生硬的固定背景框，改为自适应宽高的“印画”风格，完美兼容横图与竖图 */}
                       <div className="w-full flex justify-center items-center py-4">
                         <div className="relative group flex items-center justify-center max-w-full">
                           {activeProp.bookImg ? (
