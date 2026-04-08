@@ -776,7 +776,6 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
             </div>
           </div>
         </div>
-
       </div>
       
       <div className="mt-12 text-center relative z-10">
@@ -789,6 +788,145 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
     </div>
   </Section>
 );
+
+// ============================================================================
+// 💡 全新落地模块：Campus Lab (理疗所 + 课室网格)
+// ============================================================================
+const CampusProjectsSection = ({ isEn }: { isEn: boolean }) => {
+  // 💡 课室数据列表，已写死为本地路径
+  const classrooms = [
+    { 
+      id: "W1-233", 
+      link: "https://vr.justeasy.cn/view/174v3j47i0470778-1734793858.html", 
+      img: "/images/W1-233.png" // 👈 请确保 public/images 文件夹下有这个文件
+    },
+    { 
+      id: "5A-220", 
+      link: "https://vr.justeasy.cn/view/147e374o54n19057-1753083138.html", 
+      img: "/images/5A-220.png" // 👈 请确保 public/images 文件夹下有这个文件
+    },
+    { 
+      id: "E3-312", 
+      link: "https://vr.justeasy.cn/view/zn61187413306813-1756382846.html", 
+      img: "/images/E3-312.png" // 👈 请确保 public/images 文件夹下有这个文件
+    },
+    { 
+      id: "E3-314", 
+      link: "https://vr.justeasy.cn/view/uk17d141l920b639-1758796620.html", 
+      img: "/images/E3-314.png" // 👈 请确保 public/images 文件夹下有这个文件
+    }
+  ];
+
+  return (
+    <Section 
+      title={isEn ? "Campus Lab" : "校园实践"} 
+      subTitle={isEn ? "Translating theory into physical space through generative AI." : "将抽象理论通过人工智能，转化为物理空间的真实疗愈体验。"}
+      className="!pt-12"
+    >
+      {/* 01. 理疗所 VR 独立入口卡片 */}
+      <div className="mb-16 mt-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-6">
+          <div className="max-w-2xl">
+            <h4 className="text-2xl font-serif font-bold text-stone-900 mb-3">
+              {isEn ? "01. The Healing Clinic" : "01. 理疗所改造项目"}
+            </h4>
+            <p className="text-stone-600 text-sm leading-relaxed">
+              {isEn 
+                ? "A campus clinic designed to foster 'Inner Calm'. We used AI to generate artistic human muscle structures that resonate with the geometric properties of life, deeply integrating them into the environment." 
+                : "一个旨在培养“内在平静”的校园理疗所。我们利用 AI 生成了与生命几何属性共鸣的人体肌肉艺术画，并将其深度融入物理环境，增强空间的治愈氛围。"}
+            </p>
+          </div>
+        </div>
+        
+        <a 
+          href="https://vr.justeasy.cn/view/17xx174rk9649594-1775484431.html" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block w-full aspect-[4/3] md:aspect-[21/9] bg-stone-900 rounded-2xl overflow-hidden border border-stone-200 shadow-md hover:shadow-xl transition-all duration-500 relative group cursor-pointer"
+        >
+          {/* 🖼️ 理疗所封面图 */}
+          <ImageWithFallback 
+            src="/images/clinic.png" 
+            alt="Physiotherapy Clinic VR Cover"
+            className="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition-all duration-700"
+          />
+          
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent" />
+
+          {/* 悬浮居中的引导按钮 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.3)] group-hover:scale-110 group-hover:bg-teal-500 transition-all duration-300">
+              <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-stone-900 group-hover:text-white transition-colors" />
+            </div>
+          </div>
+
+          {/* 左下角信息 */}
+          <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+            <Badge variant="outline" className="border-white/40 text-white mb-3 backdrop-blur-md bg-black/20 uppercase tracking-widest text-[10px]">
+               <Eye className="w-3 h-3 mr-1.5 inline" /> {isEn ? "360° VR Tour" : "360° 沉浸式全景"}
+            </Badge>
+            <h5 className="text-xl md:text-3xl font-serif font-bold text-white shadow-sm drop-shadow-md">
+               {isEn ? "Enter the Healing Clinic" : "进入理疗所漫游"}
+            </h5>
+          </div>
+        </a>
+      </div>
+
+      {/* 02. 课室改造网格画廊 */}
+      <div className="mb-12 mt-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+          <div className="max-w-2xl">
+            <h4 className="text-2xl font-serif font-bold text-stone-900 mb-3 flex items-center gap-3">
+              {isEn ? "02. Classroom Renovations" : "02. 传统课室系列改造"}
+            </h4>
+            <p className="text-stone-600 text-sm leading-relaxed">
+              {isEn
+                ? "Breaking the rigid Cartesian grid across multiple learning spaces. We apply the 15 properties to create 'Strong Centers' and 'Positive Space', turning monotonous rooms into organic learning organisms in HKUST（GZ）."
+                : "打破传统排排坐的死板笛卡尔网格。我们在香港科技大学（广州）多间课室中应用 15 个基础属性，重新建立“强中心”和“正空间”，将单调的空间转化为有机的学习生命体。点击对应课室进入实景漫游："}
+            </p>
+          </div>
+        </div>
+        
+        {/* 2x2 网格布局 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {classrooms.map((room) => (
+            <a 
+              key={room.id}
+              href={room.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block w-full aspect-[4/3] md:aspect-[16/9] bg-stone-100 rounded-2xl overflow-hidden border border-stone-200 shadow-md relative group cursor-pointer"
+            >
+              {/* 🖼️ 课室封面图 */}
+              <ImageWithFallback 
+                src={room.img} 
+                alt={`Classroom ${room.id}`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 opacity-90 group-hover:opacity-100"
+              />
+              
+              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-transparent to-transparent pointer-events-none" />
+              
+              {/* 悬浮的小箭头 */}
+              <div className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                 <ArrowUpRight className="w-5 h-5 text-stone-900" />
+              </div>
+
+              {/* 底部信息 */}
+              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 text-white pointer-events-none">
+                 <Badge variant="outline" className="border-white/40 text-white mb-2 backdrop-blur-md bg-black/20 uppercase tracking-widest text-[9px]">
+                   <Box className="w-3 h-3 mr-1.5 inline" /> {isEn ? "Spatial Transformation" : "空间重构"}
+                 </Badge>
+                 <h5 className="text-xl md:text-2xl font-serif font-bold text-white shadow-sm drop-shadow-md">
+                   {isEn ? `Room ${room.id}` : `课室 ${room.id}`}
+                 </h5>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+};
 
 // --- Main Page Component ---
 
@@ -806,23 +944,19 @@ export function Theory() {
   const [answers, setAnswers] = useState<{property: string, choiceType: string}[]>([]);
   const [report, setReport] = useState<string | null>(null);
   
-  // 💡 用于存放动态生成的题库
   const [activeQuestions, setActiveQuestions] = useState<typeof STATIC_QUESTION_POOL>([]);
   const [isLoadingDataset, setIsLoadingDataset] = useState(false);
 
-  // 💡 核心改造：通过 GitHub Tree API 动态抓取图库并配对
   const startTest = async () => {
     setIsLoadingDataset(true);
-    let questions = STATIC_QUESTION_POOL; // 默认使用本地经典题库兜底
+    let questions = STATIC_QUESTION_POOL; 
 
     try {
-      // 1. 获取整个仓库的文件树 (recursive=1 解决任何文件夹嵌套问题)
       const treeRes = await fetch("https://api.github.com/repos/yq1ngz/before-after-streetscape/git/trees/main?recursive=1");
       
       if (treeRes.ok) {
         const treeData = await treeRes.json();
         
-        // 2. 筛选出目标文件夹 ("2_Seperate images without watermarks") 下的所有图片
         const imagePaths = treeData.tree
           .map((item: any) => item.path)
           .filter((path: string) => 
@@ -830,7 +964,6 @@ export function Theory() {
             path.match(/\.(jpg|jpeg|png|webp)$/i)
           );
 
-        // 3. 将图片配对分组 (根据路径中的数字)
         const pairsMap = new Map<string, any[]>();
         
         imagePaths.forEach((path: string) => {
@@ -838,13 +971,11 @@ export function Theory() {
            const filename = parts[parts.length - 1];
            const folderPath = parts.slice(0, -1).join('/');
            
-           // 提取文件名或文件夹名中的数字作为配对 ID
            const numMatch = filename.match(/\d+/) || folderPath.match(/\d+$/);
            if (numMatch) {
              const id = `${folderPath}-${numMatch[0]}`; 
              if (!pairsMap.has(id)) pairsMap.set(id, []);
              
-             // 构建 raw 真实图片下载地址
              const encodedPath = path.split('/').map(p => encodeURIComponent(p)).join('/');
              pairsMap.get(id)!.push({
                name: filename,
@@ -853,7 +984,6 @@ export function Theory() {
            }
         });
 
-        // 4. 筛选出完整的 Before & After 对
         const validPairs = Array.from(pairsMap.values())
           .filter(arr => arr.length >= 2) 
           .map(arr => {
@@ -865,7 +995,6 @@ export function Theory() {
              const n1 = arr[0].name.toLowerCase();
              const n2 = arr[1].name.toLowerCase();
              
-             // 根据常见关键词自动识别改造前与改造后
              if (n1.includes('after') || n1.includes('new') || n2.includes('before') || n2.includes('old') || n2.includes('original')) {
                afterUrl = arr[0].url;
                beforeUrl = arr[1].url;
@@ -877,12 +1006,11 @@ export function Theory() {
              return { before: beforeUrl, after: afterUrl };
           });
 
-        // 5. 随机抽取 10 对，打乱 A 和 B 选项的位置
         if (validPairs.length >= 5) {
           const shuffled = validPairs.sort(() => 0.5 - Math.random()).slice(0, 10);
           
           questions = shuffled.map((pair, index) => {
-            const isStrongA = Math.random() > 0.5; // 50% 概率 A 是正确的 (改造后)
+            const isStrongA = Math.random() > 0.5; 
             return {
               id: index + 1,
               property: `Streetscape Transformation ${index + 1}`,
@@ -1405,29 +1533,27 @@ export function Theory() {
                       </div>
                     </div>
 
-                    <div className="mt-auto pt-6 border-t border-stone-100">
+                    <div className="mt-8 pt-6 border-t border-stone-100">
                       <p className="text-xs text-stone-400 uppercase tracking-widest mb-4 font-bold flex items-center gap-2">
                         <BookOpen className="w-4 h-4" />
                         {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
                       </p>
                       
-                      <div className="w-full flex justify-center items-center py-4">
-                        <div className="relative group flex items-center justify-center max-w-full">
-                          {activeProp.bookImg ? (
-                            <img 
-                              src={activeProp.bookImg} 
-                              alt="Book Illustration"
-                              className="w-auto h-auto max-w-full max-h-[350px] md:max-h-[450px] object-contain mix-blend-multiply opacity-85 group-hover:opacity-100 group-hover:scale-[1.02] transition-transform duration-500 origin-center"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
-                              }}
-                            />
-                          ) : (
-                            <div className="text-stone-400 text-sm font-mono flex items-center gap-2">
-                               <ScanLine className="w-4 h-4" /> Image scan pending...
-                            </div>
-                          )}
-                        </div>
+                      <div className="w-full flex justify-center items-center py-2">
+                        {activeProp.bookImg ? (
+                          <img 
+                            src={activeProp.bookImg} 
+                            alt="Book Illustration"
+                            className="max-h-[250px] md:max-h-[320px] w-auto max-w-full object-contain mix-blend-multiply opacity-85 group-hover:opacity-100 transition-opacity"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
+                            }}
+                          />
+                        ) : (
+                          <div className="text-stone-400 text-sm font-mono flex items-center gap-2">
+                             <ScanLine className="w-4 h-4" /> Image scan pending...
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -1451,6 +1577,10 @@ export function Theory() {
           </div>
         </Section>
         
+        {/* 💡 新增：Campus Lab 校园实践项目与 AI 融合 */}
+        <CampusProjectsSection isEn={isEn} />
+
+        {/* Section 5: Chinese Architecture */}
         <div className="mt-32">
           <Section title={trans.theory?.chinese?.title || "Chinese Architecture"} className="!pt-0 !border-0">
              <div className="mb-12 max-w-2xl">
