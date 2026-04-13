@@ -275,13 +275,12 @@ const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, 
 const BookLaunchExperiment = () => {
   const { language } = useLanguage();
   const isEn = language === 'en';
-  const [organicView, setOrganicView] = useState(false);
 
   return (
     <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
       <div className="bg-stone-950 rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-2xl border border-stone-800 flex flex-col">
         
-        {/* 🌟 上半部：高级质感的新书视觉发布区 */}
+        {/* 🌟 仅保留新书视觉发布区 */}
         <div className="grid grid-cols-1 lg:grid-cols-12 relative">
           <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-10 mix-blend-overlay pointer-events-none" />
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
@@ -307,7 +306,7 @@ const BookLaunchExperiment = () => {
               
               <div className="h-1 w-16 bg-amber-500 mb-8 rounded-full" />
 
-              <p className="text-stone-300 leading-relaxed mb-8 text-sm md:text-base font-light max-w-xl text-justify">
+              <p className="text-stone-300 leading-relaxed text-sm md:text-base font-light max-w-xl text-justify">
                 {isEn 
                   ? "Prof. Bin Jiang bridges the gap between Christopher Alexander's phenomenological theory and modern artificial intelligence. This masterpiece reveals the computable, objective beauty hidden within traditional Chinese architecture, transforming subjective aesthetics into rigorous science."
                   : "江斌教授跨越了亚历山大现象学理论与现代人工智能的鸿沟。这部开创性著作，深度揭示了隐藏在中国传统建筑基因中、可被计算的客观结构之美，将主观的建筑美学升华为严谨的科学。"}
@@ -332,148 +331,6 @@ const BookLaunchExperiment = () => {
           </div>
         </div>
 
-        {/* 🧪 下半部：空间哲学与整体性悖论实验区 */}
-        <div className="bg-stone-50 rounded-t-3xl md:rounded-t-[3rem] p-8 md:p-12 lg:p-16 border-t border-stone-800 relative z-20 mt-[-2rem] overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/images/grid-pattern.png')] opacity-5 mix-blend-overlay pointer-events-none" />
-
-          {/* 控制台 */}
-          <div className="text-center mb-16 relative z-10">
-            <h3 className="text-xs md:text-sm font-bold text-stone-400 uppercase tracking-[0.2em] mb-6 flex items-center justify-center gap-2">
-              <Microscope className="w-4 h-4 text-amber-500" />
-              {isEn ? "Philosophical Experiment: The Wholeness Paradox" : "空间哲学与定价实验：整体性悖论"}
-            </h3>
-            
-            <p className="text-stone-500 max-w-2xl mx-auto mb-10 leading-relaxed text-sm md:text-base">
-              {isEn 
-                ? "In a Cartesian market, knowledge and tools are sold as fragmented, isolated parts. Toggle the switch to apply the 'Organic View of Space' and witness how fragmented options collapse into an indivisible living structure."
-                : "在机械论的消费主义中，理论与工具总是被当作割裂的零件孤立售卖。请切换至“有机空间观”，观察那些毫无意义的‘割裂选项’，是如何在整体性的视角下坍缩，最终融合成一个不可分割的生命力结构的。"}
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 bg-white w-fit mx-auto p-3 md:p-4 rounded-full shadow-sm border border-stone-200 relative overflow-hidden">
-              <div className={`absolute inset-0 bg-teal-50/30 transition-opacity duration-700 ${organicView ? 'opacity-100' : 'opacity-0'}`} />
-              
-              <span className={`relative z-10 text-xs md:text-sm font-bold transition-colors flex items-center gap-1 ${!organicView ? 'text-stone-900' : 'text-stone-400'}`}>
-                <Box className="w-4 h-4" />
-                {isEn ? "Cartesian Market (Fragmented)" : "笛卡尔市场 (割裂态)"}
-              </span>
-              
-              <button 
-                onClick={() => setOrganicView(!organicView)}
-                className={`relative z-10 w-12 md:w-14 h-7 md:h-8 rounded-full transition-colors duration-500 shadow-inner shrink-0 ${organicView ? 'bg-teal-600' : 'bg-stone-300'}`}
-              >
-                <motion.div 
-                  className="absolute top-1 left-1 w-5 h-5 md:w-6 md:h-6 bg-white rounded-full shadow-md"
-                  animate={{ x: organicView ? (typeof window !== 'undefined' && window.innerWidth < 768 ? 20 : 24) : 0 }}
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                />
-              </button>
-              
-              <span className={`relative z-10 text-xs md:text-sm font-bold flex items-center gap-1 transition-colors ${organicView ? 'text-teal-700' : 'text-stone-400'}`}>
-                 <Leaf className="w-4 h-4" />
-                {isEn ? "Organic View (Wholeness)" : "有机空间观 (整体态)"} 
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 max-w-5xl mx-auto relative z-10">
-            
-            <Card className={`flex-1 p-8 flex flex-col relative transition-all duration-700 rounded-2xl ${organicView ? 'bg-stone-100 border-stone-200 opacity-60 scale-95 grayscale' : 'bg-white border-stone-200 shadow-md'}`}>
-              <div className="mb-6">
-                <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "The Isolated Tool" : "孤立的数字工具"}</h3>
-                <p className="text-xs text-stone-500 font-mono uppercase tracking-wider">{isEn ? "Property: Local Symmetries" : "属性：局部对称 (碎片)"}</p>
-              </div>
-              <div className="mb-8">
-                <span className="text-4xl font-serif font-bold text-stone-900">¥99</span><span className="text-stone-500">/yr</span>
-              </div>
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-teal-500 shrink-0 mt-0.5" /> {isEn ? "Healing Mirror App Access" : "愈合之镜 App 年度诊断权"}</li>
-                <li className="flex items-start gap-3 text-sm text-stone-400 italic"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Lacks theoretical foundation" : "剥离了深层的理论底蕴 (无实体书)"}</li>
-              </ul>
-              <Button variant="outline" className="w-full text-stone-600 border-stone-300 hover:bg-stone-200 rounded-full">
-                {isEn ? "Select Fragment" : "选择割裂的局部"}
-              </Button>
-            </Card>
-
-            <AnimatePresence>
-              {!organicView && (
-                <motion.div 
-                  initial={{ width: 0, opacity: 0, scale: 0.9, margin: 0, display: "none" }}
-                  animate={{ width: "auto", opacity: 1, scale: 1, margin: "0", display: "flex" }}
-                  exit={{ width: 0, opacity: 0, scale: 0.8, filter: "blur(10px)", margin: 0, transitionEnd: { display: "none" } }}
-                  transition={{ duration: 0.6, type: "spring" }}
-                  className="flex-1 lg:flex-[0.8] flex overflow-hidden origin-center lg:origin-left"
-                >
-                  <Card className="w-full p-8 bg-[#fffbfa] border-stone-200 flex flex-col relative overflow-hidden shadow-sm mx-auto lg:mx-2 mt-6 lg:mt-0 rounded-2xl">
-                    <div className="mb-6">
-                      <h3 className="text-xl font-bold text-stone-900 mb-2">{isEn ? "The Isolated Theory" : "孤立的抽象理论"}</h3>
-                      <p className="text-xs text-stone-500 font-mono uppercase tracking-wider text-red-500/80">{isEn ? "Property: Isolated Center" : "属性：失效的中心 (诱饵)"}</p>
-                    </div>
-                    <div className="mb-8">
-                      <span className="text-4xl font-serif font-bold text-stone-900">¥199</span>
-                    </div>
-                    <ul className="space-y-4 mb-8 flex-1">
-                      <li className="flex items-start gap-3 text-sm text-stone-600"><CheckCircle2 className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" /> {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装书"}</li>
-                      <li className="flex items-start gap-3 text-sm text-stone-400 italic"><X className="w-4 h-4 text-stone-300 shrink-0 mt-0.5" /> {isEn ? "Disconnected from tools" : "缺乏实证实操工具 (无 App)"}</li>
-                    </ul>
-                    <Button variant="outline" className="w-full bg-stone-100 text-stone-400 border-none cursor-not-allowed rounded-full">
-                      {isEn ? "A Cartesian Illusion" : "笛卡尔式的幻觉选项"}
-                    </Button>
-                  </Card>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <Card className={`flex-1 lg:flex-[1.2] p-8 flex flex-col relative z-10 shadow-2xl transform transition-all duration-700 rounded-2xl mt-6 lg:mt-0 ${organicView ? 'bg-[#0f3531] border-teal-800 scale-105 ring-4 ring-teal-500/30' : 'bg-stone-900 border-stone-800 lg:-translate-y-4 ring-4 ring-amber-500/30'}`}>
-              <div className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-widest px-6 py-1.5 rounded-full shadow-lg whitespace-nowrap transition-colors duration-700 ${organicView ? 'bg-teal-400 text-teal-950' : 'bg-amber-500 text-stone-950'}`}>
-                {isEn ? "Property 15: Not-Separateness" : "属性 15：非分离性"}
-              </div>
-              
-              <div className="mb-6 mt-2">
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{isEn ? "The Indivisible Wholeness" : "不可分割的整体"}</h3>
-                <p className={`text-sm transition-colors ${organicView ? 'text-teal-200' : 'text-stone-400'}`}>
-                  {isEn ? "Theory + Practice deeply interlocked" : "理论与实践的深度交织 (Deep Interlock)"}
-                </p>
-              </div>
-              
-              <div className="mb-8 flex items-baseline gap-3">
-                <span className={`text-4xl font-serif font-bold transition-colors ${organicView ? 'text-white' : 'text-amber-400'}`}>¥199</span>
-                <AnimatePresence>
-                  {!organicView && (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-sm text-stone-500 line-through font-medium">
-                      ¥298
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </div>
-              
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3 text-sm text-stone-200">
-                   <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 transition-colors ${organicView ? 'text-teal-400' : 'text-amber-400'}`} /> 
-                   {isEn ? "Physical Book 'Living Structure'" : "《活力结构》实体精装著作 (右脑感知)"}
-                </li>
-                <li className="flex items-start gap-3 text-sm text-stone-200">
-                   <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 transition-colors ${organicView ? 'text-teal-400' : 'text-amber-400'}`} /> 
-                   {isEn ? "Healing Mirror App Annual Access" : "愈合之镜 App 算法引擎 (左脑量化)"}
-                </li>
-                <AnimatePresence>
-                  {organicView && (
-                     <motion.li 
-                       initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, height: 0 }}
-                       className="flex items-start gap-3 text-sm text-teal-200 font-serif italic mt-6 p-4 bg-teal-900/50 rounded-lg"
-                     >
-                       {isEn ? '"In a living structure, the theory and the tool cannot exist without each other."' : '“在真正的生命力结构中，道（理论）与器（工具）互为支撑，不可割裂。”'}
-                     </motion.li>
-                  )}
-                </AnimatePresence>
-              </ul>
-              
-              <Button className={`w-full font-bold shadow-lg hover:shadow-xl transition-all rounded-full ${organicView ? 'bg-teal-500 hover:bg-teal-400 text-teal-950' : 'bg-amber-500 hover:bg-amber-400 text-stone-950'}`}>
-                {isEn ? "Embrace Wholeness" : "拥抱完整的生命力"}
-              </Button>
-            </Card>
-
-          </div>
-        </div>
       </div>
     </section>
   );
@@ -523,7 +380,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </motion.div>
       </section>
 
-      {/* 2. 新书发布 & 整体性悖论实验 */}
+      {/* 2. 新书发布 */}
       <BookLaunchExperiment />
 
       {/* 3. Platform Statement */}
