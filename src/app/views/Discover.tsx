@@ -254,8 +254,8 @@ const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, 
   const { language } = useLanguage(); 
   return (
     <div className={`flex flex-col md:flex-row items-center gap-8 ${align === "right" ? "md:flex-row-reverse" : ""}`}>
-      <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 relative rounded-full overflow-hidden border border-stone-200 shadow-sm group">
-        <ImageWithFallback src={image} alt={nameEn} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0" />
+      <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 relative rounded-full overflow-hidden border border-stone-200 shadow-sm group cursor-pointer focus:outline-none">
+        <ImageWithFallback src={image} alt={nameEn} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-active:grayscale-0" />
       </div>
       <div className={`text-center ${align === "left" ? "md:text-left" : "md:text-right"}`}>
         <h3 className="text-2xl font-serif font-bold text-stone-900 mb-1">
@@ -325,7 +325,7 @@ const BookLaunchExperiment = () => {
                 <img 
                   src="/book-cover.jpg" 
                   alt="Living Structure Book Cover" 
-                  className="w-auto h-full max-h-[350px] md:max-h-[450px] object-contain shadow-[-30px_30px_40px_rgba(0,0,0,0.8)] rotate-y-[-15deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 transition-transform duration-700 ease-out"
+                  className="w-auto h-full max-h-[350px] md:max-h-[450px] object-contain shadow-[-30px_30px_40px_rgba(0,0,0,0.8)] rotate-y-[-15deg] rotate-x-[5deg] hover:rotate-y-0 hover:rotate-x-0 active:rotate-y-0 active:rotate-x-0 transition-transform duration-700 ease-out cursor-pointer"
                 />
              </motion.div>
           </div>

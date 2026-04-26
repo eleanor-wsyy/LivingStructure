@@ -478,7 +478,7 @@ export function Practice() {
                     className="absolute top-20 left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
                   >
                     <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">{isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}</p>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {MOOD_OPTIONS.map(mood => (
                         <button key={mood.id} onClick={() => handleMoodSelect(mood.id)} className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02] active:scale-95", mood.bg, mood.border)}>
                           <mood.icon className={cn("w-4 h-4", mood.color)} />
@@ -768,7 +768,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
           <motion.div 
             animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.03, 0.06, 0.03] }}
             transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[80vw] md:h-[80vw] max-w-[1000px] max-h-[1000px] flex items-center justify-center p-12 mix-blend-screen"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[80vw] md:h-[80vw] max-w-[1000px] max-h-[1000px] flex items-center justify-center p-8 md:p-12 mix-blend-screen"
           >
              <img src="/logo.jpg" alt="Logo Watermark" className="w-full h-full object-contain blur-[1px] opacity-20 grayscale" />
           </motion.div>

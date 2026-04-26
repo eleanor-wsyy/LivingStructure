@@ -307,11 +307,33 @@ export function Library() {
                       className="w-full h-full object-contain bg-black"
                     />
                   ) : (
-                    <iframe 
-                      src={selectedItem.fileUrl.includes('.pdf') ? `${selectedItem.fileUrl}#toolbar=0` : selectedItem.fileUrl} 
-                      className="w-full h-full border-none bg-stone-200"
-                      title="Viewer"
-                    />
+                    <>
+                      {/* 🖥️ PC 端显示 iframe */}
+                      <iframe 
+                        src={selectedItem.fileUrl.includes('.pdf') ? `${selectedItem.fileUrl}#toolbar=0&view=FitH` : selectedItem.fileUrl} 
+                        className="hidden md:block w-full h-full border-none bg-stone-200"
+                        title="Viewer"
+                      />
+                      {/* 📱 移动端显示全屏专属打开按钮，避免 iframe 兼容性问题 */}
+                      <div className="md:hidden flex flex-col items-center justify-center p-8 text-center w-full h-full bg-stone-50">
+                        <FileText className="w-16 h-16 text-stone-300 mb-6" />
+                        <h3 className="text-xl font-bold text-stone-800 mb-3">{isEn ? "Mobile PDF Reader" : "移动端文档阅读"}</h3>
+                        <p className="text-sm text-stone-500 mb-8 max-w-xs leading-relaxed">
+                          {isEn 
+                            ? "For the best reading experience on mobile screens, please open the document directly." 
+                            : "为了在小屏幕设备上获得最佳的排版与缩放体验，建议直接打开原生阅读器。"}
+                        </p>
+                        <a 
+                          href={selectedItem.fileUrl} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="px-8 py-4 bg-stone-900 text-white hover:bg-teal-600 rounded-full font-bold shadow-xl active:scale-95 transition-all flex items-center gap-3"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                          {isEn ? "Open PDF Reader" : "使用原生阅读器打开"}
+                        </a>
+                      </div>
+                    </>
                   )}
                 </div>
               </motion.div>

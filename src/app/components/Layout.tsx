@@ -236,8 +236,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
           <ul className="space-y-1">
             {menuItems.map((item) => (
               <li key={item.id}>
-                <button onClick={() => onNavigate(item.id)} className={cn("flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors", currentPage === item.id ? "bg-stone-100/80 text-stone-900" : "text-stone-500 hover:bg-stone-50/80 hover:text-stone-900")}>
-                  <item.icon className={cn("h-4 w-4", currentPage === item.id ? "text-stone-900" : "text-stone-400")} />
+                <button onClick={() => onNavigate(item.id)} className={cn("flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all group", currentPage === item.id ? "bg-stone-900 text-white shadow-md" : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 hover:scale-[1.02]")}>
+                  <item.icon className={cn("h-4 w-4 transition-colors", currentPage === item.id ? "text-amber-400" : "text-stone-400 group-hover:text-amber-500")} />
                   {item.label}
                 </button>
               </li>
@@ -260,21 +260,21 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
 
       {/* --- Main Area --- */}
       <div className="flex flex-1 flex-col overflow-hidden relative bg-[#FDFBF7]">
-        <header className="flex h-14 items-center justify-between border-b border-stone-200 bg-white/80 backdrop-blur px-4 md:hidden z-30 relative">
+        <header className="flex h-14 items-center justify-between border-b border-stone-200 bg-white/90 backdrop-blur-md px-4 md:hidden z-30 relative shadow-sm">
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-stone-900 text-white shadow-sm">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
             </div>
             <span className="font-bold text-stone-900">{isEn ? 'Living Structure' : '活力结构'}</span>
           </div>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-stone-500 hover:bg-stone-100 rounded-md">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-stone-600 hover:bg-stone-100 rounded-md active:scale-95 transition-transform">
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </header>
 
         <AnimatePresence>
           {isMenuOpen && (
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="absolute inset-0 z-20 bg-white/95 backdrop-blur-sm md:hidden overflow-y-auto">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="absolute inset-0 z-20 bg-white/98 backdrop-blur-md md:hidden overflow-y-auto">
               <div className="p-4 space-y-6 pt-20">
                 <nav className="flex flex-col space-y-1">
                   {menuItems.map((item) => (
@@ -284,6 +284,19 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
                     </button>
                   ))}
                 </nav>
+
+                <div className="border-t border-stone-100 mt-6 pt-6 space-y-6">
+                  <div className="flex items-center justify-between px-3">
+                    <Button variant="ghost" size="sm" onClick={toggleLanguage} className="h-8 px-4 py-2 border border-stone-200 rounded-full text-sm font-bold text-stone-600 hover:bg-stone-100 transition-colors shadow-sm active:scale-95">
+                      {language === 'en' ? '切换至中文' : 'Switch to English'}
+                    </Button>
+                    <div className="text-xs font-bold text-stone-400 flex items-center gap-1"><Globe className="h-4 w-4" /> EN/ZH</div>
+                  </div>
+                  
+                  <div className="px-3">
+                     <UserControl isEn={isEn} />
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

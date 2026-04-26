@@ -421,7 +421,7 @@ export function Analyze() {
                           </h4>
                           
                           {Array.isArray(currentStats?.all_attributes) ? (
-                            <div className="grid grid-cols-3 gap-2 md:gap-3">
+                            <div className="grid grid-cols-3 gap-1 md:gap-3">
                               {currentStats.all_attributes.map((attr: any, idx: number) => {
                                 const isPresent = Number(attr.score) >= 1;
                                 return (

@@ -237,6 +237,8 @@ interface CaseStudy {
   dynastyZh: string;
   location: string;
   locationZh: string;
+  category: string;
+  categoryZh: string;
   lValue: number;
   bValue: string;
   description: string;
@@ -249,7 +251,18 @@ interface CaseStudy {
   centers?: CenterNode[]; 
 }
 
+const CATEGORIES = [
+  { id: "all",         en: "All Types",   zh: "全部" },
+  { id: "residential", en: "Residential",  zh: "住宅" },
+  { id: "temple",      en: "Temple",       zh: "庙宇" },
+  { id: "educational", en: "Educational",  zh: "教学楼" },
+  { id: "commercial",  en: "Commercial",   zh: "商业" },
+  { id: "medical",     en: "Medical",      zh: "医院" },
+  { id: "palace_garden", en: "Palace",     zh: "宫殿/坛庙" },
+];
+
 const cases: CaseStudy[] = [
+  // ── 住宅 Residential ──────────────────────────────────────
   {
     id: "langjiali",
     name: "Langjiali Folk House",
@@ -257,11 +270,13 @@ const cases: CaseStudy[] = [
     dynasty: "Ming & Qing",
     dynastyZh: "明清时期",
     location: "Linhai, Zhejiang",
-    locationZh: "浙江临海",
+    locationZh: "浙江台州",
+    category: "residential",
+    categoryZh: "住宅",
     lValue: 22038,
     bValue: "6 / 15",
-    description: "Jiangnan folk houses are a vital component of traditional Chinese residential architecture. Characterized by facing south for sunlight, using wooden beams for load-bearing, and stone/earth for protection.",
-    descriptionZh: "江南民居是中国传统民居建筑的重要组成部分，江浙水乡注重前街后河，但无论南方还是北方的中国人，其传统民居的共同特点都是坐北朝南，注重内采光；以木梁承重，以砖、石、土砌护墙。",
+    description: "Jiangnan folk houses are a vital component of traditional Chinese residential architecture. Characterized by facing south for sunlight, structured around light wells.",
+    descriptionZh: "典型江南水乡民居，围绕天井展开，木梁承重。从街巷到天井再到厅堂的层层递进，展现了丰富的尺度层级。",
     imageUrl: "/cnts/LJNMJ.png",
     diagramUrl: "/cnts/LJNMJ.png", 
     elevationUrl: "/cnts/LJNMJ.png", 
@@ -270,53 +285,265 @@ const cases: CaseStudy[] = [
     centers: [
       { x: 50, y: 30, r: 80, label: "Main Ridge (主脊)" },
       { x: 30, y: 60, r: 60, label: "Gable Wall (山墙)" },
-      { x: 70, y: 60, r: 60, label: "Courtyard Entry (庭院入口)" },
+      { x: 70, y: 60, r: 60, label: "Courtyard Entry (庭院入口)" }
     ]
   },
   {
-    id: "forbidden_city",
-    name: "Hall of Supreme Harmony",
-    nameZh: "太和殿",
-    dynasty: "Ming Dynasty",
-    dynastyZh: "明朝",
+    id: "guangdong_residence",
+    name: "Guangdong Residence",
+    nameZh: "广东旧址住宅",
+    dynasty: "1871",
+    dynastyZh: "1871年建",
+    location: "Guangdong",
+    locationZh: "广东",
+    category: "residential",
+    categoryZh: "住宅",
+    lValue: 38706,
+    bValue: "7 / 15",
+    description: "A traditional Guangdong residence featuring 'wok-handle' roof walls. The complex layout of courtyards produces a high degree of living structure.",
+    descriptionZh: "传统岭南民居，以经典的镬耳墙为特征。其复杂的院落布局和深层交织产生了极高的生命活力结构得分。",
+    imageUrl: "/cnts/guangdong_residence.png",
+    diagramUrl: "/cnts/guangdong_residence.png", 
+    elevationUrl: "/cnts/guangdong_residence.png", 
+    levels: [3, 9, 31, 169, 913, 5326],
+    relatedProperties: [2, 5, 8, 12],
+    centers: [
+      { x: 50, y: 50, r: 100, label: "Main Courtyard (主院)" }
+    ]
+  },
+  // ── 庙宇 Temple ──────────────────────────────────────
+  {
+    id: "jingci_temple",
+    name: "Jingci Temple",
+    nameZh: "净慈寺",
+    dynasty: "Song Dynasty (Relic)",
+    dynastyZh: "宋代始建",
+    location: "Hangzhou, Zhejiang",
+    locationZh: "浙江杭州",
+    category: "temple",
+    categoryZh: "庙宇",
+    lValue: 19764,
+    bValue: "10 / 15",
+    description: "A prominent Buddhist temple featuring profound 'Voids' in its courtyards. The alternating repetition of halls and open spaces generates spiritual calmness.",
+    descriptionZh: "著名的佛教寺庙，其庭院展现了深邃的'虚空'。殿堂与开阔空间的交替重复营造出精神上的宁静感。",
+    imageUrl: "/cnts/jingci_temple.png",
+    diagramUrl: "/cnts/jingci_temple.png",
+    elevationUrl: "/cnts/jingci_temple.png",
+    levels: [4, 11, 27, 90, 318, 2844],
+    relatedProperties: [4, 13, 14],
+    centers: [
+      { x: 50, y: 60, r: 90, label: "Main Hall (大雄宝殿)" }
+    ]
+  },
+  {
+    id: "shengmu_temple",
+    name: "Shengmu Temple",
+    nameZh: "圣母庙",
+    dynasty: "Song Dynasty",
+    dynastyZh: "宋代",
+    location: "Taiyuan, Shanxi",
+    locationZh: "山西太原",
+    category: "temple",
+    categoryZh: "庙宇",
+    lValue: 22038,
+    bValue: "9 / 15",
+    description: "An ancient temple complex nestled in the mountains. The harmony between natural topography and architectural structure exhibits strong 'not-separateness'.",
+    descriptionZh: "依山而建的古老庙宇群。自然地形与建筑结构之间的和谐展现了强烈的“不分离”和“局部对称”属性。",
+    imageUrl: "/cnts/jingci_temple.png",
+    diagramUrl: "/cnts/jingci_temple.png",
+    elevationUrl: "/cnts/jingci_temple.png",
+    levels: [4, 10, 36, 123, 533, 2967],
+    relatedProperties: [3, 7, 15],
+    centers: [
+      { x: 50, y: 40, r: 70, label: "Main Shrine (主殿)" }
+    ]
+  },
+  // ── 教学楼 Educational ──────────────────────────────────────
+  {
+    id: "st_johns_univ",
+    name: "St. John's University",
+    nameZh: "圣约翰大学教学楼",
+    dynasty: "1916",
+    dynastyZh: "1916年",
+    location: "Shanghai",
+    locationZh: "上海",
+    category: "educational",
+    categoryZh: "教学楼",
+    lValue: 12096,
+    bValue: "7 / 15",
+    description: "An early integration of Western collegiate architecture with Chinese traditional roofs. The strong boundaries and solid shapes reflect institutional stability.",
+    descriptionZh: "早期中西合璧的大学建筑，结合了西方学院派结构与中国传统屋顶。坚固的边界和良好的形状体现了机构的稳定性。",
+    imageUrl: "/cnts/st_johns_univ.png",
+    diagramUrl: "/cnts/st_johns_univ.png",
+    elevationUrl: "/cnts/st_johns_univ.png",
+    levels: [2, 6, 30, 82, 314, 1582],
+    relatedProperties: [3, 6, 9],
+    centers: [
+      { x: 50, y: 50, r: 80, label: "Main Entrance (主入口)" }
+    ]
+  },
+  {
+    id: "missions_building",
+    name: "Missions Building",
+    nameZh: "协和书局/教士大楼",
+    dynasty: "1915",
+    dynastyZh: "1915年",
+    location: "Shanghai",
+    locationZh: "上海",
+    category: "educational",
+    categoryZh: "教学楼",
+    lValue: 38661,
+    bValue: "7 / 15",
+    description: "An important educational and publishing center. Its multi-layered facade and strong central entrance establish a powerful structural hierarchy.",
+    descriptionZh: "重要的教育与出版中心。其多层次的立面和突出的中央入口建立了强大的结构层级和生命活力。",
+    imageUrl: "/cnts/st_johns_univ.png",
+    diagramUrl: "/cnts/st_johns_univ.png",
+    elevationUrl: "/cnts/st_johns_univ.png",
+    levels: [4, 12, 33, 108, 313, 1299, 3754],
+    relatedProperties: [2, 4, 10],
+    centers: [
+      { x: 50, y: 70, r: 60, label: "Central Hall (中央大厅)" }
+    ]
+  },
+  // ── 商业 Commercial ──────────────────────────────────────
+  {
+    id: "shanghai_customs",
+    name: "Shanghai Customs House",
+    nameZh: "上海海关大楼",
+    dynasty: "1916",
+    dynastyZh: "1916年",
+    location: "The Bund, Shanghai",
+    locationZh: "上海外滩",
+    category: "commercial",
+    categoryZh: "商业",
+    lValue: 46770,
+    bValue: "7 / 15",
+    description: "A neo-classical commercial landmark on the Bund. Its massive scale and strong vertical centers dominate the skyline.",
+    descriptionZh: "外滩的新古典主义商业地标。其巨大的尺度和强烈的垂直中心主导了天际线，创造了独特的视觉层级。",
+    imageUrl: "/cnts/shanghai_customs.png",
+    diagramUrl: "/cnts/shanghai_customs.png",
+    elevationUrl: "/cnts/shanghai_customs.png",
+    levels: [4, 12, 59, 223, 1132, 6365],
+    relatedProperties: [1, 2, 7],
+    centers: [
+      { x: 50, y: 20, r: 60, label: "Clock Tower (钟楼)" }
+    ]
+  },
+  {
+    id: "art_deco_building",
+    name: "Art Deco Commercial Bldg",
+    nameZh: "杰凯庐苑(Art Deco商业)",
+    dynasty: "1930s",
+    dynastyZh: "1930年代",
+    location: "Shanghai",
+    locationZh: "上海",
+    category: "commercial",
+    categoryZh: "商业",
+    lValue: 17766,
+    bValue: "6 / 15",
+    description: "Features geometric ornamentation and stepped gradients. The contrast between vertical lines and horizontal balconies creates dynamic positive space.",
+    descriptionZh: "典型的Art Deco风格。具有几何装饰和阶梯状渐变，垂直线条与阳台之间的对比创造了动态的正空间。",
+    imageUrl: "/cnts/shanghai_customs.png",
+    diagramUrl: "/cnts/shanghai_customs.png",
+    elevationUrl: "/cnts/shanghai_customs.png",
+    levels: [3, 13, 32, 116, 652, 2145],
+    relatedProperties: [5, 9, 10],
+    centers: [
+      { x: 50, y: 50, r: 70, label: "Facade Pattern (立面纹理)" }
+    ]
+  },
+  // ── 医院 Medical ──────────────────────────────────────
+  {
+    id: "children_hospital",
+    name: "Children's Hospital",
+    nameZh: "巨鹿路儿童医院",
+    dynasty: "1931",
+    dynastyZh: "1931年",
+    location: "Shanghai",
+    locationZh: "上海",
+    category: "medical",
+    categoryZh: "医院",
+    lValue: 5345,
+    bValue: "5 / 15",
+    description: "Designed with an emphasis on functional light and ventilation, featuring gentle gradients and calm spaces to promote healing.",
+    descriptionZh: "设计注重采光和通风，具有柔和的渐变和平静的空间，以促进疗愈，体现了“局部对称”和“渐变”。",
+    imageUrl: "/cnts/children_hospital.png",
+    diagramUrl: "/cnts/children_hospital.png",
+    elevationUrl: "/cnts/children_hospital.png",
+    levels: [2, 14, 43, 216, 794],
+    relatedProperties: [10, 14],
+    centers: [
+      { x: 50, y: 50, r: 60, label: "Entrance Hall (门厅)" }
+    ]
+  },
+  {
+    id: "early_medical",
+    name: "Early Medical Building",
+    nameZh: "早期医疗建筑",
+    dynasty: "1835",
+    dynastyZh: "1835年",
+    location: "Guangzhou",
+    locationZh: "广州",
+    category: "medical",
+    categoryZh: "医院",
+    lValue: 9636,
+    bValue: "6 / 15",
+    description: "An early integration of Western medical function with local structural elements, maintaining strong 'roughness' and structural coherence.",
+    descriptionZh: "早期西式医疗功能与本土结构的融合，维持了高强度的结构连贯性与和谐度。",
+    imageUrl: "/cnts/children_hospital.png",
+    diagramUrl: "/cnts/children_hospital.png",
+    elevationUrl: "/cnts/children_hospital.png",
+    levels: [2, 6, 21, 78, 288, 1211],
+    relatedProperties: [8, 15],
+    centers: [
+      { x: 50, y: 50, r: 80, label: "Main Ward (主病房)" }
+    ]
+  },
+  // ── 宫殿/坛庙 Palace/Altar ──────────────────────────────────────
+  {
+    id: "temple_of_heaven",
+    name: "Temple of Heaven",
+    nameZh: "明太祖天坛",
+    dynasty: "1420",
+    dynastyZh: "1420年",
+    location: "Beijing",
+    locationZh: "北京",
+    category: "palace_garden",
+    categoryZh: "宫殿/坛庙",
+    lValue: 6525,
+    bValue: "7 / 15",
+    description: "An imperial complex representing the connection between Heaven and Earth, defined by perfect geometry and deep spiritual centers.",
+    descriptionZh: "代表天地相连的皇家建筑群，以完美的几何形状和极强的“好形状”、“局部对称”属性著称。",
+    imageUrl: "/cnts/temple_of_heaven.png",
+    diagramUrl: "/cnts/temple_of_heaven.png",
+    elevationUrl: "/cnts/temple_of_heaven.png",
+    levels: [4, 12, 57, 263, 969],
+    relatedProperties: [6, 7, 13],
+    centers: [
+      { x: 50, y: 50, r: 60, label: "Altar Center (天心石)" }
+    ]
+  },
+  {
+    id: "qianqing_palace",
+    name: "Qianqing Palace",
+    nameZh: "乾清宫",
+    dynasty: "1748",
+    dynastyZh: "1748年",
     location: "Beijing",
     locationZh: "北京故宫",
-    lValue: 45210,
-    bValue: "12 / 15",
-    description: "The largest hall in the Forbidden City, exemplifying imperial power through strict symmetry, massive scale, and intricate Dougong bracket sets. It represents the peak of official structural hierarchy.",
-    descriptionZh: "故宫中最大的殿宇，通过严格的对称性、巨大的尺度和复杂的斗拱结构体现皇权。它代表了官方结构等级制度的巅峰。",
-    imageUrl: "https://images.unsplash.com/photo-1740390364580-bfc152f2499d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwQmVpamluZyUyMGFlcmlhbCUyMHZpZXclMjBzeW1tZXRyeSUyMGFyY2hpdGVjdHVyZXxlbnwxfHx8fDE3NzE2NDk6MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    diagramUrl: "https://images.unsplash.com/photo-1599571342676-47b297800067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwcm9vZiUyMGRldGFpbCUyMGdvbGRlbnxlbnwxfHx8fDE3NzE2NDk2MTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    elevationUrl: "https://images.unsplash.com/photo-1546261547-49f3e4c4c77c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxGb3JiaWRkZW4lMjBDaXR5JTIwZmFjYWRlfGVufDF8fHx8MTc3MTY0OTYxOXww&ixlib=rb-4.1.0&q=80&w=1080",
-    levels: [2, 12, 48, 192, 864, 4200],
-    relatedProperties: [2, 6, 7, 12, 14],
+    category: "palace_garden",
+    categoryZh: "宫殿/坛庙",
+    lValue: 21828,
+    bValue: "6 / 15",
+    description: "The primary inner-court residence for emperors. It features extremely strong centers, strict boundaries, and high scale contrast.",
+    descriptionZh: "故宫内廷主要建筑，皇帝的寝宫。具有极强的中心、严格的边界和高强度的层级尺度对比。",
+    imageUrl: "/cnts/temple_of_heaven.png",
+    diagramUrl: "/cnts/temple_of_heaven.png",
+    elevationUrl: "/cnts/temple_of_heaven.png",
+    levels: [3, 9, 47, 201, 504, 2874],
+    relatedProperties: [2, 3, 9, 14],
     centers: [
-      { x: 50, y: 50, r: 120, label: "Imperial Throne (宝座中心)" },
-      { x: 20, y: 40, r: 50, label: "Dougong Cluster (斗拱群)" },
-      { x: 80, y: 40, r: 50, label: "Dougong Cluster (斗拱群)" },
-    ]
-  },
-  {
-    id: "suzhou_garden",
-    name: "Humble Administrator's Garden",
-    nameZh: "拙政园",
-    dynasty: "Ming Dynasty",
-    dynastyZh: "明朝",
-    location: "Suzhou, Jiangsu",
-    locationZh: "江苏苏州",
-    lValue: 18500,
-    bValue: "9 / 15",
-    description: "A masterpiece of Chinese landscape garden design. Unlike the strict symmetry of imperial palaces, it emphasizes 'Roughness' and 'Echoes' through natural forms, water, and rockeries.",
-    descriptionZh: "中国园林设计的杰作。与皇宫严格的对称性不同，它通过自然形态、水体和假山强调“粗糙性”和“呼应”。",
-    imageUrl: "https://images.unsplash.com/photo-1722097993455-eb9c949270d9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxDaGluZXNlJTIwdHJhZGl0aW9uYWwlMjBnYXJkZW4lMjBTdXpob3UlMjBhcmNoaXRlY3R1cmV8ZW58MXx8fHwxNzcxNjQ5NjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-    diagramUrl: "https://images.unsplash.com/photo-1523528206898-1e43c5101037?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXpob3UlMjBnYXJkZW4lMjBkZXRhaWx8ZW58MXx8fHwxNzcxNjQ5NjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-    elevationUrl: "https://images.unsplash.com/photo-1512805177439-012b18f15d73?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdXpob3UlMjBnYXJkZW4lMjB3aW5kb3d8ZW58MXx8fHwxNzcxNjQ5NjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-    levels: [6, 24, 88, 300, 1100, 3500],
-    relatedProperties: [4, 8, 11, 13, 15],
-    centers: [
-      { x: 40, y: 70, r: 70, label: "Rockery Point (假山叠石)" },
-      { x: 75, y: 45, r: 60, label: "Framed Window (漏窗透景)" },
-      { x: 25, y: 25, r: 50, label: "Curved Eave (飞檐)" },
+      { x: 50, y: 50, r: 70, label: "Imperial Throne (宝座)" }
     ]
   }
 ];
@@ -359,8 +586,8 @@ const STATIC_QUESTION_POOL = [
 // --- Components ---
 
 const Section = ({ title, subTitle, children, className }: { title: string, subTitle?: string, children: React.ReactNode, className?: string }) => (
-  <section className={cn("mb-32 pt-12 border-t border-stone-200", className)}>
-    <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-16 items-baseline">
+  <section className={cn("mb-16 md:mb-32 pt-8 md:pt-12 border-t border-stone-200", className)}>
+    <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-8 md:mb-16 items-baseline">
       <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-900 uppercase tracking-widest shrink-0 w-auto md:w-80">{title}</h2>
       {subTitle && <h3 className="text-lg md:text-xl font-sans text-stone-400 font-light">{subTitle}</h3>}
     </div>
@@ -474,8 +701,8 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
                 className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
                 style={{ left: `${sliderPos}%` }}
              >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center border border-stone-200 text-stone-600">
-                   <MoveHorizontal className="w-4 h-4" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center border border-stone-200 text-stone-600">
+                   <MoveHorizontal className="w-5 h-5" />
                 </div>
              </div>
           </div>
@@ -487,15 +714,37 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
 
 const ChineseArchitecturalSystem = () => {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>("all");
   const [highlightCenters, setHighlightCenters] = useState(false);
   const { trans, language } = useLanguage();
 
   const selectedCase = cases.find(c => c.id === selectedCaseId);
 
   if (!selectedCase) {
+    const filteredCases = activeCategory === "all" ? cases : cases.filter(c => c.category === activeCategory);
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cases.map((c) => (
+      <div>
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-2 mb-8 justify-center md:justify-start">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={cn(
+                "px-4 py-1.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest transition-colors",
+                activeCategory === cat.id
+                  ? "bg-stone-900 text-white"
+                  : "bg-white text-stone-500 border border-stone-200 hover:border-stone-400"
+              )}
+            >
+              {language === 'zh' ? cat.zh : cat.en}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCases.map((c) => (
           <div 
             key={c.id}
             onClick={() => setSelectedCaseId(c.id)}
@@ -525,12 +774,13 @@ const ChineseArchitecturalSystem = () => {
           </div>
         ))}
       </div>
+      </div>
     );
   }
 
   return (
     <div className="bg-white border border-stone-200 rounded-sm shadow-sm">
-      <div className="border-b border-stone-100 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-stone-50/50">
+      <div className="border-b border-stone-100 p-4 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-stone-50/50">
          <div className="flex items-start gap-4">
             <button 
               onClick={() => setSelectedCaseId(null)}
@@ -545,7 +795,7 @@ const ChineseArchitecturalSystem = () => {
          </div>
       </div>
 
-      <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div className="p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
         <div className="lg:col-span-4 space-y-8">
            <div>
              <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-3 border-b border-stone-100 pb-2 inline-block">
@@ -1151,7 +1401,7 @@ export function Theory() {
   return (
     <div className="flex flex-col min-h-screen bg-[#FDFBF7] text-stone-800 pb-24">
       
-      <div className="w-full max-w-7xl mx-auto p-8 md:p-16 pb-0">
+      <div className="w-full max-w-7xl mx-auto p-4 md:p-16 pb-0">
 
         {/* Section 0: The Empirical Mirror */}
         <div className="mb-32">
@@ -1169,7 +1419,7 @@ export function Theory() {
           </div>
 
           <Section title={isEn ? "Empirical Test" : "实证测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：观测与测量"} className="!pt-0 !border-0">
-            <div className="w-full bg-white border border-stone-200 text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[600px] flex flex-col items-center justify-center p-8">
+            <div className="w-full bg-white border border-stone-200 text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center p-6 md:p-8">
               
               <AnimatePresence mode="wait">
                 {!hasStarted && !report && (
@@ -1231,7 +1481,7 @@ export function Theory() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-[400px]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 min-h-[400px] h-auto">
                       <div 
                         onClick={() => handleSelect(activeQuestions[currentStep].optionA.type, activeQuestions[currentStep].property)}
                         className="relative rounded-2xl overflow-hidden cursor-pointer group border border-stone-200 hover:border-amber-400 shadow-sm transition-all"
@@ -1283,7 +1533,7 @@ export function Theory() {
                     key="report"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-3xl w-full bg-stone-50/80 p-8 md:p-12 rounded-2xl border border-stone-200 backdrop-blur-sm shadow-inner"
+                    className="max-w-3xl w-full bg-stone-50/80 p-6 md:p-12 rounded-2xl border border-stone-200 backdrop-blur-sm shadow-inner"
                   >
                     <div className="text-amber-600 text-xs font-bold uppercase tracking-[0.2em] mb-4 text-center flex items-center justify-center gap-2">
                       <Sparkles className="w-4 h-4" /> 
@@ -1425,7 +1675,7 @@ export function Theory() {
                       isActive ? "bg-stone-900 text-white shadow-xl" : "bg-white text-stone-900 hover:bg-stone-50"
                     )}
                   >
-                    <motion.div layout className="p-6 md:p-8 flex flex-col items-center text-center">
+                    <motion.div layout className="p-4 md:p-8 flex flex-col items-center text-center">
                        <div className={cn(
                          "w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors",
                          isActive ? "bg-stone-800 text-teal-400" : "bg-stone-100 text-stone-600"
@@ -1491,7 +1741,7 @@ export function Theory() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ duration: 0.3 }}
-                    className="p-8 md:p-12 flex-grow flex flex-col"
+                    className="p-6 md:p-12 flex-grow flex flex-col"
                   >
                     <h3 className="text-4xl font-serif font-bold text-stone-900 mb-6 flex items-baseline gap-4">
                       <span className="text-amber-500 text-2xl font-mono">{String(activeProp.n).padStart(2, '0')}</span>
