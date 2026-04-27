@@ -435,7 +435,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <QuickStartCard titleEn="Learn Theory" titleZh="理论学习" descEn="Master the 15 fundamental properties of living structure through interactive definitions and case studies." descZh="通过交互式定义与真实案例分析，深入掌握活力结构的15个基本属性。" icon={BookOpen} onClick={() => onNavigate("theory")} color="stone" />
-          <QuickStartCard titleEn="Analyze" titleZh="结构分析" descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)." descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。" icon={ScanEye} onClick={() => onNavigate("analyze")} color="teal" />
+          <QuickStartCard titleEn="Analysis" titleZh="结构分析" descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)." descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。" icon={ScanEye} onClick={() => onNavigate("analyze")} color="teal" />
           <QuickStartCard titleEn="Practice Lab" titleZh="实践沙盒" descEn="Experiment with generative tools to create your own living geometries in a 2D/3D sandbox." descZh="在2D/3D交互实验室内使用生成工具，尝试创造属于你自己的生命几何图形。" icon={PenTool} onClick={() => onNavigate("practice")} color="amber" />
         </div>
       </section>

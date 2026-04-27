@@ -3,7 +3,7 @@ export const translations = {
     nav: {
       discover: "Home",
       theory: "Theory",
-      analyze: "Analyze",
+      analyze: "Analysis",
       construct: "Construct Studio",
       practice: "Healing Lab",
       library: "Studies",

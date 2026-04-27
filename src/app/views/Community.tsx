@@ -71,34 +71,42 @@ const INITIAL_POSTS: Post[] = [
     externalUrl: 'https://twitter.com/createstreets/status/1190219661596200961'
   },
   {
-    id: '1',
-    author: 'Thomas_Pioneer',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
-    imageUrl: 'https://images.unsplash.com/photo-1518991669955-9c7e78ec80ca?auto=format&fit=crop&w=800&q=80',
-    titleEn: 'Florence Gradients',
-    titleZh: '佛罗伦萨的渐变',
-    descriptionEn: 'Found this beautiful transition in Florence. The gradient of shadows creates a profound sense of inner calm.',
-    descriptionZh: '在佛罗伦萨发现了这段绝美的过渡空间。阴影的渐变营造出一种深刻的内在平静。',
-    likes: 342,
-    tagsEn: ['Gradients', 'Humanise'],
-    tagsZh: ['渐变', '人性化'],
-    dateEn: '2h ago',
-    dateZh: '2小时前'
+    id: 'ext_2',
+    author: 'Humanise',
+    avatar: 'https://humanise.org/apple-touch-icon.png',
+    imageUrl: 'https://strapi-humanise.s3.eu-west-2.amazonaws.com/Web_banners_14_b8f8a150c2.png',
+    titleEn: 'Six joyful Brazilian buildings',
+    titleZh: '六座充满生机的巴西建筑',
+    descriptionEn: "We're living through a quiet global catastrophe of soulless boring buildings. Let's look at six joyful buildings in Brazil that make cities more human.",
+    descriptionZh: '我们正经历一场由缺乏灵魂的枯燥建筑带来的全球性灾难。一起来看看巴西这六座充满生机的建筑，它们让城市变得更加人性化。',
+    likes: 8520,
+    tagsEn: ['Joyful Buildings', 'Humanise'],
+    tagsZh: ['生机建筑', '人性化城市'],
+    locationEn: 'Brazil',
+    locationZh: '巴西',
+    dateEn: 'Featured',
+    dateZh: '精选转载',
+    isExternal: true,
+    externalUrl: 'https://humanise.org/opinions/six-joyful-Brazilian-buildings'
   },
   {
-    id: '2',
-    author: 'PatternLanguage',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka',
-    imageUrl: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
-    titleEn: 'Strong Centers study',
-    titleZh: '强中心空间研究',
-    descriptionEn: 'Notice how the boundaries are not just lines, but spaces themselves.',
-    descriptionZh: '请注意这些边界不再是简单的线条，而是具有厚度的空间本身。',
-    likes: 189,
-    tagsEn: ['Strong Centers', 'Boundaries'],
-    tagsZh: ['强中心', '边界'],
-    dateEn: '5h ago',
-    dateZh: '5小时前'
+    id: 'ext_3',
+    author: 'Humanise',
+    avatar: 'https://humanise.org/apple-touch-icon.png',
+    imageUrl: 'https://strapi-humanise.s3.eu-west-2.amazonaws.com/Web_banners_15_aa1bad6880.png',
+    titleEn: 'Giving more than taking: The BuStop House',
+    titleZh: '给予多于索取：BuStop住宅',
+    descriptionEn: 'The thinking behind the brilliant reimagining of a family home in Cambridgeshire, UK. Generosity and publicness at its core.',
+    descriptionZh: '英国剑桥郡一处家庭住宅绝妙重构背后的思考。其核心在于对街道的慷慨与公共性的重塑。',
+    likes: 4200,
+    tagsEn: ['Publicness', 'Generosity'],
+    tagsZh: ['公共性', '空间慷慨'],
+    locationEn: 'UK',
+    locationZh: '英国',
+    dateEn: 'Featured',
+    dateZh: '精选转载',
+    isExternal: true,
+    externalUrl: 'https://humanise.org/opinions/generosity-and-publicness-at-the-bustop-house'
   }
 ];
 
@@ -257,7 +265,8 @@ export default function Community() {
                 {viewingPost.isExternal && (
                   <div className="absolute bottom-6 left-6 flex items-center gap-2">
                     <div className="bg-stone-900/80 backdrop-blur text-white px-4 py-2 rounded-full text-xs font-bold flex items-center gap-2 shadow-2xl border border-white/10">
-                      <Twitter className="w-3.5 h-3.5 text-blue-400" /> Source: X / Twitter
+                      {viewingPost.externalUrl?.includes('twitter') ? <Twitter className="w-3.5 h-3.5 text-blue-400" /> : <ExternalLink className="w-3.5 h-3.5 text-amber-400" />} 
+                      Source: {viewingPost.externalUrl?.includes('twitter') ? 'X / Twitter' : 'Humanise.org'}
                     </div>
                   </div>
                 )}
@@ -287,8 +296,17 @@ export default function Community() {
                       rel="noreferrer" 
                       className="flex items-center justify-center gap-2 w-full py-3.5 bg-stone-100 rounded-xl text-stone-900 text-xs font-bold uppercase tracking-widest hover:bg-stone-200 transition-all border border-stone-200 shadow-sm group"
                     >
-                      <Twitter className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" /> 
-                      {isEn ? 'Dive Deeper on X' : '在 X 上查看原文链接'}
+                      {viewingPost.externalUrl.includes('twitter') ? (
+                        <>
+                          <Twitter className="w-4 h-4 text-blue-500 group-hover:scale-110 transition-transform" /> 
+                          {isEn ? 'Dive Deeper on X' : '在 X 上查看原文链接'}
+                        </>
+                      ) : (
+                        <>
+                          <ExternalLink className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" /> 
+                          {isEn ? 'Read on Humanise.org' : '在 Humanise 查看原文'}
+                        </>
+                      )}
                     </a>
                   )}
                 </div>

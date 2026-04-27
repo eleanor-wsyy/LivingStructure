@@ -284,7 +284,7 @@ export function Analyze() {
                   {isEn ? "Perceiving the 15 geometric properties..." : "正在感知空间的 15 个几何属性..."}
                 </h2>
                 <p className="mt-3 text-sm md:text-base text-stone-600">
-                  {isEn ? "Calculating Degree of Beauty and life vitality..." : "计算美度 (Beauty) 及其活力指标..."}
+                  {isEn ? "Calculating Degree of Beauty and Vitality..." : "计算美度 (Beauty) 及其活力指标..."}
                 </p>
               </div>
             )}

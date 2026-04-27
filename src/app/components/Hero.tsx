@@ -21,12 +21,12 @@ export function Hero() {
             </div>
             <Input
               type="text"
-              placeholder="Analyze a space, search theory, or browse patterns..."
+              placeholder="Analysis a space, search theory, or browse patterns..."
               className="h-14 rounded-full border-stone-200 bg-white pl-12 pr-32 text-base shadow-sm ring-1 ring-stone-900/5 focus:ring-2 focus:ring-teal-600"
             />
             <div className="absolute inset-y-1.5 right-1.5">
               <Button size="lg" className="h-full rounded-full bg-stone-900 px-6 hover:bg-stone-800">
-                Analyze
+                Analysis
               </Button>
             </div>
           </div>

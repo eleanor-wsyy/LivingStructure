@@ -1303,15 +1303,15 @@ export function Theory() {
                 id: `A${index + 1}`,
                 type: isStrongA ? "strong" : "weak",
                 img: isStrongA ? pair.after : pair.before,
-                descEn: isStrongA ? "Living Structure (Transformed)" : "Mechanistic Space (Original)",
-                descZh: isStrongA ? "具备生命感的有机空间 (改造后)" : "机械、割裂的现代空间 (改造前)"
+                descEn: isStrongA ? "More Living (Felt More Alive)" : "Less Living (Felt Less Alive)",
+                descZh: isStrongA ? "更有生命力 (Felt More Alive)" : "较少生命力 (Felt Less Alive)"
               },
               optionB: {
                 id: `B${index + 1}`,
                 type: !isStrongA ? "strong" : "weak",
                 img: !isStrongA ? pair.after : pair.before,
-                descEn: !isStrongA ? "Living Structure (Transformed)" : "Mechanistic Space (Original)",
-                descZh: !isStrongA ? "具备生命感的有机空间 (改造后)" : "机械、割裂的现代空间 (改造前)"
+                descEn: !isStrongA ? "More Living (Felt More Alive)" : "Less Living (Felt Less Alive)",
+                descZh: !isStrongA ? "更有生命力 (Felt More Alive)" : "较少生命力 (Felt Less Alive)"
               }
             };
           });

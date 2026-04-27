@@ -421,7 +421,7 @@ export function Practice() {
         <div className="grid gap-8 lg:grid-cols-12 items-start">
           
           <div className="lg:col-span-4 space-y-6">
-            
+
             <Card className="p-0 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center overflow-hidden h-72 group cursor-pointer hover:border-amber-300 transition-all duration-500">
               <BreathingCircle isEn={isEn} />
             </Card>
@@ -795,15 +795,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
 
       <div className="w-full flex p-6 z-20 h-24 shrink-0 items-center justify-between px-6 md:px-10">
         <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center gap-3 opacity-90">
-            <div className="w-10 h-10 rounded-full bg-stone-950/80 backdrop-blur flex items-center justify-center border border-stone-800 overflow-hidden shadow-xl p-0.5">
-                <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover rounded-full" />
-            </div>
-            <div className="flex flex-col text-left">
-                <span className="text-sm md:text-base font-serif font-black text-amber-50/90 leading-none">
-                    {isEn ? "LivableCityLAB" : "宜居城市实验室"}
-                </span>
-                
-            </div>
+            <img src="/logo-white.png" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain" />
         </motion.div>
 
         <button onClick={onClose} className="text-amber-100/50 hover:text-white transition-colors p-3 bg-white/5 rounded-full backdrop-blur-md h-fit">
@@ -888,15 +880,7 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
         >
           <div className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-3">
               <motion.div whileHover={{ x: 3 }} className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-stone-200 shadow-sm flex items-center justify-center overflow-hidden bg-stone-900 group-hover:border-amber-400 transition-colors p-0.5">
-                      <img src="/logo.jpg" alt="LivableCityLAB" className="w-full h-full object-cover rounded-full" />
-                  </div>
-                  <div className="flex flex-col text-left">
-                      <span className="text-sm md:text-base font-serif font-black text-stone-900 leading-none group-hover:text-amber-700 transition-colors">
-                          {isEn ? "LivableCityLAB" : "宜居城市实验室"}
-                      </span>
-                      
-                  </div>
+                  <img src="/logo-blue.png" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain" />
               </motion.div>
           </div>
 
