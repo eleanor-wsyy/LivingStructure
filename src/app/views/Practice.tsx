@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
-import { 
-  Play, Pause, Wind, Send, Calendar as CalendarIcon, 
-  Sparkles, History, Trash2, Camera, Scan, AlertCircle, 
+import {
+  Play, Pause, Wind, Send, Calendar as CalendarIcon,
+  Sparkles, History, Trash2, Camera, Scan, AlertCircle,
   Mic, X, Sun, Zap, Box, Plus, FileText, Loader2, Quote, Heart, Eye
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { createClient } from '@supabase/supabase-js';
-import { createPortal } from 'react-dom'; 
+import { createPortal } from 'react-dom';
 
 // 初始化 Supabase 客户端
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
@@ -19,9 +19,9 @@ interface Message {
   id: string;
   role: "user" | "ai";
   content: string;
-  image?: string; 
+  image?: string;
   timestamp: number;
-  prescription?: string[]; 
+  prescription?: string[];
 }
 
 const STORAGE_KEY = "vitality_healing_chat_history";
@@ -35,19 +35,19 @@ const MOOD_OPTIONS = [
 ];
 
 const LiveableLabLogo = ({ isEn, className }: { isEn: boolean, className?: string }) => (
-    <div className={cn("flex items-center gap-3", className)}>
-        <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 shadow-sm flex items-center justify-center p-2 group-hover:bg-amber-700 transition-colors">
-            <Eye className="w-6 h-6 text-amber-300 group-hover:text-white" />
-        </div>
-        <div className="flex flex-col text-left">
-            <span className="text-xl font-serif font-black text-stone-900 leading-none">
-                {isEn ? "LivableCityLAB" : "宜居城市实验室"}
-            </span>
-            <span className="text-[9px] uppercase tracking-[0.2em] text-stone-400 group-hover:text-amber-600 transition-colors">
-                {isEn ? "宜居城市实验室 " : "LivableCityLAB "}
-            </span>
-        </div>
+  <div className={cn("flex items-center gap-3", className)}>
+    <div className="w-10 h-10 rounded-full bg-stone-900 border border-stone-800 shadow-sm flex items-center justify-center p-2 group-hover:bg-amber-700 transition-colors">
+      <Eye className="w-6 h-6 text-amber-300 group-hover:text-white" />
     </div>
+    <div className="flex flex-col text-left">
+      <span className="text-xl font-serif font-black text-stone-900 leading-none">
+        {isEn ? "LivableCityLAB" : "宜居城市实验室"}
+      </span>
+      <span className="text-[9px] uppercase tracking-[0.2em] text-stone-400 group-hover:text-amber-600 transition-colors">
+        {isEn ? "宜居城市实验室 " : "LivableCityLAB "}
+      </span>
+    </div>
+  </div>
 );
 
 export function Practice() {
@@ -65,7 +65,7 @@ export function Practice() {
 
   const [moodHistory, setMoodHistory] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem(MOOD_STORAGE_KEY);
-    if (saved) try { return JSON.parse(saved); } catch(e) {}
+    if (saved) try { return JSON.parse(saved); } catch (e) { }
     return {};
   });
   const [showMoodSelector, setShowMoodSelector] = useState(false);
@@ -78,7 +78,7 @@ export function Practice() {
   const base64ImageRef = useRef<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [scanStep, setScanStep] = useState(0); 
+  const [scanStep, setScanStep] = useState(0);
   const [isListening, setIsListening] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -86,9 +86,9 @@ export function Practice() {
   const recognitionRef = useRef<any>(null);
   const startTextRef = useRef("");
 
-  useEffect(() => { 
+  useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); 
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
     } catch (e) {
       const safeMessages = messages.map(m => ({ ...m, image: undefined }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(safeMessages));
@@ -108,7 +108,7 @@ export function Practice() {
         recognitionRef.current = new SpeechRecognition();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = true;
-        
+
         recognitionRef.current.onstart = () => { startTextRef.current = inputText; };
         recognitionRef.current.onresult = (event: any) => {
           let currentTranscript = "";
@@ -121,7 +121,7 @@ export function Practice() {
         recognitionRef.current.onend = () => setIsListening(false);
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleListening = () => {
@@ -151,7 +151,7 @@ export function Practice() {
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 800; 
+        const MAX_WIDTH = 800;
         let width = img.width;
         let height = img.height;
 
@@ -164,8 +164,8 @@ export function Practice() {
         canvas.height = height;
         const ctx = canvas.getContext("2d");
         ctx?.drawImage(img, 0, 0, width, height);
-        
-        base64ImageRef.current = canvas.toDataURL("image/jpeg", 0.7); 
+
+        base64ImageRef.current = canvas.toDataURL("image/jpeg", 0.7);
       };
       img.src = event.target?.result as string;
     };
@@ -185,7 +185,7 @@ export function Practice() {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      const dayName = isEn 
+      const dayName = isEn
         ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()]
         : ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
       days.push({ dateKey, dayName, isToday: i === 0 });
@@ -201,21 +201,21 @@ export function Practice() {
     if (!inputText.trim() && !previewImage) return;
 
     const userBase64 = base64ImageRef.current;
-    const currentInput = inputText; 
-    
-    const newUserMsg: Message = { 
-      id: Date.now().toString(), 
-      role: "user", 
-      content: inputText, 
+    const currentInput = inputText;
+
+    const newUserMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: inputText,
       image: userBase64 || undefined,
-      timestamp: Date.now() 
+      timestamp: Date.now()
     };
 
     setMessages(prev => [...prev, newUserMsg]);
     setInputText("");
-    clearImage(); 
+    clearImage();
     setIsTyping(true);
-    
+
     if (newUserMsg.image) {
       setIsScanning(true);
       setScanStep(1);
@@ -230,8 +230,8 @@ export function Practice() {
         return mood ? `${day.dayName}: ${isEn ? mood.labelEn : mood.labelZh}` : null;
       }).filter(Boolean).join(", ");
 
-      const memoryContext = recentMoodsString 
-        ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to softly track their inner wholeness.` 
+      const memoryContext = recentMoodsString
+        ? `Here is the user's emotional state over the past few days: [${recentMoodsString}]. Use this memory to softly track their inner wholeness.`
         : `This is the user's first time sharing.`;
 
       // 将 System Prompt 和 User Input 组合成 Gemini 接受的单段 Prompt
@@ -265,10 +265,10 @@ export function Practice() {
 
       // 请求 Supabase 中转站
       const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: { 
+        body: {
           prompt: finalPrompt,
           images: imagePayloads,
-          model: 'gemini' 
+          model: 'gemini'
         }
       });
 
@@ -277,22 +277,22 @@ export function Practice() {
       }
 
       const aiRawContent = data.reply || "";
-      
+
       const tagRegex = /#([^\s#]+)/g;
       const extractedTags = [];
       let match;
       while ((match = tagRegex.exec(aiRawContent)) !== null) {
-        extractedTags.push(match[1]); 
+        extractedTags.push(match[1]);
       }
-      
+
       const cleanContent = aiRawContent.replace(tagRegex, '').trim();
       const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Awaken Wholeness", "Gentle Boundary"] : ["唤醒整体性", "温柔的边界"]);
 
       setIsScanning(false);
-      setMessages(prev => [...prev, { 
-        id: Date.now().toString(), 
-        role: "ai", 
-        content: cleanContent, 
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        role: "ai",
+        content: cleanContent,
         timestamp: Date.now(),
         prescription: finalPrescription
       }]);
@@ -344,8 +344,8 @@ export function Practice() {
       }).filter(Boolean).join("\n");
 
       if (!recentMoodsString) {
-        setWeeklyReport(isEn 
-          ? "You haven't recorded enough moods this week. Try recording how your space feels today!" 
+        setWeeklyReport(isEn
+          ? "You haven't recorded enough moods this week. Try recording how your space feels today!"
           : "你这周还没有记录过空间心境哦。去点亮今天的状态，再来生成报告吧！");
         setIsGeneratingReport(false);
         return;
@@ -367,10 +367,10 @@ export function Practice() {
       `;
 
       const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: { 
+        body: {
           prompt: prompt,
-          images: [], 
-          model: 'gemini' 
+          images: [],
+          model: 'gemini'
         }
       });
 
@@ -403,23 +403,23 @@ export function Practice() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
       <div className="mx-auto max-w-7xl space-y-10">
-        
+
         <header className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[10px] font-bold text-teal-600 uppercase tracking-widest">
-             <Heart className="w-3 h-3 text-red-400" /> Wholeness Therapy
+            <Heart className="w-3 h-3 text-red-400" /> Wholeness Therapy
           </div>
           <h1 className="text-4xl font-serif font-black text-stone-900 italic">
             {isEn ? "The Healing Mirror" : "愈合之镜"}
           </h1>
           <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
-            {isEn 
-              ? "Upload a photo or describe your environment. We will use the organic view of space to help you find wholeness. Healing the room is healing yourself." 
+            {isEn
+              ? "Upload a photo or describe your environment. We will use the organic view of space to help you find wholeness. Healing the room is healing yourself."
               : "上传环境照片或诉说感受。我们将运用“有机空间观”助你找回内心的整体性。治愈空间，即是治愈自我。"}
           </p>
         </header>
 
         <div className="grid gap-8 lg:grid-cols-12 items-start">
-          
+
           <div className="lg:col-span-4 space-y-6">
 
             <Card className="p-0 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center overflow-hidden h-72 group cursor-pointer hover:border-amber-300 transition-all duration-500">
@@ -440,7 +440,7 @@ export function Practice() {
                   const mood = MOOD_OPTIONS.find(m => m.id === moodId);
                   return (
                     <div key={day.dateKey} className="flex flex-col items-center gap-2 relative">
-                      <div 
+                      <div
                         onClick={() => { if (day.isToday) setShowMoodSelector(!showMoodSelector); }}
                         className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
@@ -473,7 +473,7 @@ export function Practice() {
 
               <AnimatePresence>
                 {showMoodSelector && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     className="absolute top-20 left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
                   >
@@ -494,7 +494,7 @@ export function Practice() {
 
           <div className="lg:col-span-8">
             <Card className="bg-white h-[750px] shadow-2xl border-stone-200 flex flex-col overflow-hidden relative">
-              
+
               <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
                 <div className="flex items-center gap-3">
                   <div className="relative">
@@ -509,7 +509,7 @@ export function Practice() {
                     </div>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => { if(window.confirm('Reset?')) setMessages([{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }]); }} className="text-stone-400 hover:text-red-500 transition-colors">
+                <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Reset?')) setMessages([{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }]); }} className="text-stone-400 hover:text-red-500 transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -551,7 +551,7 @@ export function Practice() {
                 {isScanning && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
                     <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-50 border border-teal-100 flex items-center justify-center">
-                      <motion.div 
+                      <motion.div
                         className="absolute inset-0 bg-gradient-to-t from-teal-100/50 to-transparent"
                         animate={{ opacity: [0.3, 0.8, 0.3] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -567,15 +567,15 @@ export function Practice() {
               <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-stone-200">
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto">
                   <div className="relative flex flex-col bg-white rounded-3xl border border-stone-200 shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
-                    
+
                     <AnimatePresence>
                       {previewImage && (
                         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }} className="p-2 flex items-center gap-3">
-                           <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-md">
-                              <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
-                              <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
-                           </div>
-                           <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready to heal" : "准备倾听"}</p>
+                          <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-md">
+                            <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
+                            <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
+                          </div>
+                          <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready to heal" : "准备倾听"}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -584,9 +584,9 @@ export function Practice() {
                       <button onClick={() => fileInputRef.current?.click()} className="p-3 text-stone-400 hover:text-teal-600 transition-colors" title={isEn ? "Upload Photo" : "上传照片"}>
                         <Camera className="w-5 h-5" />
                       </button>
-                      
-                      <button 
-                        onClick={toggleListening} 
+
+                      <button
+                        onClick={toggleListening}
                         className={cn("p-3 transition-colors", isListening ? "text-red-500 animate-pulse" : "text-stone-400 hover:text-teal-600")}
                         title={isEn ? "Voice Input" : "语音输入"}
                       >
@@ -621,17 +621,17 @@ export function Practice() {
 
       <AnimatePresence>
         {weeklyReport && (
-          <motion.div 
+          <motion.div
             key="weekly-report-modal"
             className="fixed inset-0 z-[5000] flex items-center justify-center p-4"
           >
-            <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" 
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm"
               onClick={() => setWeeklyReport(null)}
             />
-            
-            <motion.div 
+
+            <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-xl bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-stone-200/60"
             >
@@ -643,7 +643,7 @@ export function Practice() {
               <div className="relative z-10 flex flex-col max-h-[80vh]">
                 <div className="px-8 pt-10 pb-6 text-center shrink-0">
                   <div className="mx-auto w-12 h-12 rounded-full bg-white shadow-sm border border-teal-100 flex items-center justify-center mb-4">
-                     <Sparkles className="w-5 h-5 text-teal-500" />
+                    <Sparkles className="w-5 h-5 text-teal-500" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif font-black text-stone-800 tracking-wide">
                     {isEn ? "Weekly Resonance" : "空间与心灵共振周报"}
@@ -684,7 +684,7 @@ export function Practice() {
 function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => void }) {
   const [step, setStep] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -713,9 +713,9 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    audioRef.current = new Audio('/meditation-audio.mp3'); 
+    audioRef.current = new Audio('/meditation-audio.mp3');
     audioRef.current.loop = true;
-    audioRef.current.volume = 0; 
+    audioRef.current.volume = 0;
 
     const fadeAudioIn = () => {
       if (audioRef.current && audioRef.current.volume < 0.6) {
@@ -725,21 +725,21 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
     };
 
     audioRef.current.play().then(() => {
-        fadeAudioIn();
+      fadeAudioIn();
     }).catch(error => {
-        console.log("Audio autoplay prevented.", error);
+      console.log("Audio autoplay prevented.", error);
     });
 
     return () => {
       if (audioRef.current) {
         const fadeAudioOut = () => {
-             if (audioRef.current && audioRef.current.volume > 0.05) {
-                 audioRef.current.volume -= 0.05;
-                 setTimeout(fadeAudioOut, 100);
-             } else if(audioRef.current) {
-                 audioRef.current.pause();
-                 audioRef.current = null;
-             }
+          if (audioRef.current && audioRef.current.volume > 0.05) {
+            audioRef.current.volume -= 0.05;
+            setTimeout(fadeAudioOut, 100);
+          } else if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current = null;
+          }
         }
         fadeAudioOut();
       }
@@ -748,7 +748,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
 
   useEffect(() => {
     if (step < observationSteps.length) {
-      const timer = setTimeout(() => setStep(s => s + 1), 9000); 
+      const timer = setTimeout(() => setStep(s => s + 1), 9000);
       return () => clearTimeout(timer);
     }
   }, [step, observationSteps.length]);
@@ -756,46 +756,46 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
   if (!mounted || typeof document === 'undefined') return null;
 
   return createPortal(
-    <motion.div 
+    <motion.div
       key="mirror-portal-overlay"
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      exit={{ opacity: 0 }} 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: 1.5 }}
       className="fixed inset-0 z-[9999] bg-gradient-to-b from-stone-900 via-[#292524] to-stone-950 flex flex-col items-center justify-between overflow-hidden"
     >
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.03, 0.06, 0.03] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[80vw] md:h-[80vw] max-w-[1000px] max-h-[1000px] flex items-center justify-center p-8 md:p-12 mix-blend-screen"
-          >
-             <img src="/logo.jpg" alt="Logo Watermark" className="w-full h-full object-contain blur-[1px] opacity-20 grayscale" />
-          </motion.div>
+        <motion.div
+          animate={{ scale: [1.05, 1.15, 1.05], opacity: [0.03, 0.06, 0.03] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[80vw] md:h-[80vw] max-w-[1000px] max-h-[1000px] flex items-center justify-center p-8 md:p-12 mix-blend-screen"
+        >
+          <img src="/logo.jpg" alt="Logo Watermark" className="w-full h-full object-contain blur-[1px] opacity-20 grayscale" />
+        </motion.div>
 
-          <motion.div 
-            animate={{ 
-                scale: [1, 1.2, 1], 
-                opacity: [0.15, 0.35, 0.15],
-            }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] max-w-[800px] max-h-[800px] rounded-full bg-amber-600/20 blur-[120px]"
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.35, 0.15],
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] max-w-[800px] max-h-[800px] rounded-full bg-amber-600/20 blur-[120px]"
+        />
+
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={`particle-${i}`}
+            className="absolute w-1.5 h-1.5 bg-amber-100/40 rounded-full blur-[1px]"
+            initial={{ x: `${Math.random() * 100}vw`, y: `${100 + Math.random() * 20}vh`, opacity: 0 }}
+            animate={{ y: [`${100 + Math.random() * 20}vh`, `-20vh`], x: `${Math.random() * 100}vw`, opacity: [0, 0.6, 0] }}
+            transition={{ duration: Math.random() * 15 + 15, repeat: Infinity, ease: "linear", delay: Math.random() * 10 }}
           />
-          
-          {[...Array(20)].map((_, i) => (
-             <motion.div
-                key={`particle-${i}`}
-                className="absolute w-1.5 h-1.5 bg-amber-100/40 rounded-full blur-[1px]"
-                initial={{ x: `${Math.random() * 100}vw`, y: `${100 + Math.random() * 20}vh`, opacity: 0 }}
-                animate={{ y: [`${100 + Math.random() * 20}vh`, `-20vh`], x: `${Math.random() * 100}vw`, opacity: [0, 0.6, 0] }}
-                transition={{ duration: Math.random() * 15 + 15, repeat: Infinity, ease: "linear", delay: Math.random() * 10 }}
-             />
-          ))}
+        ))}
       </div>
 
       <div className="w-full flex p-6 z-20 h-24 shrink-0 items-center justify-between px-6 md:px-10">
-        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center gap-3 opacity-90">
-            <img src="/logo-white.png" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain" />
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center justify-center bg-white/5 backdrop-blur-xl px-4 py-2 rounded-2xl shadow-2xl border border-white/10">
+          <img src="/logo-white.jpg" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain mix-blend-screen opacity-90" />
         </motion.div>
 
         <button onClick={onClose} className="text-amber-100/50 hover:text-white transition-colors p-3 bg-white/5 rounded-full backdrop-blur-md h-fit">
@@ -811,7 +811,7 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
               initial={{ opacity: 0, y: 15, filter: "blur(8px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -15, filter: "blur(8px)" }}
-              transition={{ duration: 3.5, ease: "easeOut" }} 
+              transition={{ duration: 3.5, ease: "easeOut" }}
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-[#f8fafc] tracking-wide leading-loose md:leading-relaxed text-center drop-shadow-2xl whitespace-pre-line px-2"
             >
               {observationSteps[step]}
@@ -819,17 +819,17 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
           ) : (
             <motion.div
               key="observation-complete"
-              initial={{ opacity: 0, scale: 0.9 }} 
-              animate={{ opacity: 1, scale: 1 }} 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 2 }}
               className="flex flex-col items-center gap-12"
             >
               <p className="text-xl sm:text-2xl md:text-3xl font-serif text-amber-200/90 italic tracking-widest text-center px-4 leading-relaxed">
                 {isEn ? "Observation Complete." : "实证观测完成。"}
               </p>
-              <Button 
-                onClick={onClose} 
-                variant="outline" 
+              <Button
+                onClick={onClose}
+                variant="outline"
                 className="border-amber-500/40 text-amber-50 hover:bg-amber-500/30 hover:border-amber-400 rounded-full px-12 py-7 text-xs md:text-sm tracking-[0.2em] md:tracking-[0.3em] uppercase transition-all duration-500 backdrop-blur-lg shadow-[0_0_30px_rgba(245,158,11,0.15)]"
               >
                 {isEn ? "Upload Photo for Diagnosis" : "带着觉知上传照片"}
@@ -840,28 +840,28 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
       </div>
 
       <div className="h-32 md:h-40 w-full flex flex-col items-center justify-end pb-12 md:pb-16 z-10 shrink-0">
-         <AnimatePresence>
-            {step < observationSteps.length && (
-                <motion.div 
-                    key="calibration-anchor"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="flex flex-col items-center gap-5"
-                >
-                    <motion.div 
-                      animate={{ scale: [1, 2, 1], opacity: [0.3, 0.8, 0.3] }} 
-                      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                      className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)]"
-                    />
-                    <motion.span 
-                        animate={{ opacity: [0.3, 0.8, 0.3] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                        className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-amber-100/60 font-medium"
-                    >
-                      {isEn ? "Calibrating Inner Instrument..." : "正在校准内在量尺..."}
-                    </motion.span>
-                </motion.div>
-            )}
-         </AnimatePresence>
+        <AnimatePresence>
+          {step < observationSteps.length && (
+            <motion.div
+              key="calibration-anchor"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="flex flex-col items-center gap-5"
+            >
+              <motion.div
+                animate={{ scale: [1, 2, 1], opacity: [0.3, 0.8, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.6)]"
+              />
+              <motion.span
+                animate={{ opacity: [0.3, 0.8, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="text-[9px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-amber-100/60 font-medium"
+              >
+                {isEn ? "Calibrating Inner Instrument..." : "正在校准内在量尺..."}
+              </motion.span>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>,
     document.body
@@ -874,14 +874,14 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
   return (
     <>
       <div className="flex w-full h-full items-center justify-center p-6 md:p-8">
-        <div 
+        <div
           className="flex flex-col items-center justify-center w-full h-full cursor-pointer group rounded-2xl transition-colors duration-500 hover:bg-stone-50/50"
           onClick={() => setIsObserving(true)}
         >
           <div className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-3">
-              <motion.div whileHover={{ x: 3 }} className="flex items-center gap-3">
-                  <img src="/logo-blue.png" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain" />
-              </motion.div>
+            <motion.div whileHover={{ x: 3 }} className="flex items-center gap-3">
+              <img src="/logo-blue.jpg" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain" />
+            </motion.div>
           </div>
 
           <div className="mb-4 md:mb-6 flex items-center gap-2 text-stone-400 group-hover:text-amber-600 transition-colors mt-16 md:mt-20">
@@ -890,13 +890,13 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
           </div>
 
           <div className="relative h-28 w-28 md:h-40 md:w-40 flex items-center justify-center">
-            <motion.div 
-              className="absolute inset-0 rounded-full border border-amber-100 bg-amber-50/30 transition-transform duration-500 group-hover:scale-110" 
-              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.3, 0.6] }} 
-              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }} 
+            <motion.div
+              className="absolute inset-0 rounded-full border border-amber-100 bg-amber-50/30 transition-transform duration-500 group-hover:scale-110"
+              animate={{ scale: [1, 1.15, 1], opacity: [0.6, 0.3, 0.6] }}
+              transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
-            <motion.div 
-              className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-stone-900 flex flex-col items-center justify-center text-white shadow-xl z-10 transition-colors duration-500 group-hover:bg-amber-600" 
+            <motion.div
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-stone-900 flex flex-col items-center justify-center text-white shadow-xl z-10 transition-colors duration-500 group-hover:bg-amber-600"
               whileTap={{ scale: 0.95 }}
             >
               <Eye className="w-5 h-5 md:w-6 md:h-6 mb-1 opacity-80" />

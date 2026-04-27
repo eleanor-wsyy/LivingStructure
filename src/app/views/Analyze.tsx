@@ -27,11 +27,31 @@ export function Analyze() {
     const files = Array.from(e.target.files || []);
     files.forEach(file => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImages(prev => {
-          const newImages = [...prev, reader.result as string];
-          return newImages.slice(0, 2);
-        });
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_WIDTH) {
+            height = Math.round((height * MAX_WIDTH) / width);
+            width = MAX_WIDTH;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+          setImages(prev => {
+            const newImages = [...prev, compressedBase64];
+            return newImages.slice(0, 2);
+          });
+        };
+        img.src = event.target?.result as string;
       };
       reader.readAsDataURL(file);
     });
