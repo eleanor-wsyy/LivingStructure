@@ -354,7 +354,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           transition={{ duration: 0.8 }}
         >
           <Badge variant="outline" className="mb-6 border-teal-500/50 text-teal-700 bg-teal-50 uppercase tracking-widest px-5 py-2 rounded-full font-bold">
-             {isEn ? "AI Spatial Diagnosis & Healing Tool" : "AI 空间诊断与疗愈工具"}
+             {isEn ? "Spatial Diagnosis & Healing Tool" : "空间诊断与疗愈工具"}
           </Badge>
           
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-stone-900 tracking-tight mb-6">
@@ -368,7 +368,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           <p className="text-base md:text-lg text-stone-600 font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
             {isEn
               ? "Space is not a dead box, but a true mirror of your inner state. Upload an image, and our structural algorithm (L = S × H) will measure the objective 'Livingness' of your environment. By applying the 15 properties of life for spatial micro-interventions, we help you repair fragmentation and rediscover profound inner peace."
-              : "这是一款基于「活力结构」理论的 AI 空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。只需上传一张照片，「愈合之镜」将通过底层结构算法（L = S × H）精准测算你所在空间的客观生命力。我们基于15种属性为你提供空间“微介入”处方，通过极简的物理调整，修补环境的割裂，助你找回内心的平静与完整。"}
+              : "这是一款基于「活力结构」理论的空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。只需上传一张照片，「愈合之镜」将通过底层结构算法（L = S × H）精准测算你所在空间的客观生命力。我们基于15种属性为你提供空间“微介入”处方，通过极简的物理调整，修补环境的割裂，助你找回内心的平静与完整。"}
           </p>
           
           <Button 
@@ -435,7 +435,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <QuickStartCard titleEn="Learn Theory" titleZh="理论学习" descEn="Master the 15 fundamental properties of living structure through interactive definitions and case studies." descZh="通过交互式定义与真实案例分析，深入掌握活力结构的15个基本属性。" icon={BookOpen} onClick={() => onNavigate("theory")} color="stone" />
-          <QuickStartCard titleEn="Analysis" titleZh="结构分析" descEn="Upload your own architectural images and use AI to evaluate their structural vitality (L = S × H)." descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。" icon={ScanEye} onClick={() => onNavigate("analyze")} color="teal" />
+          <QuickStartCard titleEn="Analysis" titleZh="结构分析" descEn="Upload your own architectural images and use structural algorithms to evaluate their vitality (L = S × H)." descZh="上传你自己的建筑图纸或照片，使用算法模型评估其结构活力指标 (L = S × H)。" icon={ScanEye} onClick={() => onNavigate("analyze")} color="teal" />
           <QuickStartCard titleEn="Practice Lab" titleZh="实践沙盒" descEn="Experiment with generative tools to create your own living geometries in a 2D/3D sandbox." descZh="在2D/3D交互实验室内使用生成工具，尝试创造属于你自己的生命几何图形。" icon={PenTool} onClick={() => onNavigate("practice")} color="amber" />
         </div>
       </section>

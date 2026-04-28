@@ -18,6 +18,7 @@ export function Analyze() {
   const [userIntent, setUserIntent] = useState<string>(""); 
   const [analysisResult, setAnalysisResult] = useState<any>(null); 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [retryCount, setRetryCount] = useState<number>(0);
   
   // 获取当前的语言状态
   const { trans, language } = useLanguage();
@@ -109,6 +110,7 @@ export function Analyze() {
     if (images.length === 0) return;
     setStep("processing");
     setSelectedIndex(0); 
+    setRetryCount(0);
 
     try {
       // 处理前端 Base64 图片
@@ -138,6 +140,7 @@ export function Analyze() {
         1. "Degree of Beauty" (B) strictly depends on the presence of the 15 geometric properties.
         2. STRICT BINARY SCORING: 1 (Present, strengthening the Wholeness), 0 (Absent or disjointed). No partial scores!
         3. 🌐 LANGUAGE RULE: ALL your generated JSON values (analysis, explanations, advice, and attribute names) MUST be written in fluent ${targetLanguage}.
+        4. ⚡ PERFORMANCE RULE: Keep ALL text fields and "desc" explanations extremely short and concise (max 10-15 words). This is critical to prevent system timeouts.
 
         [The 15 Properties Map (You MUST use these exact terms for the "name" field in your JSON)]
         ${attributeNames}
@@ -180,31 +183,62 @@ export function Analyze() {
         }
       `;
 
-      // 通过 Supabase 中转站调用 Gemini
-      const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: { 
-          prompt: promptText,
-          images: imagePayloads,
-          model: 'gemini' 
-        }
-      });
+      // 引入轻量重试机制，最多重试 1 次 (防止过长等待)
+      let parsedData = null;
+      let attempt = 0;
+      const maxRetries = 1;
+      let lastError = null;
 
-      if (error) {
-        throw new Error(error.message || "请求中转站失败");
+      while (attempt <= maxRetries) {
+        try {
+          // 通过 Supabase 中转站调用 Gemini
+          const { data, error } = await supabase.functions.invoke('ai-gateway', {
+            body: { 
+              prompt: promptText,
+              images: imagePayloads,
+              model: 'gemini' 
+            }
+          });
+
+          if (error) {
+            throw new Error(error.message || "请求中转站失败");
+          }
+
+          // 提取回复内容并进行 JSON 解析
+          const responseText = data.reply || "{}";
+          parsedData = safeExtractJSON(responseText);
+          
+          if (!parsedData) throw new Error("AI 数据格式错乱");
+
+          // 成功则跳出循环
+          break;
+        } catch (err: any) {
+          lastError = err;
+          attempt++;
+          if (attempt <= maxRetries) {
+            console.warn(`第 ${attempt} 次尝试失败，正在进行重试...`, err);
+            setRetryCount(attempt);
+            // 等待 1.5 秒后重试，避免瞬间连续请求
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          }
+        }
       }
 
-      // 提取回复内容并进行 JSON 解析
-      const responseText = data.reply || "{}";
-      const parsedData = safeExtractJSON(responseText);
-      
-      if (!parsedData) throw new Error("AI 数据格式错乱");
+      if (!parsedData) {
+        throw lastError || new Error("多次尝试后分析依然失败");
+      }
 
       setAnalysisResult(parsedData);
       setStep("results");
 
     } catch (error: any) {
       console.error("AI 分析失败:", error);
-      alert(`${isEn ? 'Analysis interrupted' : '诊断中断'}：${error.message} \n${isEn ? 'Please check your network.' : '请检查网络或服务运行状态。'}`);
+      
+      // 友好的报错文案 (修复了转义字符问题)
+      const errorMsgEn = "The AI expert is thinking too deeply and encountered a timeout. Please try again.";
+      const errorMsgZh = "AI 专家思考过于深入导致连接超时，或者网络遇到波动。\n不要灰心，请再试一次！";
+      
+      alert(`⚠️ ${isEn ? 'Analysis Interrupted' : '诊断中断'}\n\n${isEn ? errorMsgEn : errorMsgZh}\n\n(Error: ${error.message})`);
       setStep("upload");
     }
   };
@@ -303,8 +337,14 @@ export function Analyze() {
                 <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
                   {isEn ? "Perceiving the 15 geometric properties..." : "正在感知空间的 15 个几何属性..."}
                 </h2>
-                <p className="mt-3 text-sm md:text-base text-stone-600">
-                  {isEn ? "Calculating Degree of Beauty and Vitality..." : "计算美度 (Beauty) 及其活力指标..."}
+                <p className="mt-3 text-sm md:text-base text-stone-600 flex flex-col items-center gap-2">
+                  {retryCount > 0 ? (
+                    <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
+                      {isEn ? `AI is thinking deeply... (Auto-retry ${retryCount}/2)` : `AI 专家深度思考中... (自动重试 ${retryCount}/2)`}
+                    </span>
+                  ) : (
+                    <span>{isEn ? "Calculating Degree of Beauty and Vitality..." : "计算美度 (Beauty) 及其活力指标..."}</span>
+                  )}
                 </p>
               </div>
             )}
