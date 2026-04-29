@@ -158,3 +158,13 @@ export const Tooltip = ({ children, content, ...props }: { children: React.React
 
 // --- Switch ---
 export { Switch } from "./switch";
+// --- Section ---
+export const Section = ({ title, subTitle, children, className }: { title: string, subTitle?: string, children: React.ReactNode, className?: string }) => (
+  <section className={cn("mb-16 md:mb-32 pt-8 md:pt-12 border-t border-stone-200", className)}>
+    <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-8 md:mb-16 items-baseline">
+      <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-900 uppercase tracking-widest shrink-0 w-auto md:w-80">{title}</h2>
+      {subTitle && <h3 className="text-lg md:text-xl font-sans text-stone-400 font-light">{subTitle}</h3>}
+    </div>
+    {children}
+  </section>
+);
