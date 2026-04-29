@@ -48,33 +48,7 @@ const resources = [
     abstractEn: "An engaging video podcast explaining the core concepts of Living Structure, GeoAnalytics, and Alexander's 15 Properties.",
     abstractZh: "一段生动的播客视频，深入浅出地解释了活力结构、地理分析以及亚历山大 15 种几何属性的核心概念。",
     fileUrl: "/videos/livingstructure.mp4" // 💡 换成你视频的名字
-  },
-  { 
-    id: 3, 
-    type: "paper", 
-    titleEn: "Head/Tail Breaks: A New Classification Scheme for Data with a Heavy-Tailed Distribution", 
-    titleZh: "头/尾分布：一种针对重尾分布数据的新型分类方案",
-    author: "Bin Jiang", 
-    year: 2013, 
-    citations: 1205,
-    abstractEn: "Proposes a novel classification scheme for data with a heavy-tailed distribution, which is the mathematical foundation for measuring living structure.",
-    abstractZh: "提出了一种针对重尾分布数据的新型分类方案，这为量化测量“活力结构”提供了坚实的数学和拓扑学基础。",
-    fileUrl: "https://arxiv.org/ftp/arxiv/papers/1209/1209.2801.pdf" 
-  },
- 
-  { 
-    id: 4, 
-    type: "paper", 
-    titleEn: "Decision-Procedure for Quality in the Built Environment", 
-    titleZh: "建筑环境质量的决策流程",
-    author: "Greg Bryant (based on Christopher Alexander)", 
-    year: "2026", 
-    citations: 0,
-    abstractEn: "A step-by-step phenomenological procedure using feeling as a meter to evaluate and generate living structures.",
-    abstractZh: "一份指导如何将身体感受作为量尺，结合 15 种属性与强中心来评估和生成活力结构的详细步骤指南。",
-    fileUrl: "/pdfs/Decision-Procedure for Quality in the Built Environment.pdf" 
   }
-  
 ];
 
 export function Library() {
