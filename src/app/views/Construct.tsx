@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Card, cn } from "@/app/components/ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
+import { Sparkles, Layers, Copy, Check, ChevronRight, Info } from "lucide-react";
 
 // 定义图片路径数组，对应 7 个层级
 const STAGE_IMAGES = [
@@ -30,6 +31,35 @@ export function Construct() {
   // 计算：截取从第1项到第H项的数组，然后求和
   const sumS = S_SEQUENCE.slice(0, H).reduce((acc, curr) => acc + curr, 0);
   const L = sumS * H; 
+
+  // --- Hierarchical Prompt Lab State ---
+  const [skeleton, setSkeleton] = useState(isEn ? "A centralized courtyard with octagonal symmetry" : "具有八角对称性的中心庭院");
+  const [properties, setProperties] = useState(isEn ? "Positive space, deep interlock, local symmetries" : "正空间，深度交织，局部对称");
+  const [detail, setDetail] = useState(isEn ? "Fractal wood joinery, recursive floral patterns" : "分形木构件，递归花卉图案");
+  const [useScaling, setUseScaling] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const generateFullPrompt = () => {
+    const p = trans.construct.promptLab;
+    const scalingClause = useScaling ? "\n[Mathematical Principle]: Follow the scaling law: far more smalls than larges. Ensure a recursive hierarchy where small details outnumber large structures by a factor of 3^n." : "";
+    
+    return `[Hierarchical Line Drawing Task]
+Role: Master Architectural Illustrator
+Goal: Generate a living structure drawing with clear hierarchical depth.
+
+${p.layer1}: ${skeleton} (Line Weight: 2.0pt, Thick)
+${p.layer2}: ${properties} (Line Weight: 1.0pt, Medium)
+${p.layer3}: ${detail} (Line Weight: 0.5pt, Thin)
+${scalingClause}
+
+Final Instruction: Compose these layers into a single coherent image that feels 'alive'. Use clean black lines on a white background.`;
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(generateFullPrompt());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   
   // 添加千位分隔符 (如 21427 变成 21,427)
   const formattedL = L.toLocaleString('en-US');
@@ -191,6 +221,91 @@ export function Construct() {
                       : "拖动滑块查看 7 个离散的结构演化阶段。每一层级产生的新结构将不断累加形成 ΣS，共同决定最终的活力指数 (L)。"}
                   </p>
                 </div>
+              </div>
+            </Card>
+
+            {/* --- 💡 Hierarchical Prompt Lab (New Feature from Gemini Appendix) --- */}
+            <Card className="bg-gradient-to-br from-teal-50 to-white p-5 md:p-6 space-y-5 border-teal-100 shadow-lg relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-3 opacity-10">
+                <Sparkles className="w-12 h-12 text-teal-600" />
+              </div>
+              
+              <div className="flex items-center gap-2 mb-1">
+                <Layers className="w-5 h-5 text-teal-600" />
+                <h3 className="font-serif font-bold text-lg text-stone-900">{trans.construct.promptLab.title}</h3>
+              </div>
+              
+              <p className="text-xs text-stone-500 leading-relaxed italic">
+                {trans.construct.promptLab.subtitle}
+              </p>
+
+              <div className="space-y-4 pt-2">
+                {/* Layer 1 */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
+                      <span className="w-4 h-0.5 bg-stone-900 rounded-full" /> {trans.construct.promptLab.layer1}
+                    </label>
+                  </div>
+                  <input 
+                    value={skeleton}
+                    onChange={(e) => setSkeleton(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm focus:ring-1 focus:ring-teal-500 outline-none transition-all"
+                  />
+                </div>
+
+                {/* Layer 2 */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-4 h-0.5 bg-stone-500 rounded-full" /> {trans.construct.promptLab.layer2}
+                  </label>
+                  <input 
+                    value={properties}
+                    onChange={(e) => setProperties(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm focus:ring-1 focus:ring-teal-500 outline-none transition-all"
+                  />
+                </div>
+
+                {/* Layer 3 */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-4 h-0.5 bg-stone-300 rounded-full" /> {trans.construct.promptLab.layer3}
+                  </label>
+                  <input 
+                    value={detail}
+                    onChange={(e) => setDetail(e.target.value)}
+                    className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm focus:ring-1 focus:ring-teal-500 outline-none transition-all"
+                  />
+                </div>
+
+                {/* Scaling Toggle */}
+                <div className="flex items-center gap-2 py-1">
+                  <input 
+                    type="checkbox" 
+                    id="scaling" 
+                    checked={useScaling}
+                    onChange={(e) => setUseScaling(e.target.checked)}
+                    className="w-4 h-4 accent-teal-600 rounded"
+                  />
+                  <label htmlFor="scaling" className="text-[11px] font-medium text-stone-600 cursor-pointer flex items-center gap-1">
+                    {trans.construct.promptLab.principle}
+                    <Info className="w-3 h-3 text-stone-300" />
+                  </label>
+                </div>
+
+                <button 
+                  onClick={handleCopy}
+                  className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-95 transition-all"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  {copied ? (isEn ? "Copied!" : "已复制！") : trans.construct.promptLab.copy}
+                </button>
+              </div>
+
+              <div className="mt-4 p-3 bg-white/40 border border-teal-50 rounded-lg">
+                <p className="text-[10px] text-teal-800/70 leading-relaxed">
+                  <span className="font-bold">Appendix Logic:</span> Line weights are strictly controlled: 2.0pt for Wholeness, 1.0pt for Centers, and 0.5pt for recursive Smalls. This ensures visual coherence across scales.
+                </p>
               </div>
             </Card>
 
