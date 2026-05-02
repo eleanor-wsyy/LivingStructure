@@ -158,7 +158,26 @@ export const translations = {
       formula: "L = S × H (Structure × Harmony)",
       breakdown: "Attribute Breakdown",
       downloadReport: "Download Full Report",
-      analyzeAnother: "Analyze Another Space"
+      analyzeAnother: "Analyze Another Space",
+      promptLab: {
+        title: "Hierarchical Prompt Lab",
+        subtitle: "Generate living structure prompts based on the Gemini Hierarchical Appendix.",
+        layer1: "Layer 1: Skeleton",
+        layer1Desc: "Primary wholeness, thick lines.",
+        layer2: "Layer 2: Properties",
+        layer2Desc: "Centers & symmetries, medium lines.",
+        layer3: "Layer 3: Detail",
+        layer3Desc: "Recursive smalls, thin lines.",
+        generate: "Generate Prompt",
+        copy: "Copy to Clipboard",
+        principle: "Scaling Principle (Far More Smalls than Larges)",
+        pdfLink: "View Full Appendix (PDF)",
+        extractTitle: "AI Hierarchy Extraction",
+        extractDesc: "Upload an image to automatically deconstruct its structural layers.",
+        extractButton: "Extract Hierarchy",
+        extracting: "Extracting...",
+        extractSuccess: "Hierarchy extracted successfully!"
+      }
     },
     practice: {
       title: "Embodied Practice",
@@ -187,20 +206,7 @@ export const translations = {
       },
       insight: "As structure deepens, vitality increases.",
       insightSub: "Order is not imposed — it emerges.",
-      footerPrompt: "\"Where is your center? What strengthens it? What boundaries protect it?\"",
-      promptLab: {
-        title: "Hierarchical Prompt Lab",
-        subtitle: "Generate living structure prompts based on the Gemini Hierarchical Appendix.",
-        layer1: "Layer 1: Skeleton",
-        layer1Desc: "Primary wholeness, thick lines.",
-        layer2: "Layer 2: Properties",
-        layer2Desc: "Centers & symmetries, medium lines.",
-        layer3: "Layer 3: Detail",
-        layer3Desc: "Recursive smalls, thin lines.",
-        generate: "Generate Prompt",
-        copy: "Copy to Clipboard",
-        principle: "Scaling Principle (Far More Smalls than Larges)"
-      }
+      footerPrompt: "\"Where is your center? What strengthens it? What boundaries protect it?\""
     },
     library: {
       title: "Academic Library",
@@ -376,7 +382,26 @@ export const translations = {
       formula: "L = S × H (结构 × 和谐)",
       breakdown: "属性细分",
       downloadReport: "下载完整报告",
-      analyzeAnother: "分析另一个空间"
+      analyzeAnother: "分析另一个空间",
+      promptLab: {
+        title: "层级化提示词实验室",
+        subtitle: "基于 Gemini 层级化附录生成活力结构提示词。",
+        layer1: "图层 1：骨架 (Skeleton)",
+        layer1Desc: "核心整体性，粗线条。",
+        layer2: "图层 2：属性 (Properties)",
+        layer2Desc: "中心与对称性，中等线条。",
+        layer3: "图层 3：细节 (Detail)",
+        layer3Desc: "递归微观结构，细线条。",
+        generate: "生成提示词",
+        copy: "复制到剪贴板",
+        principle: "尺度原则 (多小而少大)",
+        pdfLink: "查看完整附录 (PDF)",
+        extractTitle: "AI 层级提取",
+        extractDesc: "上传一张图片，自动解构其结构层级。",
+        extractButton: "一键提取层级",
+        extracting: "提取中...",
+        extractSuccess: "层级提取成功！"
+      }
     },
     practice: {
       title: "具身实践",
@@ -405,20 +430,7 @@ export const translations = {
       },
       insight: "随着结构加深，活力增强。",
       insightSub: "秩序不是强加的——它是涌现的。",
-      footerPrompt: "“你的中心在哪里？什么在强化它？什么边界在保护它？”",
-      promptLab: {
-        title: "层级化提示词实验室",
-        subtitle: "基于 Gemini 层级化附录生成活力结构提示词。",
-        layer1: "图层 1：骨架 (Skeleton)",
-        layer1Desc: "核心整体性，粗线条。",
-        layer2: "图层 2：属性 (Properties)",
-        layer2Desc: "中心与对称性，中等线条。",
-        layer3: "图层 3：细节 (Detail)",
-        layer3Desc: "递归微观结构，细线条。",
-        generate: "生成提示词",
-        copy: "复制到剪贴板",
-        principle: "尺度原则 (多小而少大)"
-      }
+      footerPrompt: "“你的中心在哪里？什么在强化它？什么边界在保护它？”"
     },
     library: {
       title: "学术图书馆",

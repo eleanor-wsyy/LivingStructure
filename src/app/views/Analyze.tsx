@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
-import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare } from "lucide-react";
+import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare, Copy, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
@@ -13,6 +13,7 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export function Analyze() {
+  const [view, setView] = useState<"diagnostic" | "lab">("diagnostic");
   const [step, setStep] = useState<"upload" | "processing" | "results">("upload");
   const [images, setImages] = useState<string[]>([]); 
   const [userIntent, setUserIntent] = useState<string>(""); 
@@ -20,9 +21,126 @@ export function Analyze() {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [retryCount, setRetryCount] = useState<number>(0);
   
-  // 获取当前的语言状态
+  // --- Prompt Lab State ---
+  const [skeleton, setSkeleton] = useState("");
+  const [properties, setProperties] = useState("");
+  const [detail, setDetail] = useState("");
+  const [useScaling, setUseScaling] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [labImage, setLabImage] = useState<string | null>(null);
+  const [isExtracting, setIsExtracting] = useState(false);
+  
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
+
+  // 初始化 Prompt Lab 默认值
+  useEffect(() => {
+    setSkeleton(isEn ? "A centralized courtyard with octagonal symmetry" : "具有八角对称性的中心庭院");
+    setProperties(isEn ? "Positive space, deep interlock, local symmetries" : "正空间，深度交织，局部对称");
+    setDetail(isEn ? "Fractal wood joinery, recursive floral patterns" : "分形木构件，递归花卉图案");
+  }, [isEn]);
+
+  const generateFullPrompt = () => {
+    const p = trans.analyze.promptLab;
+    const scalingClause = useScaling ? "\n[Mathematical Principle]: Follow the scaling law: far more smalls than larges. Ensure a recursive hierarchy where small details outnumber large structures by a factor of 3^n." : "";
+
+    return `[Hierarchical Line Drawing Task]
+Role: Master Architectural Illustrator
+Goal: Generate a living structure drawing with clear hierarchical depth.
+
+${p.layer1}: ${skeleton} (Line Weight: 2.0pt, Thick)
+${p.layer2}: ${properties} (Line Weight: 1.0pt, Medium)
+${p.layer3}: ${detail} (Line Weight: 0.5pt, Thin)
+${scalingClause}
+
+Final Instruction: Compose these layers into a single coherent image that feels 'alive'. Use clean black lines on a white background.`;
+  };
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(generateFullPrompt());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLabFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 800;
+        let width = img.width;
+        let height = img.height;
+        if (width > MAX_WIDTH) {
+          height = Math.round((height * MAX_WIDTH) / width);
+          width = MAX_WIDTH;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+        setLabImage(compressedBase64);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const startHierarchyExtraction = async () => {
+    if (!labImage) return;
+    setIsExtracting(true);
+
+    try {
+      const [header, base64Data] = labImage.split(',');
+      const mimeType = header.split(':')[1].split(';')[0];
+      const imagePayload = { mimeType, base64Data };
+
+      const targetLanguage = isEn ? "English" : "Simplified Chinese (简体中文)";
+
+      const extractionPrompt = `
+        [Role]
+        You are an expert architectural analyst.
+        
+        [Task]
+        Analyze the provided image and perform a "Hierarchical Structural Extraction" based on Christopher Alexander's Living Structure theory and the methodology of "Hierarchical Line Drawing".
+        
+        [Output Format]
+        Return ONLY a JSON object with exactly these three keys:
+        - "skeleton": Describe the primary wholeness and macro-scale structure (thick lines).
+        - "properties": Describe the centers, local symmetries, and medium-scale structures (medium lines).
+        - "detail": Describe the recursive small-scale details and fractal patterns (thin lines).
+        
+        [Language Rule]
+        Respond in ${targetLanguage}. Keep descriptions concise but academic (max 20 words per field).
+      `;
+
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
+        body: { 
+          prompt: extractionPrompt,
+          images: [imagePayload],
+          model: 'gemini' 
+        }
+      });
+
+      if (error) throw new Error(error.message);
+
+      const parsed = safeExtractJSON(data.reply || "{}");
+      if (parsed) {
+        if (parsed.skeleton) setSkeleton(parsed.skeleton);
+        if (parsed.properties) setProperties(parsed.properties);
+        if (parsed.detail) setDetail(parsed.detail);
+      }
+    } catch (err) {
+      console.error("Extraction failed:", err);
+      alert(isEn ? "Failed to extract hierarchy. Please try again." : "层级提取失败，请重试。");
+    } finally {
+      setIsExtracting(false);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -254,19 +372,178 @@ export function Analyze() {
     <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
       <div className="mx-auto max-w-7xl">
         
-        <div className="mb-8 md:mb-12 flex justify-center">
-          <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
-             <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
-             <div className="h-px w-4 md:w-12 bg-stone-300" />
-             <StepItem current={step} target="processing" number={2} label={trans.analyze.step2} />
-             <div className="h-px w-4 md:w-12 bg-stone-300" />
-             <StepItem current={step} target="results" number={3} label={trans.analyze.step3} />
+        <div className="flex flex-col items-center mb-8 md:mb-12">
+          <div className="flex bg-stone-200/50 p-1 rounded-full mb-8">
+            <button 
+              onClick={() => setView("diagnostic")}
+              className={cn(
+                "px-6 py-2 rounded-full text-sm font-bold transition-all",
+                view === "diagnostic" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"
+              )}
+            >
+              {isEn ? "Expert Diagnostic" : "专家诊断"}
+            </button>
+            <button 
+              onClick={() => setView("lab")}
+              className={cn(
+                "px-6 py-2 rounded-full text-sm font-bold transition-all",
+                view === "lab" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"
+              )}
+            >
+              {isEn ? "Prompt Laboratory" : "提示词实验室"}
+            </button>
           </div>
+
+          {view === "diagnostic" && (
+            <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
+               <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
+               <div className="h-px w-4 md:w-12 bg-stone-300" />
+               <StepItem current={step} target="processing" number={2} label={trans.analyze.step2} />
+               <div className="h-px w-4 md:w-12 bg-stone-300" />
+               <StepItem current={step} target="results" number={3} label={trans.analyze.step3} />
+            </div>
+          )}
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div key={step} className="min-h-[500px]">
+          <motion.div key={view + step} className="min-h-[500px]">
+            {view === "lab" ? (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-4xl mx-auto">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">{trans.analyze.promptLab.title}</h2>
+                  <p className="mt-4 text-stone-600 max-w-2xl mx-auto leading-relaxed">{trans.analyze.promptLab.subtitle}</p>
+
+                </div>
+
+                {/* --- New Extraction Section --- */}
+                <div className="mb-12 bg-white rounded-3xl p-6 shadow-sm border border-stone-100 flex flex-col md:flex-row items-center gap-8">
+                  <div className={cn(
+                    "relative w-full md:w-1/3 aspect-[4/3] rounded-2xl border-2 border-dashed overflow-hidden flex flex-col items-center justify-center transition-all",
+                    labImage ? "border-transparent bg-stone-50" : "border-stone-200 hover:border-teal-500 hover:bg-stone-50"
+                  )}>
+                    {labImage ? (
+                      <>
+                        <img src={labImage} alt="Lab Upload" className="w-full h-full object-cover" />
+                        <button onClick={() => setLabImage(null)} className="absolute top-2 right-2 p-1.5 bg-black/50 text-white rounded-full backdrop-blur-sm"><X className="w-3.5 h-3.5" /></button>
+                      </>
+                    ) : (
+                      <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-4">
+                        <Upload className="w-8 h-8 text-stone-300 mb-2" />
+                        <span className="text-xs font-bold text-stone-500">{trans.analyze.promptLab.extractTitle}</span>
+                        <input type="file" hidden onChange={handleLabFileChange} accept="image/*" />
+                      </label>
+                    )}
+                  </div>
+                  
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h4 className="text-lg font-bold text-stone-900">{trans.analyze.promptLab.extractTitle}</h4>
+                      <p className="text-sm text-stone-500">{trans.analyze.promptLab.extractDesc}</p>
+                    </div>
+                    <Button 
+                      onClick={startHierarchyExtraction} 
+                      disabled={!labImage || isExtracting}
+                      className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-8 py-6 shadow-lg shadow-teal-600/20 disabled:bg-stone-200"
+                    >
+                      {isExtracting ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {trans.analyze.promptLab.extracting}</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4 mr-2" /> {trans.analyze.promptLab.extractButton}</>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                  <Card className="bg-white p-8 space-y-6 shadow-xl border-stone-100 rounded-3xl">
+                    <div className="space-y-5">
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                          <div className="w-6 h-1 bg-stone-900 rounded-full" /> {trans.analyze.promptLab.layer1}
+                        </label>
+                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer1Desc}</p>
+                        <textarea 
+                          value={skeleton} 
+                          onChange={(e) => setSkeleton(e.target.value)} 
+                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                          <div className="w-6 h-1 bg-stone-500 rounded-full" /> {trans.analyze.promptLab.layer2}
+                        </label>
+                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer2Desc}</p>
+                        <textarea 
+                          value={properties} 
+                          onChange={(e) => setProperties(e.target.value)} 
+                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                          <div className="w-6 h-1 bg-stone-300 rounded-full" /> {trans.analyze.promptLab.layer3}
+                        </label>
+                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer3Desc}</p>
+                        <textarea 
+                          value={detail} 
+                          onChange={(e) => setDetail(e.target.value)} 
+                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-2">
+                        <button 
+                          onClick={() => setUseScaling(!useScaling)}
+                          className={cn(
+                            "w-10 h-5 rounded-full relative transition-colors",
+                            useScaling ? "bg-teal-500" : "bg-stone-300"
+                          )}
+                        >
+                          <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all", useScaling ? "left-6" : "left-1")} />
+                        </button>
+                        <span className="text-xs font-medium text-stone-600">{trans.analyze.promptLab.principle}</span>
+                      </div>
+                    </div>
+
+                    <Button onClick={handleCopyPrompt} className="w-full py-6 bg-stone-900 hover:bg-stone-800 text-white rounded-2xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95">
+                      {copied ? (isEn ? "Copied to Clipboard!" : "已复制到剪贴板！") : (
+                        <div className="flex items-center gap-2">
+                          <Copy className="w-4 h-4" />
+                          {trans.analyze.promptLab.generate}
+                        </div>
+                      )}
+                    </Button>
+                  </Card>
+
+                  <div className="space-y-6">
+                    <div className="bg-stone-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <Sparkles className="w-32 h-32" />
+                      </div>
+                      <h4 className="text-stone-400 uppercase tracking-widest text-[10px] font-bold mb-4">Live Preview</h4>
+                      <div className="font-mono text-xs leading-relaxed text-stone-300 whitespace-pre-wrap h-[300px] overflow-y-auto custom-scrollbar">
+                        {generateFullPrompt()}
+                      </div>
+                    </div>
+                    
+                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
+                      <h5 className="text-amber-900 font-bold text-sm mb-2 flex items-center gap-2">
+                        <Info className="w-4 h-4" />
+                        {isEn ? "How to use this prompt?" : "如何使用此提示词？"}
+                      </h5>
+                      <p className="text-amber-800/80 text-xs leading-relaxed">
+                        {isEn 
+                          ? "Copy this prompt and paste it into Gemini or Midjourney. It is optimized to create architectural drawings that respect the 15 geometric properties of living structure through hierarchical line weights."
+                          : "复制此提示词并将其粘贴到 Gemini 或 Midjourney 中。它经过优化，可通过层级化的线宽创建遵循活力结构 15 个几何属性的建筑图纸。"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <>
             {step === "upload" && (
+
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8 max-w-4xl mx-auto">
                 <div className="text-center mb-6 md:mb-8">
                   <h2 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">{trans.analyze.uploadTitle}</h2>
@@ -522,7 +799,17 @@ export function Analyze() {
                           </p>
                         </div>
                         
-                        <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100">
+                        <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100 flex flex-col gap-2">
+                          <Button 
+                            className="w-full rounded-full bg-stone-900 text-white hover:bg-stone-800 py-5 md:py-6 text-sm md:text-base font-semibold shadow-md" 
+                            onClick={() => { 
+                              setView("lab"); 
+                              if (images[selectedIndex]) setLabImage(images[selectedIndex]);
+                            }}
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            {isEn ? "Extract Hierarchy & Generate Prompt" : "提取层级并生成提示词"}
+                          </Button>
                           <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
                             {isEn ? "Analyze Another Space" : "重新分析下一个空间"}
                           </Button>
@@ -535,8 +822,10 @@ export function Analyze() {
 
               </motion.div>
             )}
-          </motion.div>
-        </AnimatePresence>
+          </>
+        )}
+      </motion.div>
+    </AnimatePresence>
       </div>
     </div>
   );

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Card, cn } from "@/app/components/ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-import { 
-  Sparkles, Layers, Copy, Check, ChevronRight, Info, 
+import {
+  Sparkles, Layers, Copy, Check, ChevronRight, Info,
   ArrowRight, ArrowLeft, Box, Eye, ArrowUpRight, Building2,
   Leaf, BookOpen, ScanLine
 } from "lucide-react";
@@ -40,7 +40,7 @@ const CampusProjectsSection = ({ isEn }: { isEn: boolean }) => {
 
   return (
     <Section
-      title={isEn ? "Campus Lab" : "校园实践"}
+      title={isEn ? "Living Lab" : "校园实践"}
       subTitle={isEn ? "Translating theory into physical space through generative AI." : "将抽象理论通过人工智能，转化为物理空间的真实疗愈体验。"}
       className="!pt-0 !border-t-0"
     >
@@ -346,37 +346,8 @@ export function Construct() {
   const S_SEQUENCE = [3, 6, 13, 52, 112, 402, 2473];
   const H = hierarchy;
   const sumS = S_SEQUENCE.slice(0, H).reduce((acc, curr) => acc + curr, 0);
-  const L = sumS * H; 
+  const L = sumS * H;
 
-  // --- Hierarchical Prompt Lab State ---
-  const [skeleton, setSkeleton] = useState(isEn ? "A centralized courtyard with octagonal symmetry" : "具有八角对称性的中心庭院");
-  const [properties, setProperties] = useState(isEn ? "Positive space, deep interlock, local symmetries" : "正空间，深度交织，局部对称");
-  const [detail, setDetail] = useState(isEn ? "Fractal wood joinery, recursive floral patterns" : "分形木构件，递归花卉图案");
-  const [useScaling, setUseScaling] = useState(true);
-  const [copied, setCopied] = useState(false);
-
-  const generateFullPrompt = () => {
-    const p = trans.construct.promptLab;
-    const scalingClause = useScaling ? "\n[Mathematical Principle]: Follow the scaling law: far more smalls than larges. Ensure a recursive hierarchy where small details outnumber large structures by a factor of 3^n." : "";
-    
-    return `[Hierarchical Line Drawing Task]
-Role: Master Architectural Illustrator
-Goal: Generate a living structure drawing with clear hierarchical depth.
-
-${p.layer1}: ${skeleton} (Line Weight: 2.0pt, Thick)
-${p.layer2}: ${properties} (Line Weight: 1.0pt, Medium)
-${p.layer3}: ${detail} (Line Weight: 0.5pt, Thin)
-${scalingClause}
-
-Final Instruction: Compose these layers into a single coherent image that feels 'alive'. Use clean black lines on a white background.`;
-  };
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(generateFullPrompt());
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-  
   const formattedL = L.toLocaleString('en-US');
   const formattedSumS = sumS.toLocaleString('en-US');
   const sumString = S_SEQUENCE.slice(0, H).map(n => n.toLocaleString('en-US')).join(" + ");
@@ -394,7 +365,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
   return (
     <div className="min-h-screen bg-[#fafaf9] py-8 md:py-12 px-4 font-sans">
       <div className="mx-auto max-w-7xl space-y-16 md:space-y-32 w-full">
-        
+
         <div className="space-y-8 md:space-y-12">
           <div>
             <h1 className="text-3xl md:text-5xl font-serif font-black text-stone-900 uppercase tracking-tight">
@@ -406,165 +377,137 @@ Final Instruction: Compose these layers into a single coherent image that feels 
           </div>
 
           <div className="bg-white p-8 md:p-12 rounded-3xl border border-stone-200 shadow-sm">
-             <div className="max-w-3xl mb-12">
-                <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-900 mb-4">
-                  {isEn ? "01. Evolutionary Growth" : "01. 结构演化增长"}
-                </h2>
-                <p className="text-sm md:text-base text-stone-600 leading-relaxed">
-                  {isEn 
-                    ? "Observe the discrete evolution of a classical structure. The livingness (L) is calculated by multiplying the cumulative number of substructures (ΣS) with the hierarchy depth (H)." 
-                    : "观察建筑结构的离散演化过程。随着层级 (H) 的加深，所有层级的子结构数量不断累加构成总数 (ΣS)，两者共同决定了整体的活力 (L)。"}
-                </p>
-             </div>
+            <div className="max-w-3xl mb-12">
+              <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-900 mb-4">
+                {isEn ? "01. Evolutionary Growth" : "01. 结构演化增长"}
+              </h2>
+              <p className="text-sm md:text-base text-stone-600 leading-relaxed">
+                {isEn
+                  ? "Observe the discrete evolution of a classical structure. The livingness (L) is calculated by multiplying the cumulative number of substructures (ΣS) with the hierarchy depth (H)."
+                  : "观察建筑结构的离散演化过程。随着层级 (H) 的加深，所有层级的子结构数量不断累加构成总数 (ΣS)，两者共同决定了整体的活力 (L)。"}
+              </p>
+            </div>
 
-             <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 md:gap-12 items-start w-full">
-                <div className="order-2 lg:order-1 lg:col-span-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
-                  <div className="hidden lg:block w-full">
-                    <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
-                      <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase z-10">
-                        {isEn ? "Initial State" : "初始状态"} (H: 1, ΣS: 3)
-                      </div>
-                      <div className="flex-1 flex items-center justify-center w-full h-full p-4 relative">
-                        <img 
-                          src={STAGE_IMAGES[0]} 
-                          alt="Stage 1" 
-                          className="object-contain w-full h-full max-h-[500px]"
-                        />
-                      </div>
-                      <div className="text-center text-xs font-mono text-stone-400 tracking-widest pb-4">
-                        PRIMITIVE MASS
-                      </div>
-                    </Card>
-                  </div>
-
-                  <Card className="bg-white p-0 h-[420px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden w-full">
-                    <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
-                      <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-                      {isEn ? "Living Structure" : "活力结构"}
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 md:gap-12 items-start w-full">
+              <div className="order-2 lg:order-1 lg:col-span-8 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
+                <div className="hidden lg:block w-full">
+                  <Card className="bg-white p-6 h-[700px] flex flex-col relative border-stone-200 shadow-sm opacity-50 grayscale">
+                    <div className="absolute top-6 left-6 text-[10px] font-bold tracking-widest text-stone-400 uppercase z-10">
+                      {isEn ? "Initial State" : "初始状态"} (H: 1, ΣS: 3)
                     </div>
-                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
-                    <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-6 md:p-12 relative">
-                      <AnimatePresence mode="wait">
-                        <motion.img
-                          key={hierarchy}
-                          src={STAGE_IMAGES[hierarchy - 1]}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 1.05 }}
-                          transition={{ duration: 0.3 }}
-                          className="object-contain w-full h-full max-h-[500px] drop-shadow-sm"
-                          alt={`Evolution Stage ${hierarchy}`}
-                        />
-                      </AnimatePresence>
-                    </div>
-                    <div className="text-center text-[10px] md:text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-4 md:pb-6">
-                      STAGE {hierarchy} EVOLUTION
-                    </div>
-                  </Card>
-                </div>
-
-                <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full lg:sticky lg:top-8">
-                  <Card className="bg-stone-100 border-none p-5 md:p-8 text-center relative overflow-hidden shadow-inner">
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
-                    <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 md:mb-6">
-                      {isEn ? "Livingness Formula" : "活力计算公式"}
-                    </div>
-                    <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4">
-                      <div className="text-xl md:text-2xl font-mono font-bold text-stone-400 tracking-widest">
-                        L = ΣS × H
-                      </div>
-                      <div className="flex flex-wrap items-baseline justify-center gap-x-2 md:gap-x-4 text-xl sm:text-2xl md:text-4xl font-mono text-stone-700">
-                        <motion.span 
-                          key={`L-${L}`}
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="text-[2.5rem] leading-none sm:text-6xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
-                        >
-                          {formattedL}
-                        </motion.span>
-                        <span className="text-stone-300 font-normal">=</span>
-                        <motion.span key={`S-${sumS}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
-                          {formattedSumS}
-                        </motion.span>
-                        <span className="text-stone-300 font-normal">×</span>
-                        <motion.span key={`H-${H}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
-                          {H}
-                        </motion.span>
-                      </div>
-                      <div className="h-auto min-h-[1.5rem] mt-1 flex items-center justify-center px-2">
-                        <AnimatePresence mode="wait">
-                          {H > 1 && (
-                            <motion.div 
-                              key={`sum-${H}`}
-                              initial={{ opacity: 0, y: -5 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className="text-[10px] md:text-xs text-stone-400 font-mono leading-relaxed text-center"
-                            >
-                              ΣS = {sumString}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </Card>
-
-                  <Card className="bg-white p-4 md:p-6 space-y-6 shadow-sm border-stone-200">
-                    <div className="space-y-4 group">
-                      <div className="flex justify-between items-end mb-2">
-                        <label className="text-sm md:text-base font-bold text-stone-800 tracking-wide transition-colors group-hover:text-teal-700">
-                          {isEn ? "Evolution Stage (H)" : "演化层级 (H)"}
-                        </label>
-                        <span className="font-mono text-xl md:text-2xl font-black text-teal-600">{hierarchy}</span>
-                      </div>
-                      <input 
-                        type="range" 
-                        min="1" max="7" step="1"
-                        value={hierarchy}
-                        onChange={(e) => setHierarchy(Number(e.target.value))}
-                        className="w-full h-1.5 md:h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
+                    <div className="flex-1 flex items-center justify-center w-full h-full p-4 relative">
+                      <img
+                        src={STAGE_IMAGES[0]}
+                        alt="Stage 1"
+                        className="object-contain w-full h-full max-h-[500px]"
                       />
                     </div>
-                  </Card>
-
-                  <Card className="bg-gradient-to-br from-teal-50 to-white p-5 md:p-6 space-y-5 border-teal-100 shadow-lg relative overflow-hidden">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Layers className="w-5 h-5 text-teal-600" />
-                      <h3 className="font-serif font-bold text-lg text-stone-900">{trans.construct.promptLab.title}</h3>
-                    </div>
-                    <div className="space-y-4 pt-2">
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
-                          <span className="w-4 h-0.5 bg-stone-900 rounded-full" /> {trans.construct.promptLab.layer1}
-                        </label>
-                        <input value={skeleton} onChange={(e) => setSkeleton(e.target.value)} className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
-                          <span className="w-4 h-0.5 bg-stone-500 rounded-full" /> {trans.construct.promptLab.layer2}
-                        </label>
-                        <input value={properties} onChange={(e) => setProperties(e.target.value)} className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-1.5">
-                          <span className="w-4 h-0.5 bg-stone-300 rounded-full" /> {trans.construct.promptLab.layer3}
-                        </label>
-                        <input value={detail} onChange={(e) => setDetail(e.target.value)} className="w-full px-3 py-2 bg-white/50 border border-stone-200 rounded-lg text-sm" />
-                      </div>
-                      <button onClick={handleCopy} className="w-full py-3 bg-teal-600 text-white rounded-xl font-bold text-xs">
-                        {copied ? (isEn ? "Copied!" : "已复制！") : trans.construct.promptLab.copy}
-                      </button>
+                    <div className="text-center text-xs font-mono text-stone-400 tracking-widest pb-4">
+                      PRIMITIVE MASS
                     </div>
                   </Card>
                 </div>
-             </div>
+
+                <Card className="bg-white p-0 h-[420px] lg:h-[700px] flex flex-col relative border-teal-200 shadow-2xl ring-1 ring-teal-50 overflow-hidden w-full">
+                  <div className="absolute top-4 left-4 md:top-6 md:left-6 text-[10px] font-bold tracking-widest text-teal-700 uppercase flex items-center gap-2 z-10">
+                    <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                    {isEn ? "Living Structure" : "活力结构"}
+                  </div>
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#f5f5f4_2px,transparent_2px),linear-gradient(to_bottom,#f5f5f4_2px,transparent_2px)] bg-[size:4rem_4rem] opacity-60" />
+                  <div className="flex-1 flex items-center justify-center z-10 w-full h-full p-6 md:p-12 relative">
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={hierarchy}
+                        src={STAGE_IMAGES[hierarchy - 1]}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                        className="object-contain w-full h-full max-h-[500px] drop-shadow-sm"
+                        alt={`Evolution Stage ${hierarchy}`}
+                      />
+                    </AnimatePresence>
+                  </div>
+                  <div className="text-center text-[10px] md:text-xs font-mono text-teal-700/50 tracking-widest z-10 font-bold pb-4 md:pb-6">
+                    STAGE {hierarchy} EVOLUTION
+                  </div>
+                </Card>
+              </div>
+
+              <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full lg:sticky lg:top-8">
+                <Card className="bg-stone-100 border-none p-5 md:p-8 text-center relative overflow-hidden shadow-inner">
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-teal-600" />
+                  <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-3 md:mb-6">
+                    {isEn ? "Livingness Formula" : "活力计算公式"}
+                  </div>
+                  <div className="flex flex-col items-center justify-center space-y-2 md:space-y-4">
+                    <div className="text-xl md:text-2xl font-mono font-bold text-stone-400 tracking-widest">
+                      L = ΣS × H
+                    </div>
+                    <div className="flex flex-wrap items-baseline justify-center gap-x-2 md:gap-x-4 text-xl sm:text-2xl md:text-4xl font-mono text-stone-700">
+                      <motion.span
+                        key={`L-${L}`}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="text-[2.5rem] leading-none sm:text-6xl md:text-7xl font-black text-teal-600 tracking-tighter drop-shadow-sm"
+                      >
+                        {formattedL}
+                      </motion.span>
+                      <span className="text-stone-300 font-normal">=</span>
+                      <motion.span key={`S-${sumS}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
+                        {formattedSumS}
+                      </motion.span>
+                      <span className="text-stone-300 font-normal">×</span>
+                      <motion.span key={`H-${H}`} initial={{ y: -10 }} animate={{ y: 0 }} className="font-bold">
+                        {H}
+                      </motion.span>
+                    </div>
+                    <div className="h-auto min-h-[1.5rem] mt-1 flex items-center justify-center px-2">
+                      <AnimatePresence mode="wait">
+                        {H > 1 && (
+                          <motion.div
+                            key={`sum-${H}`}
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-[10px] md:text-xs text-stone-400 font-mono leading-relaxed text-center"
+                          >
+                            ΣS = {sumString}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="bg-white p-4 md:p-6 space-y-6 shadow-sm border-stone-200">
+                  <div className="space-y-4 group">
+                    <div className="flex justify-between items-end mb-2">
+                      <label className="text-sm md:text-base font-bold text-stone-800 tracking-wide transition-colors group-hover:text-teal-700">
+                        {isEn ? "Evolution Stage (H)" : "演化层级 (H)"}
+                      </label>
+                      <span className="font-mono text-xl md:text-2xl font-black text-teal-600">{hierarchy}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1" max="7" step="1"
+                      value={hierarchy}
+                      onChange={(e) => setHierarchy(Number(e.target.value))}
+                      className="w-full h-1.5 md:h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500/30 transition-all shadow-inner"
+                    />
+                  </div>
+                </Card>
+
+                {/* Prompt Lab removed and moved to Analysis */}
+              </div>
+            </div>
           </div>
         </div>
 
         <CampusProjectsSection isEn={isEn} />
 
         <div className="pt-8">
-          <Section 
-            title={trans.theory?.chinese?.title || "Chinese Architecture"} 
+          <Section
+            title={trans.theory?.chinese?.title || "Chinese Architecture"}
             subTitle={isEn ? "Empirical Analysis" : "实证案例分析"}
             className="!border-t-0 !pt-0"
           >
