@@ -10,7 +10,172 @@ import {
 import { ImageWithFallback } from "@/app/components/figma/ImageWithFallback";
 import { properties as propertiesData } from "@/app/data/properties";
 import { CaseStudy, CATEGORIES, cases } from "@/app/data/cases";
+import { studioExamples } from "@/app/data/studioExamples";
 import { Section, Badge } from "@/app/components/ui";
+
+// --- Living Structure Studio: Before/After Gallery (from Whole book.pdf, Chapter 4) ---
+
+const HighLowGallery = ({ isEn }: { isEn: boolean }) => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  const [showVas, setShowVas] = useState(false);
+  const ex = studioExamples[activeIdx];
+
+  const ScoreBar = ({ label, value, max, color }: { label: string; value: number; max: number; color: string }) => (
+    <div className="space-y-1">
+      <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
+        <span className="text-stone-400">{label}</span>
+        <span className={color}>{value}{max <= 15 ? `/${max}` : ''}</span>
+      </div>
+      <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+        <motion.div
+          className={`h-full rounded-full ${color === 'text-teal-600' ? 'bg-teal-500' : 'bg-red-400'}`}
+          initial={{ width: 0 }}
+          animate={{ width: `${Math.min((value / max) * 100, 100)}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        />
+      </div>
+    </div>
+  );
+
+  const VasOverlay = ({ foci }: { foci: { x: number; y: number; r: number }[] }) => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 z-10 pointer-events-none"
+    >
+      <div className="absolute inset-0 bg-stone-900/40" />
+      {foci.map((f, i) => (
+        <motion.div
+          key={i}
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: i * 0.15, type: 'spring', stiffness: 60 }}
+          className="absolute rounded-full"
+          style={{
+            left: `${f.x}%`, top: `${f.y}%`,
+            width: f.r, height: f.r,
+            transform: 'translate(-50%, -50%)',
+            background: 'radial-gradient(circle, rgba(245,158,11,0.7) 0%, rgba(245,158,11,0.2) 50%, transparent 70%)',
+            boxShadow: '0 0 30px rgba(245,158,11,0.5)',
+          }}
+        />
+      ))}
+    </motion.div>
+  );
+
+  return (
+    <Section
+      title={isEn ? 'Living Structure Studio' : '活力结构工作室'}
+      subTitle={isEn ? '5 Before/After case studies with L-score, B-score, and VAS scanning from Chapter 4.' : '来自第四章的 5 组建筑改造 Before/After 案例：L-score、B-score 与 VAS 扫描量化对比。'}
+      className="!pt-0 !border-t-0"
+    >
+      {/* Tab Selector */}
+      <div className="flex flex-wrap gap-2 mb-10 justify-center">
+        {studioExamples.map((s, i) => (
+          <button
+            key={s.id}
+            onClick={() => { setActiveIdx(i); setShowVas(false); }}
+            className={cn(
+              'px-4 py-2 rounded-full text-xs font-bold transition-all',
+              activeIdx === i
+                ? 'bg-stone-900 text-white shadow-lg'
+                : 'bg-white text-stone-500 border border-stone-200 hover:border-stone-400'
+            )}
+          >
+            {isEn ? s.nameEn : s.nameZh}
+          </button>
+        ))}
+      </div>
+
+      {/* Active case title */}
+      <div className="text-center mb-8">
+        <h3 className="text-2xl md:text-3xl font-serif font-bold text-stone-900">{isEn ? ex.nameEn : ex.nameZh}</h3>
+        <p className="text-sm text-stone-500 mt-1 font-mono">{ex.location} · {ex.pageRef}</p>
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={ex.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Before / After Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* BEFORE */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-3 h-3 rounded-full bg-red-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-red-600">Before</span>
+              </div>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-lg">
+                <ImageWithFallback src={ex.beforeImg} alt="Before" className="w-full h-full object-cover" />
+                <AnimatePresence>{showVas && <VasOverlay foci={ex.beforeVasFoci} />}</AnimatePresence>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm space-y-3">
+                <ScoreBar label="L-Score (Livingness)" value={ex.beforeL} max={70} color="text-red-500" />
+                <ScoreBar label="B-Score (Beauty)" value={ex.beforeB} max={15} color="text-red-500" />
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  {isEn ? ex.beforeDescEn : ex.beforeDescZh}
+                </p>
+              </div>
+            </div>
+
+            {/* AFTER */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-3 h-3 rounded-full bg-teal-500" />
+                <span className="text-xs font-bold uppercase tracking-widest text-teal-700">After</span>
+              </div>
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 border border-stone-200 shadow-lg">
+                <ImageWithFallback src={ex.afterImg} alt="After" className="w-full h-full object-cover" />
+                <AnimatePresence>{showVas && <VasOverlay foci={ex.afterVasFoci} />}</AnimatePresence>
+              </div>
+              <div className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm space-y-3">
+                <ScoreBar label="L-Score (Livingness)" value={ex.afterL} max={70} color="text-teal-600" />
+                <ScoreBar label="B-Score (Beauty)" value={ex.afterB} max={15} color="text-teal-600" />
+                <p className="text-xs text-stone-600 leading-relaxed">
+                  {isEn ? ex.afterDescEn : ex.afterDescZh}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* VAS Toggle + Source */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <button
+                onClick={() => setShowVas(!showVas)}
+                className={cn(
+                  'w-12 h-6 rounded-full relative transition-colors duration-300 shadow-inner',
+                  showVas ? 'bg-amber-500' : 'bg-stone-300'
+                )}
+              >
+                <div className={cn(
+                  'w-4 h-4 bg-white rounded-full absolute top-1 transition-transform duration-300 shadow-sm',
+                  showVas ? 'left-7' : 'left-1'
+                )} />
+              </button>
+              <div>
+                <span className="text-sm font-bold text-stone-800 group-hover:text-amber-600 transition-colors">
+                  {isEn ? '3M VAS Scanning Simulation' : '3M VAS 视觉注意力扫描模拟'}
+                </span>
+                <p className="text-[10px] text-stone-500">
+                  {isEn ? 'Visualize where the eye naturally focuses' : '可视化人眼自然聚焦的位置'}
+                </p>
+              </div>
+            </label>
+            <div className="text-[10px] text-stone-400 italic text-right">
+              📖 Jiang, B. — Chapter 4: Architectural Transformation · {ex.pageRef}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </Section>
+  );
+};
 
 // --- Sub-components ---
 
@@ -504,6 +669,8 @@ export function Construct() {
         </div>
 
         <CampusProjectsSection isEn={isEn} />
+
+        <HighLowGallery isEn={isEn} />
 
         <div className="pt-8">
           <Section
