@@ -7,13 +7,8 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from "@/app/lib/supabase";
 import { createPortal } from 'react-dom';
-
-// 初始化 Supabase 客户端
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface Message {
   id: string;

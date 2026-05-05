@@ -4,13 +4,7 @@ import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, Messa
 import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
-// 👇 引入 Supabase 客户端
-import { createClient } from '@supabase/supabase-js';
-
-// 初始化 Supabase 客户端 (安全读取 .env)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "@/app/lib/supabase";
 
 export function Analyze() {
   const [view, setView] = useState<"diagnostic" | "lab">("diagnostic");
@@ -213,7 +207,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
   };
 
   const safeExtractJSON = (text: string) => {
-    try { return JSON.parse(text); } 
+    try { return JSON.parse(text); }
     catch (e) {
       const match = text.match(/\{[\s\S]*\}/);
       if (match) {
@@ -221,6 +215,28 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       }
       return null;
     }
+  };
+
+  // 防止 prompt 注入：对用户输入做安全处理
+  const sanitizePromptInput = (input: string): string => {
+    if (!input) return '';
+    // 移除可能覆盖系统指令的模式
+    let sanitized = input
+      .replace(/\[Role[\s\S]*?\]/gi, '')
+      .replace(/\[Task[\s\S]*?\]/gi, '')
+      .replace(/\[System[\s\S]*?\]/gi, '')
+      .replace(/\[Output[\s\S]*?\]/gi, '')
+      .replace(/\[Language[\s\S]*?\]/gi, '')
+      .replace(/OUTPUT STRICTLY AS/i, '')
+      .replace(/Ignore all previous/i, '')
+      .replace(/ignore previous/i, '')
+      .replace(/\{[\s\S]*?"winner_declaration"[\s\S]*?\}/gi, '')
+      .trim();
+    // 限制长度防止 token 耗尽
+    if (sanitized.length > 500) {
+      sanitized = sanitized.slice(0, 500) + '...';
+    }
+    return sanitized;
   };
 
   // 👇 动态双语的 startAnalysis 函数
@@ -239,6 +255,8 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       });
 
       const isCompare = images.length === 2;
+
+      const safeUserIntent = sanitizePromptInput(userIntent);
 
       // 🏆 动态语言变量
       const targetLanguage = isEn ? "English" : "Simplified Chinese (简体中文)";
@@ -264,7 +282,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         ${attributeNames}
 
         [User Specific Intent]
-        User asks: "${userIntent || 'Please provide a standard objective analysis.'}"
+        User asks: "${safeUserIntent || 'Please provide a standard objective analysis.'}"
         You must directly answer this intent in your "core_evaluation".
 
         [Task]

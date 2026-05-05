@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-// 初始化 Supabase 客户端 (安全读取 .env)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from "@/app/lib/supabase";
 
 export function useGemini() {
   const [isThinking, setIsThinking] = useState(false);
