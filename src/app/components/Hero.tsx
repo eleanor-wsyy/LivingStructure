@@ -4,12 +4,12 @@ import { Search, Sparkles } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-stone-50 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+    <section className="relative overflow-hidden bg-muted px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl">
-          Quantifying the <span className="text-stone-500">Living Structure</span> of Space
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+          Quantifying the <span className="text-muted-foreground">Living Structure</span> of Space
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-stone-600">
+        <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
           An open-source platform for measuring architectural vitality.
           Combining network science, fractal geometry, and biophilic design principles to create healing environments.
         </p>
@@ -22,19 +22,19 @@ export function Hero() {
             <Input
               type="text"
               placeholder="Analysis a space, search theory, or browse patterns..."
-              className="h-14 rounded-full border-stone-200 bg-white pl-12 pr-32 text-base shadow-sm ring-1 ring-stone-900/5 focus:ring-2 focus:ring-teal-600"
+              className="h-14 rounded-full border-border bg-card pl-12 pr-32 text-base shadow-sm ring-1 ring-stone-900/5 focus:ring-2 focus:ring-teal-600"
             />
             <div className="absolute inset-y-1.5 right-1.5">
-              <Button size="lg" className="h-full rounded-full bg-stone-900 px-6 hover:bg-stone-800">
+              <Button size="lg" className="h-full rounded-full bg-stone-900 px-6 hover:bg-primary-hover">
                 Analysis
               </Button>
             </div>
           </div>
-          <div className="mt-4 flex justify-center gap-4 text-xs text-stone-500">
+          <div className="mt-4 flex justify-center gap-4 text-xs text-muted-foreground">
             <span>Popular:</span>
-            <a href="#" className="underline hover:text-stone-900">Healing Gardens</a>
-            <a href="#" className="underline hover:text-stone-900">Urban Plazas</a>
-            <a href="#" className="underline hover:text-stone-900">Hospital Wards</a>
+            <a href="#" className="underline hover:text-foreground">Healing Gardens</a>
+            <a href="#" className="underline hover:text-foreground">Urban Plazas</a>
+            <a href="#" className="underline hover:text-foreground">Hospital Wards</a>
           </div>
         </div>
       </div>

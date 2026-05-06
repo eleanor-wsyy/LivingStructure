@@ -384,18 +384,18 @@ export default function Community() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-stone-800 pb-24 font-sans selection:bg-amber-100">
+    <div className="min-h-screen bg-card text-stone-800 pb-24 font-sans selection:bg-amber-100">
 
       {/* Hero */}
-      <div className="w-full pt-20 pb-16 px-6 border-b border-stone-200 bg-white">
+      <div className="w-full pt-20 pb-16 px-6 border-b border-border bg-white">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 border border-stone-200 text-[10px] uppercase tracking-[0.2em] font-bold text-stone-500 mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary border border-border text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-6">
             <Sparkles className="w-3 h-3 text-amber-500" /> {isEn ? 'Global Observation Network' : '全球实证观测网络'}
           </div>
-          <h1 className="text-5xl md:text-7xl font-serif font-black mb-6 tracking-tight text-stone-900 leading-[1.1]">
+          <h1 className="text-5xl md:text-7xl font-serif font-black mb-6 tracking-tight text-foreground leading-[1.1]">
             {isEn ? (<>Reclaiming the <br /><span className="font-serif italic font-light text-amber-700">Living Structure</span> of Cities</>) : (<>重构城市空间的 <br /><span className="font-serif italic font-light text-amber-700">活力结构</span></>)}
           </h1>
-          <button onClick={() => setIsCreateModalOpen(true)} className="bg-stone-900 text-white hover:bg-amber-600 px-8 py-3.5 rounded-full font-bold tracking-widest uppercase text-xs transition-all flex items-center gap-2 mx-auto shadow-lg active:scale-95 mt-8">
+          <button onClick={() => setIsCreateModalOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary-hover px-8 py-3.5 rounded-full font-bold tracking-widest uppercase text-xs transition-all flex items-center gap-2 mx-auto shadow-lg active:scale-95 mt-8">
             <Plus className="w-4 h-4" /> {isEn ? 'Post Observation' : '发布观测记录'}
           </button>
         </div>
@@ -405,8 +405,8 @@ export default function Community() {
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {posts.map((post) => (
-            <motion.div layout key={post.id} onClick={() => setViewingPostId(post.id)} className="bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-amber-400 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col cursor-pointer">
-              <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
+            <motion.div layout key={post.id} onClick={() => setViewingPostId(post.id)} className="bg-card rounded-xl overflow-hidden border border-border hover:border-amber-400 shadow-sm hover:shadow-xl transition-all duration-500 group flex flex-col cursor-pointer">
+              <div className="relative aspect-[4/3] bg-secondary overflow-hidden">
                 <img
                   src={post.imageUrl}
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -414,12 +414,12 @@ export default function Community() {
                   onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800"; }}
                 />
                 {post.isExternal && (
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-[9px] font-bold text-amber-700 border border-amber-100 flex items-center gap-1 shadow-sm">
+                  <div className="absolute top-3 right-3 bg-card/90 backdrop-blur px-2 py-1 rounded text-[9px] font-bold text-amber-700 border border-amber-100 flex items-center gap-1 shadow-sm">
                     <ExternalLink className="w-2.5 h-2.5" /> Featured
                   </div>
                 )}
                 <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-300 flex items-center justify-center">
-                  <div className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur text-stone-900 text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                  <div className="opacity-0 group-hover:opacity-100 bg-card/90 backdrop-blur text-foreground text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
                     {isEn ? 'View Details' : '查看详情'}
                   </div>
                 </div>
@@ -427,19 +427,19 @@ export default function Community() {
               <div className="p-6 flex flex-col flex-grow">
                 <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-1 scrollbar-hide">
                   {(isEn ? post.tagsEn : post.tagsZh).map(tag => (
-                    <span key={tag} className="shrink-0 px-2 py-0.5 bg-stone-100 text-stone-500 text-[9px] font-bold uppercase tracking-wider rounded-sm border border-stone-200">{tag}</span>
+                    <span key={tag} className="shrink-0 px-2 py-0.5 bg-secondary text-muted-foreground text-[9px] font-bold uppercase tracking-wider rounded-sm border border-border">{tag}</span>
                   ))}
                 </div>
-                <h3 className="text-lg font-serif font-bold text-stone-900 mb-2 line-clamp-1">{isEn ? post.titleEn : post.titleZh}</h3>
-                <p className="text-stone-500 text-sm leading-relaxed mb-6 line-clamp-2 flex-grow">{isEn ? post.descriptionEn : post.descriptionZh}</p>
-                <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+                <h3 className="text-lg font-serif font-bold text-foreground mb-2 line-clamp-1">{isEn ? post.titleEn : post.titleZh}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6 line-clamp-2 flex-grow">{isEn ? post.descriptionEn : post.descriptionZh}</p>
+                <div className="pt-4 border-t border-border flex items-center justify-between">
                   <div className="flex items-center space-x-2.5">
                     <img src={post.avatar} className="w-6 h-6 rounded-full border border-stone-300" alt="av" />
                     <div className="flex items-center gap-1 font-bold text-stone-700 text-xs">
                       {post.author}{post.isExternal && <BadgeCheck className="w-3 h-3 text-blue-500" />}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-stone-400 group/btn"><Heart className="w-4 h-4" /><span className="text-xs font-mono">{post.likes}</span></div>
+                  <div className="flex items-center gap-1 text-muted-foreground group/btn"><Heart className="w-4 h-4" /><span className="text-xs font-mono">{post.likes}</span></div>
                 </div>
               </div>
             </motion.div>
@@ -452,9 +452,9 @@ export default function Community() {
         {viewingPost && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setViewingPostId(null)} className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-5xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]">
 
-              <div className="w-full md:w-3/5 bg-stone-100 relative h-64 md:h-auto overflow-hidden">
+              <div className="w-full md:w-3/5 bg-secondary relative h-64 md:h-auto overflow-hidden">
                 <img src={viewingPost.imageUrl} className="absolute inset-0 w-full h-full object-cover" alt="detail" onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=1200"; }} />
                 {viewingPost.isExternal && (
                   <div className="absolute bottom-6 left-6 flex items-center gap-2">
@@ -470,18 +470,18 @@ export default function Community() {
               <div className="w-full md:w-2/5 flex flex-col bg-white" style={{ maxHeight: '90vh' }}>
 
                 {/* ── Pinned Header ── */}
-                <div className="px-5 py-4 border-b border-stone-100 flex justify-between items-center shrink-0">
+                <div className="px-5 py-4 border-b border-border flex justify-between items-center shrink-0">
                   <div className="flex items-center gap-3">
-                    <img src={viewingPost.avatar} alt="av" className="w-9 h-9 rounded-full border border-stone-200 object-cover" onError={(e) => { e.currentTarget.src = 'https://api.dicebear.com/7.x/shapes/svg?seed=fallback'; }} />
+                    <img src={viewingPost.avatar} alt="av" className="w-9 h-9 rounded-full border border-border object-cover" onError={(e) => { e.currentTarget.src = 'https://api.dicebear.com/7.x/shapes/svg?seed=fallback'; }} />
                     <div>
-                      <div className="flex items-center gap-1 font-bold text-stone-900 text-sm">
+                      <div className="flex items-center gap-1 font-bold text-foreground text-sm">
                         {viewingPost.author}
                         {viewingPost.isExternal && <BadgeCheck className="w-3.5 h-3.5 text-blue-500" />}
                       </div>
-                      <div className="text-[10px] text-stone-400 font-mono uppercase tracking-wider">{isEn ? viewingPost.dateEn : viewingPost.dateZh}</div>
+                      <div className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">{isEn ? viewingPost.dateEn : viewingPost.dateZh}</div>
                     </div>
                   </div>
-                  <button onClick={() => setViewingPostId(null)} className="p-2 text-stone-400 hover:bg-stone-100 rounded-full transition-colors">
+                  <button onClick={() => setViewingPostId(null)} className="p-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -493,14 +493,14 @@ export default function Community() {
                   <div className="px-5 pt-5 pb-4">
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {(isEn ? viewingPost.tagsEn : viewingPost.tagsZh).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-stone-100 text-stone-500 text-[9px] font-bold uppercase tracking-wider rounded-sm border border-stone-200">{tag}</span>
+                        <span key={tag} className="px-2 py-0.5 bg-secondary text-muted-foreground text-[9px] font-bold uppercase tracking-wider rounded-sm border border-border">{tag}</span>
                       ))}
                     </div>
-                    <h2 className="text-xl font-serif font-bold text-stone-900 mb-3">{isEn ? viewingPost.titleEn : viewingPost.titleZh}</h2>
-                    <p className="text-stone-600 text-sm leading-loose font-serif mb-5">{isEn ? viewingPost.descriptionEn : viewingPost.descriptionZh}</p>
+                    <h2 className="text-xl font-serif font-bold text-foreground mb-3">{isEn ? viewingPost.titleEn : viewingPost.titleZh}</h2>
+                    <p className="text-muted-foreground text-sm leading-loose font-serif mb-5">{isEn ? viewingPost.descriptionEn : viewingPost.descriptionZh}</p>
                     {viewingPost.isExternal && viewingPost.externalUrl && (
                       <a href={viewingPost.externalUrl} target="_blank" rel="noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-3 bg-stone-100 rounded-xl text-stone-900 text-xs font-bold uppercase tracking-widest hover:bg-amber-50 hover:border-amber-200 transition-all border border-stone-200 group mb-2">
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-secondary rounded-xl text-foreground text-xs font-bold uppercase tracking-widest hover:bg-amber-50 hover:border-amber-200 transition-all border border-border group mb-2">
                         <ExternalLink className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
                         {isEn ? `Read on ${new URL(viewingPost.externalUrl).hostname.replace('www.','')}` : `在 ${new URL(viewingPost.externalUrl).hostname.replace('www.','')} 查看原文`}
                       </a>
@@ -508,9 +508,9 @@ export default function Community() {
                   </div>
 
                   {/* ── Comment Divider ── */}
-                  <div className="px-5 py-3 border-t border-stone-100 flex items-center gap-2">
-                    <MessageCircle className="w-3.5 h-3.5 text-stone-400" />
-                    <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">
+                  <div className="px-5 py-3 border-t border-border flex items-center gap-2">
+                    <MessageCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       {isEn ? `${currentComments.length} Comment${currentComments.length !== 1 ? 's' : ''}` : `${currentComments.length} 条评论`}
                     </span>
                   </div>
@@ -525,10 +525,10 @@ export default function Community() {
                       const isCommentLiked = commentLikes.has(likeKey);
                       return (
                         <div key={comment.id} className="flex gap-3 group/comment">
-                          <img src={comment.avatar} alt="av" className="w-8 h-8 rounded-full shrink-0 object-cover border border-stone-100" />
+                          <img src={comment.avatar} alt="av" className="w-8 h-8 rounded-full shrink-0 object-cover border border-border" />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-bold text-stone-600">{comment.author}</span>
+                              <span className="text-xs font-bold text-muted-foreground">{comment.author}</span>
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-stone-300">{comment.timestamp}</span>
                                 {/* 删除按鈕：仅自己的评论悬停时显示 */}
@@ -560,39 +560,39 @@ export default function Community() {
                 </div>
 
                 {/* ── Pinned Bottom: Like + Share + Input ── */}
-                <div className="shrink-0 border-t border-stone-100 bg-white">
+                <div className="shrink-0 border-t border-border bg-white">
                   {/* Action row */}
                   <div className="px-5 py-3 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       {/* Like toggle */}
                       <button
                         onClick={() => handleLike(viewingPost.id)}
-                        className={cn("flex items-center gap-1.5 transition-all active:scale-90", likedPosts.has(viewingPost.id) ? "text-rose-500" : "text-stone-400 hover:text-rose-400")}
+                        className={cn("flex items-center gap-1.5 transition-all active:scale-90", likedPosts.has(viewingPost.id) ? "text-rose-500" : "text-muted-foreground hover:text-rose-400")}
                       >
                         <Heart className={cn("w-5 h-5 transition-all", likedPosts.has(viewingPost.id) && "fill-rose-500 scale-110")} />
                         <span className="text-sm font-bold font-mono">{viewingPost.likes}</span>
                       </button>
                       {/* Comment count */}
-                      <span className="flex items-center gap-1.5 text-stone-400">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
                         <MessageCircle className="w-5 h-5" />
                         <span className="text-sm font-bold font-mono">{currentComments.length}</span>
                       </span>
                     </div>
                     {/* Share */}
                     <div className="relative">
-                      <button onClick={() => setShowShareMenu(!showShareMenu)} className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 text-stone-600 hover:bg-stone-900 hover:text-white rounded-full transition-all text-[10px] font-bold uppercase tracking-widest">
+                      <button onClick={() => setShowShareMenu(!showShareMenu)} className="flex items-center gap-1.5 px-3 py-1.5 bg-secondary text-muted-foreground hover:bg-stone-900 hover:text-white rounded-full transition-all text-[10px] font-bold uppercase tracking-widest">
                         <Share2 className="w-3.5 h-3.5" /> {isEn ? 'Share' : '分享'}
                       </button>
                       <AnimatePresence>
                         {showShareMenu && (
-                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute bottom-full right-0 mb-3 bg-white border border-stone-100 shadow-2xl rounded-2xl p-2 w-44 z-10">
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="absolute bottom-full right-0 mb-3 bg-card border border-border shadow-2xl rounded-2xl p-2 w-44 z-10">
                             {[
                               { id: 'x', icon: Twitter, label: 'X (Twitter)', color: 'hover:bg-stone-900' },
                               { id: 'facebook', icon: Facebook, label: 'Facebook', color: 'hover:bg-blue-600' },
                               { id: 'wechat', icon: Share2, label: isEn ? 'WeChat (QR)' : '微信分享', color: 'hover:bg-green-600' },
-                              { id: 'copy', icon: Link2, label: isEn ? 'Copy Link' : '复制链接', color: 'hover:bg-amber-600' },
+                              { id: 'copy', icon: Link2, label: isEn ? 'Copy Link' : '复制链接', color: 'hover:bg-primary-hover' },
                             ].map(p => (
-                              <button key={p.id} onClick={() => shareToPlatform(p.id)} className={cn("w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-stone-600 hover:text-white rounded-xl transition-all", p.color)}>
+                              <button key={p.id} onClick={() => shareToPlatform(p.id)} className={cn("w-full flex items-center gap-3 px-3 py-2 text-xs font-bold text-muted-foreground hover:text-white rounded-xl transition-all", p.color)}>
                                 <p.icon className="w-4 h-4" /> {p.label}
                                 {p.id === 'copy' && copied && <CheckCircle2 className="w-3 h-3 text-white ml-auto" />}
                               </button>
@@ -605,8 +605,8 @@ export default function Community() {
 
                   {/* Comment input */}
                   <div className="px-4 pb-4 flex items-center gap-2">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User123" className="w-7 h-7 rounded-full border border-stone-200 shrink-0" alt="me" />
-                    <div className="flex-1 flex items-center gap-2 bg-stone-100 rounded-full px-4 py-2">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User123" className="w-7 h-7 rounded-full border border-border shrink-0" alt="me" />
+                    <div className="flex-1 flex items-center gap-2 bg-secondary rounded-full px-4 py-2">
                       <input
                         type="text"
                         value={newCommentText}
@@ -638,10 +638,10 @@ export default function Community() {
         {isCreateModalOpen && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCreateModalOpen(false)} className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
-              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50">
-                <h3 className="text-xl font-serif font-bold text-stone-900">{isEn ? 'New Observation' : '发布新观测记录'}</h3>
-                <button onClick={() => setIsCreateModalOpen(false)} className="p-2 hover:bg-stone-200 rounded-full transition text-stone-500"><X className="w-5 h-5" /></button>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative w-full max-w-2xl bg-card rounded-3xl shadow-2xl flex flex-col max-h-[90vh]">
+              <div className="p-6 border-b border-border flex justify-between items-center bg-stone-50">
+                <h3 className="text-xl font-serif font-bold text-foreground">{isEn ? 'New Observation' : '发布新观测记录'}</h3>
+                <button onClick={() => setIsCreateModalOpen(false)} className="p-2 hover:bg-muted rounded-full transition text-muted-foreground"><X className="w-5 h-5" /></button>
               </div>
 
               <div className="p-6 overflow-y-auto space-y-6">
@@ -649,10 +649,10 @@ export default function Community() {
 
                   {/* 🖼️ 本地传图区 */}
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3">{isEn ? 'Observation Photo' : '观测照片上传'}</label>
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">{isEn ? 'Observation Photo' : '观测照片上传'}</label>
                     <div
                       onClick={() => fileInputRef.current?.click()}
-                      className="w-full h-48 border-2 border-dashed border-stone-200 rounded-2xl flex flex-col items-center justify-center bg-stone-50 hover:bg-stone-100 cursor-pointer transition-all relative overflow-hidden group"
+                      className="w-full h-48 border-2 border-dashed border-border rounded-2xl flex flex-col items-center justify-center bg-muted hover:bg-secondary cursor-pointer transition-all relative overflow-hidden group"
                     >
                       {newImgUrl ? (
                         <>
@@ -661,8 +661,8 @@ export default function Community() {
                         </>
                       ) : (
                         <>
-                          <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center mb-3 text-stone-400"><Upload className="w-6 h-6" /></div>
-                          <p className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{isEn ? 'Select from your computer' : '从电脑本地文件夹选择图片'}</p>
+                          <div className="w-12 h-12 bg-card rounded-full shadow-sm flex items-center justify-center mb-3 text-muted-foreground"><Upload className="w-6 h-6" /></div>
+                          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">{isEn ? 'Select from your computer' : '从电脑本地文件夹选择图片'}</p>
                         </>
                       )}
                     </div>
@@ -670,21 +670,21 @@ export default function Community() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">{isEn ? 'Title' : '标题'}</label>
-                    <input type="text" required value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="..." className="w-full text-xl font-serif border-0 border-b border-stone-200 focus:border-amber-500 bg-transparent px-0 py-2 focus:ring-0 transition-all" />
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">{isEn ? 'Title' : '标题'}</label>
+                    <input type="text" required value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="..." className="w-full text-xl font-serif border-0 border-b border-border focus:border-amber-500 bg-transparent px-0 py-2 focus:ring-0 transition-all" />
                   </div>
 
                   {/* 🌿 15 个 Properties 选择器 */}
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-3 flex items-center justify-between">
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center justify-between">
                       <span>{isEn ? 'Structural Properties (Max 3)' : '结构属性（最多3项）'}</span>
-                      <span className="text-[10px] bg-stone-100 px-2 py-0.5 rounded">{selectedTags.length}/3</span>
+                      <span className="text-[10px] bg-secondary px-2 py-0.5 rounded">{selectedTags.length}/3</span>
                     </label>
-                    <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 scrollbar-hide border border-stone-100 rounded-lg">
+                    <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-1 scrollbar-hide border border-border rounded-lg">
                       {PROPERTIES_TAGS.map(tag => {
                         const isSelected = selectedTags.some(t => t.en === tag.en);
                         return (
-                          <button key={tag.en} type="button" onClick={() => toggleTag(tag)} className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded border transition-all", isSelected ? "bg-stone-900 text-white border-stone-900 shadow-inner" : "bg-white text-stone-400 border-stone-200 hover:border-amber-500 hover:text-amber-600")}>
+                          <button key={tag.en} type="button" onClick={() => toggleTag(tag)} className={cn("px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded border transition-all", isSelected ? "bg-primary text-primary-foreground border-stone-900 shadow-inner" : "bg-card text-muted-foreground border-border hover:border-amber-500 hover:text-amber-600")}>
                             {isEn ? tag.en : tag.zh}
                           </button>
                         );
@@ -693,15 +693,15 @@ export default function Community() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">{isEn ? 'Observation Summary' : '观测总结与感悟'}</label>
-                    <textarea rows={3} value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="w-full text-sm bg-stone-50 border border-stone-200 rounded-xl p-4 outline-none focus:ring-2 focus:ring-amber-500/20" />
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2">{isEn ? 'Observation Summary' : '观测总结与感悟'}</label>
+                    <textarea rows={3} value={newDesc} onChange={(e) => setNewDesc(e.target.value)} className="w-full text-sm bg-muted border border-border rounded-xl p-4 outline-none focus:ring-2 focus:ring-amber-500/20" />
                   </div>
                 </form>
               </div>
 
-              <div className="p-6 border-t border-stone-100 bg-stone-50 flex justify-end gap-3">
-                <button onClick={() => setIsCreateModalOpen(false)} className="px-6 py-2.5 text-xs font-bold text-stone-500">Cancel</button>
-                <button type="submit" form="post-form" className="px-8 py-2.5 bg-stone-900 text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-amber-600 transition-all shadow-lg active:scale-95">Publish</button>
+              <div className="p-6 border-t border-border bg-muted flex justify-end gap-3">
+                <button onClick={() => setIsCreateModalOpen(false)} className="px-6 py-2.5 text-xs font-bold text-muted-foreground">Cancel</button>
+                <button type="submit" form="post-form" className="px-8 py-2.5 bg-primary text-primary-foreground rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg active:scale-95">Publish</button>
               </div>
             </motion.div>
           </div>

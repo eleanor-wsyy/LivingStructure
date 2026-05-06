@@ -42,14 +42,14 @@ export function TheoryGrid() {
   return (
     <section className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold tracking-tight text-stone-900">Latest Research</h2>
-        <Button variant="ghost" className="text-stone-600">View all publications <ArrowRight className="ml-2 h-4 w-4" /></Button>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground">Latest Research</h2>
+        <Button variant="ghost" className="text-muted-foreground">View all publications <ArrowRight className="ml-2 h-4 w-4" /></Button>
       </div>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {articles.map((article) => (
           <Card key={article.id} className="group flex flex-col overflow-hidden transition-all hover:shadow-md">
-            <div className="relative h-48 overflow-hidden bg-stone-200">
+            <div className="relative h-48 overflow-hidden bg-muted">
                <img 
                  src={article.image} 
                  alt={article.title}
@@ -57,30 +57,30 @@ export function TheoryGrid() {
                />
                <div className="absolute top-4 left-4 flex gap-2">
                  {article.tags.map(tag => (
-                   <Badge key={tag} className="bg-white/90 backdrop-blur-sm">{tag}</Badge>
+                   <Badge key={tag} className="bg-card/90 backdrop-blur-sm">{tag}</Badge>
                  ))}
                </div>
             </div>
             <CardHeader className="flex-1 pb-2">
-              <div className="mb-2 flex items-center gap-2 text-xs text-stone-500">
+              <div className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
                 <span className="font-semibold text-stone-700">{article.journal}</span>
                 <span>•</span>
                 <span>{article.date}</span>
               </div>
-              <h3 className="line-clamp-2 text-lg font-bold leading-tight text-stone-900 group-hover:text-teal-700">
+              <h3 className="line-clamp-2 text-lg font-bold leading-tight text-foreground group-hover:text-teal-700">
                 {article.title}
               </h3>
-              <p className="mt-2 text-sm text-stone-600">{article.authors}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{article.authors}</p>
             </CardHeader>
-            <CardContent className="mt-auto border-t border-stone-100 bg-stone-50 p-4">
-              <div className="flex items-center justify-between text-xs text-stone-500">
+            <CardContent className="mt-auto border-t border-border bg-muted p-4">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" />
                   {article.readTime}
                 </div>
                 <div className="flex gap-2">
-                   <button className="hover:text-stone-900"><Download className="h-4 w-4" /></button>
-                   <button className="hover:text-stone-900"><BookOpen className="h-4 w-4" /></button>
+                   <button className="hover:text-foreground"><Download className="h-4 w-4" /></button>
+                   <button className="hover:text-foreground"><BookOpen className="h-4 w-4" /></button>
                 </div>
               </div>
             </CardContent>

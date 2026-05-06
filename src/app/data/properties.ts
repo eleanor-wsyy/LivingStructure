@@ -39,7 +39,7 @@ export const properties = [
     mechZh: "层级边界增强空间连续性。",
     relEn: "Increases S (Strength) by containing energy.",
     relZh: "通过包含能量增加 S（强度）。",
-    natureEn: "Amazon oxbow lakes seen from above: each circular pool is enclosed by a dense ring of forest—a boundary as substantial as the water itself, giving each lake its identity as a strong center and tying it to the surrounding land.",
+    natureEn: "Amazon oxbow lakes seen from below: each circular pool is enclosed by a dense ring of forest—a boundary as substantial as the water itself, giving each lake its identity as a strong center and tying it to the surrounding land.",
     natureZh: "从空中俯瞰亚马逊牛轭湖：每一个圆形水面都被浓密的森林环绕——这道边界与水体本身同等厚实，赋予每个湖泊强中心的身份，同时将它与周围陆地紧密相连。",
     exampleEn: "The left image shows the Gwalior Fort in India. The top-level railing acts as a boundary, highlighting the architectural facade as the center while harmonizing the relationship between the sky and the facade. The right image shows a 20th-century apartment building; due to a lack of boundaries, the architecture appears isolated from its surroundings. Boundaries exist not only on the exterior but also permeate through the various hierarchies within the center. In the Gwalior Fort, boundaries are incorporated across all scales—from railings and columns to wall surfaces. Internally, each boundary is composed of even smaller centers and boundaries, progressing hierarchically to achieve a rich and unified whole.",
     exampleZh: "左图为印度瓜廖尔城堡，顶层的围栏作为边界，凸显了建筑立面这一中心，同时协调了天空与立面的关系。右图为一座20世纪公寓，因缺乏边界，建筑显得孤立于周围环境。边界不仅存在于外部，也贯穿于中心内部的各个等级。在瓜廖尔城堡中，围栏、立柱、墙面等各尺度都包含边界，每个边界内部又由更小的中心 and 边界组成，层层递进，丰富统一。",
@@ -73,8 +73,8 @@ export const properties = [
     relZh: "通过塑造虚空增加 S（强度）。",
     natureEn: "A cluster of mineral crystals leaves no leftover void: each faceted form presses against its neighbors so that every gap between crystals is itself a well-defined, positive shape—the space between is as alive as the solid matter.",
     natureZh: "矿物晶体簇不留任何剩余虚空：每个多面体形态与邻居紧紧相抵，使晶体间的每个间隙本身也成为明确的正面形状——间隙中的空间与固体物质同样充满生命力。",
-    exampleEn: "A public square defined by continuous building facades.",
-    exampleZh: "由连续建筑立面定义的公共广场。",
+    exampleEn: "The left image shows Nolli's 17th-century map of Rome, illustrating that all solid buildings and open spaces, including houses, squares, and streets, were meticulously designed without any superfluous or leftover spaces. Such positive space is the result of long-term design and maintenance by citizens, common not only in Rome but in many historical cities and villages. In modern architecture and planning, however, the shaping of positive space is gradually being lost. The right image depicts a modern architectural courtyard, where a cylindrical solid occupies the center, causing the surrounding courtyard space to be fragmented and enclosed. The overall space loses its coherence and vitality, and the building appears isolated and dull.",
+    exampleZh: "左图为诺利绘制的17世纪罗马平面图，展示了所有实体建筑和开放空间，包括房屋、广场和街道，都经过精心设计，没有多余或剩余的空间。这种正空间是市民长期设计和维护的成果，不仅在罗马，在许多历史城市和村落中都十分常见。而现代建筑和规划中，正空间的塑造却逐渐缺失。右图为某现代建筑庭院，其中圆柱实体占据中心位置，导致周围庭院空间破碎、封闭，整体空间失去连贯性和活力，建筑显得孤立而乏味。",
     imgPos: "/images/Positive space.png", imgNeg: "/images/PSNEG.png", bookImg: "/images/PP.png"
   },
   {
@@ -87,8 +87,8 @@ export const properties = [
     relZh: "通过几何连贯性增加 S（强度）。",
     natureEn: "This three-lobed leaf embodies good shape at every level: the overall silhouette is strong and compact, each lobe is a coherent sub-center with graceful convex curves, and the veins subdivide every surface into still smaller positive, well-shaped areas.",
     natureZh: "这片三裂叶片在每个层级都体现出良好形状：整体轮廓强健紧凑，每个裂片是具有优美凸曲线的连贯子中心，叶脉又将每个表面细分为更小的正面、形状良好的区域。",
-    exampleEn: "A perfectly proportioned rectangular window or circular arch.",
-    exampleZh: "比例完美的矩形窗或圆拱。",
+    exampleEn: "The shrine in the left image is composed of concentric hexagons, rhombuses, and arcs; its harmonious form enhances the vitality of the whole. The building in the right image appears fragmented; although the circles themselves are harmonious, the surrounding shapes merely fill the gaps. They are isolated from each other and lack connection, resulting in a lack of aesthetic appeal and vitality in the overall structure. This demonstrates that 'good shape' relies not only on the beauty of individual elements but more importantly on the organic organization of the whole.",
+    exampleZh: "左图的神龛由六边形、菱形、弧线等层层组合，形态和谐，增强整体的生命力。右图的建筑则显得破碎，虽然圆形本身和谐，但周围形状只是填充缝隙，彼此孤立，缺乏联系，导致整体缺少美感和活力。这说明，良好形状不仅依赖单个元素的美观，更需整体的有机组织。",
     imgPos: "/images/Good shape.png", imgNeg: "/images/GSNEG.png", bookImg: "/images/GSP.png"
   },
   {
@@ -101,8 +101,8 @@ export const properties = [
     relZh: "通过局部结合中心增加 S（强度）。",
     natureEn: "In a meadow of bunchberry blossoms, each four-petaled flower is perfectly symmetrical in itself, and each whorl of leaves has its own local axis—yet the whole carpet has no grand global axis, only an infinite weaving of small, independent symmetries.",
     natureZh: "草地上的白花草丛中，每朵四瓣小花本身完全对称，每组轮生叶片有其自身的局部轴线——然而整片植被没有宏大的整体轴，只有无数小而独立的对称性相互交织。",
-    exampleEn: "Ornaments, door frames, or individual tiles having internal symmetry.",
-    exampleZh: "装饰品、门框或单个瓷砖具有内部对称性。",
+    exampleEn: "The left image shows the Alhambra, whose layout is flexible and organic, adapting to its surroundings and functional needs. Local symmetries within the architecture—such as symmetrical courtyards, rotationally symmetrical annular spaces, and rooms arranged symmetrically around centers—make the space orderly and vibrant. The right image shows the Renaissance Center in Detroit; its overall plan is completely symmetrical, yet it lacks flexibility, ignores practical functional needs, and is disconnected from its environment. In contrast, the flexible application of local symmetries better reflects the adaptability and vitality of a building.",
+    exampleZh: "左图为阿尔罕布拉宫，其布局灵活有机，适应周围环境和功能需求。建筑中庭院对称、环形空间旋转对称、房间围绕中心对称等局部对称，使空间有序且富有生机。右图为底特律文艺复兴中心，整体平面完全对称，但缺乏灵活性，忽视实际功能需求，与环境脱节。相比之下，局部对称的灵活运用更能体现建筑的适应性和活力。",
     imgPos: "/images/Local symmetries.png", imgNeg: "/images/LSNEG.png", bookImg: "/images/LSP.png"
   },
   {
@@ -115,8 +115,8 @@ export const properties = [
     relZh: "通过融合相邻中心增加 S（强度）。",
     natureEn: "The giraffe's reticulated coat is a masterclass in deep interlock: dark polygonal patches and the cream network between them so deeply interpenetrate that no simple line divides them—each color belongs, ambiguously, to the other's domain.",
     natureZh: "长颈鹿的网状花纹是深度交织的自然杰作：深色多边形斑块与奶油色网络如此深度相互渗透，没有简单的线条可以将它们分开——每种颜色都模糊地归属于另一种颜色的领域。",
-    exampleEn: "Dove-tail joints in wood or interlocking paving stones.",
-    exampleZh: "木材中的燕尾榫或互锁铺路石。",
+    exampleEn: "Deep interlock and ambiguity refer to the way adjacent substructures embed into each other to form tight connections, making the whole more stable and vibrant. For instance, in the mortise and tenon structure in the left image, the wooden components interlock and share loads, enhancing structural integrity. Conversely, the round chair in the right image has mutually isolated components that are merely welded or screwed together; lacking formal connection, the overall structure is rather loose. Moreover, interlocked areas often create ambiguous spaces—like the arcade (qilou), which connects with the outside yet is enclosed by the main building, forming a transitional space with both indoor and outdoor characteristics. It provides shelter from the elements while enhancing interaction between people and the environment, allowing the building to merge more naturally with the outside world, thereby increasing the vitality and utility of the space.",
+    exampleZh: "深度交织与模糊性指相邻子结构彼此嵌入，形成紧密联系，使整体更稳固且富有生命力。例如，左图的榫卯结构，木构件的榫与卯相互嵌入，共同受力，增强整体性。而右图的圆椅，各部分构件互相孤立，仅靠焊接或螺丝固定，缺乏形态上的联系，整体较为松散。此外，交织处往往形成模糊空间，如骑楼既连通外界，又被建筑主体包围，形成兼具室内外特性的过渡空间。它既可遮风避雨，又增强人与环境的互动，使建筑与外界更自然地融合，提升空间的活力和实用性。",
     imgPos: "/images/Deep interlock and ambiguity.png", imgNeg: "/images/DNEG.png", bookImg: "/images/DIAP.png"
   },
   {
@@ -129,8 +129,8 @@ export const properties = [
     relZh: "通过阐明区别增加 S（强度）。",
     natureEn: "The Purple Emperor butterfly lives through contrast: iridescent blue-violet flares against deep reddish-brown wings, while stark white spots punctuate both. Each color sharpens the others—the blue would not glow without the dark ground surrounding it.",
     natureZh: "闪蛱蝶以对比为生：虹彩蓝紫色在深红棕色翅膀上闪耀，鲜白色斑点贯穿其间。每种颜色使其他颜色更加鲜锐——若没有包围它的深色背景，蓝色便无法如此耀眼。",
-    exampleEn: "Light against dark, rough stone against smooth plaster.",
-    exampleZh: "明与暗，粗糙石头与光滑灰泥。",
+    exampleEn: "The classroom in the left image employs a contrast between dark wooden walls and light plastered walls, creating multiple hierarchies of alternating light and dark—such as the contrast between the walls and window frames, or the seats and the floor. This adds depth to the space while maintaining overall harmony and continuity. However, contrast must be carefully organized. In the right image, although the shadow of the staircase forms a strong light-and-dark contrast with the floor-to-ceiling windows, it fragments the windows, making the space appear disjointed and uncoordinated. This demonstrates that contrast should not merely highlight differences but should enable elements to mutually accentuate each other, strengthening the organic connections within the space. Haphazardly piling on contrasts can instead destroy the overall harmonious aesthetic and diminish the space's vitality.",
+    exampleZh: "左图教室采用深色木墙与浅色抹灰墙的对比，形成多个层级的深浅交替，如墙面与窗框、座椅与地面的对比，使空间更具层次，同时保持整体的和谐与连贯。然而，对比需经过精心组织，右图楼梯的阴影虽与落地窗形成强烈明暗对比，却割裂了窗户，使空间显得破碎而缺乏协调感。这说明，对比不仅要突出差异，更要使元素相互衬托，增强空间的有机联系。随意堆砌对比，反而可能破坏整体的和谐美感，削弱空间的活力。",
     imgPos: "/images/Contrast.png", imgNeg: "/images/CNEG.png", bookImg: "/images/CP.png"
   },
   {
@@ -143,8 +143,8 @@ export const properties = [
     relZh: "通过连接尺度增加 H（层级）。",
     natureEn: "The nautilus shell cross-section is the archetype of gradient: each chamber grows smoothly larger as it spirals outward, curvature and spacing changing in one continuous flow from the tight inner whorl to the vast outer arc—no jumps, only gradual transformation.",
     natureZh: "鹦鹉螺截面是渐变的原型：每个腔室随螺旋向外平滑地增大，曲率与间距在一次连续的流动中变化，从细密的内圈到宽阔的外弧——没有跳跃，只有渐进的转化。",
-    exampleEn: "Steps of a staircase or diminishing sizes of arches.",
-    exampleZh: "楼梯的台阶或逐渐缩小的拱门。",
+    exampleEn: "The architectural facade in the left image creates a gradient through progressively receding moldings. Each molding acts as a small center, alternating between light and shadow surfaces that mutually accentuate each other. Concurrently, the cumulative variation of these small centers shapes a stronger sense of inward recession, granting the facade greater depth and vitality. In contrast, the solid wall in the right image lacks gradients, appearing stiff and devoid of life. This demonstrates that gradients not only shape gentle transitions but also enhance the overall rhythm and visual appeal of a space.",
+    exampleZh: "左图的建筑立面通过层层退进的线脚形成渐变，每一条线脚都是小的中心，在光影下交替呈现阴阳面，彼此衬托。同时，这些小中心的累积变化，塑造了更强烈的向内退进感，使立面更具层次与活力。相比之下，右图的实墙缺乏渐变，显得生硬而缺乏生命力。这表明，渐变不仅塑造柔和过渡，也增强空间的整体节奏和视觉吸引力。",
     imgPos: "/images/Gradients.png", imgNeg: "/images/GRNEG.png", bookImg: "/images/GP.png"
   },
   {
@@ -157,8 +157,8 @@ export const properties = [
     relZh: "通过适应现实增加 S（强度）。",
     natureEn: "The zebra's stripes exemplify living roughness: no two stripes are exactly the same width, each curves differently, each adapts to the body's local contour. This imperfect regularity is precisely what gives them life—mechanical perfection would make them dead.",
     natureZh: "斑马的条纹是活力粗糙性的典型：没有两条条纹宽度完全相同，每条曲线各异，每条都随身体局部轮廓自适应调整。这种不完美的规律性正是赋予它们生命的东西——机械的完美反而会使它们失去活力。",
-    exampleEn: "Hand-laid brick walls with slight irregularities.",
-    exampleZh: "手工砌筑的略带不规则的砖墙。",
+    exampleEn: "The left image displays a wall built with naturally gathered stones; due to the varying sizes and shapes of the stones, their interlocking arrangement forms a more vivid and cohesive whole. The wall in the right image, however, is composed of identical prefabricated bricks produced in a factory; although neat and uniform, it lacks a sense of connection among its parts, appearing somewhat rigid and disjointed. The irregularity of natural stones imbues the structure with greater vitality and uniqueness, whereas the precise uniformity of the prefabricated bricks diminishes the overall vitality.",
+    exampleZh: "左图展示了用自然采集的石块建造的墙体，由于石块大小和形状各异，通过相互镶嵌形成了更生动、紧密的整体。而右图的墙体由工厂生产的完全相同的预制砖块组成，虽然整齐统一，却缺乏彼此的联系感，显得较为呆板和松散。自然石块的不规则性让结构更具生命力和独特性，而预制砖块的精确一致性则削弱了整体的活力。",
     imgPos: "/images/Roughness.png", imgNeg: "/images/RNEG.png", bookImg: "/images/RP.png"
   },
   {
@@ -171,8 +171,8 @@ export const properties = [
     relZh: "通过自相似性增加 H（层级）。",
     natureEn: "An X-ray of a lily reveals a single family of forms: the sweeping curves of the petals echo the curve of the trumpet, which echoes the bend of the stem and the arc of the stamens—every part is a variation on one deep morphological theme.",
     natureZh: "百合花的X光图像揭示了同一形态家族：花瓣的弧线呼应花管的曲线，花管又呼应茎秆的弯曲与雄蕊的弧度——每个部分都是同一深层形态主题的变奏。",
-    exampleEn: "The curve of a dome echoed in the arches below it.",
-    exampleZh: "圆顶的曲线在其下方的拱门中得到呼应。",
+    exampleEn: "The left image shows the Tengboche Monastery in Nepal, situated at the foot of Mount Everest. The mountains, the tiered eaves of the monastery, the finials on the roof, and the nearby houses all exhibit formal similarities. This similarity is manifested in the triangular composition of the pitched roofs, which progresses hierarchically and repeats, allowing the monastery to blend seamlessly with its surroundings and create an 'echo'. The right image shows Porta Pia; although it contains elements of various scales, these elements differ drastically—circles, semicircles, triangles, rectangles, arches, etc., remain mutually independent, lacking internal similarity. As a result, these elements fail to form a unified whole, yielding a chaotic, cobbled-together impression rather than the tight connection of an organic structure.",
+    exampleZh: "左图为珠穆朗玛峰山脚下的尼泊尔汤坡崎寺，图中的山脉、寺庙的层层屋檐、屋顶的宝刹，以及近处的民居都展现出形式上的相似性。这种相似性体现在坡屋面的三角形构图上，层层递进、反复出现，使得寺庙与周围环境浑然一体，产生“共鸣”。右图为庇亚门，尽管包含多种等级的元素，但这些元素彼此差异巨大——圆形、半圆形、三角形、矩形、拱形等相互独立，缺乏内在的相似性。结果是，这些元素无法形成统一的整体，给人以杂乱无章的拼凑感，而非有机结构的紧密联系。",
     imgPos: "/images/Echoes.png", imgNeg: "/images/ENEG.png", bookImg: "/images/EP.png"
   },
   {
@@ -185,8 +185,8 @@ export const properties = [
     relZh: "通过创造平静中心增加 S（强度）。",
     natureEn: "In a mountain canyon, the river valley is the void: a calm, luminous emptiness carved through layer upon layer of ridges. The surrounding mountains—dense with texture—make this silence powerful; without them, the void would have no force.",
     natureZh: "在山脉峡谷中，河谷就是虚空：一片平静、明亮的空旷，穿切过层层叠叠的山脊。周围群山——充满丰富纹理——使这份寂静强大有力；没有它们，虚空便失去力量。",
-    exampleEn: "An empty altar or a quiet central courtyard.",
-    exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。",
+    exampleEn: "The left image shows the Mosque of Baybars in Cairo, where the central courtyard acts as a 'void', instilling the surrounding small rooms with a sense of vitality and order. The right image depicts an office space lacking a central void; packed with small cubicles, it appears crowded and noisy. Whether in religious buildings or other architectures, a central void is crucial: it balances noise and tranquility, enhancing the spatial comfort and overall experience.",
+    exampleZh: "左图为开罗拜巴尔清真寺，其中央中庭作为“虚空”，让周边小房间更有活力和秩序感。右图为某办公空间，缺乏中央虚空，满是小房间，显得拥挤、嘈杂。无论宗教建筑还是其他建筑，中心的虚空空间都至关重要，它能平衡嘈杂与宁静，提升空间的舒适性与体验感。",
     imgPos: "/images/The void.png", imgNeg: "/images/VNEG.png", bookImg: "/images/VP.png"
   },
   {
@@ -199,8 +199,8 @@ export const properties = [
     relZh: "通过消除摩擦增加 S（强度）。",
     natureEn: "A Tuscan wheat field in summer: the vast sweep of grain, a single row of cypresses on the ridge, a plain sky. Everything unnecessary has been stripped away by nature and time; what remains is so distilled to essentials that it radiates absolute inner calm.",
     natureZh: "夏日托斯卡纳麦田：大片连绵的麦浪，山脊上一排孤立的柏树，简洁的天空。一切多余之物已被自然与时间剔除；剩下的只是本质，却因此焕发出绝对的内在宁静。",
-    exampleEn: "A Shaker chair or a Zen garden.",
-    exampleZh: "震颤派椅子或禅宗花园。",
+    exampleEn: "The building in the left image unifies its exterior with wooden boards and tiles; though simple, it is rich in detail. Elements such as the entrance and window frames are appropriately designed, exuding a natural and warm presence. The Italian chair in the right image, despite its complex form, lacks organic connections; instead, it appears chaotic and bizarre, losing any sense of grounded serenity.",
+    exampleZh: "左图建筑采用木板与瓦片统一外观，虽简洁但富有细节，入口、窗框等均恰当设计，展现自然温润感。右图意大利椅虽造型复杂，但缺乏有机联系，反而显得杂乱怪异，失去沉稳气质。",
     imgPos: "/images/Simplicity and inner calm.png", imgNeg: "/images/SINEG.png", bookImg: "/images/SICP.png"
   },
   {
@@ -213,8 +213,8 @@ export const properties = [
     relZh: "通过连接到最大整体增加 H（层级）。",
     natureEn: "Magnetic domains in a cobalt crystal under the microscope: each domain merges imperceptibly into its neighbors with no hard edge—only a gradual transition where one field dissolves into the next. No domain is separate; all are one continuous, indivisible whole.",
     natureZh: "显微镜下钴晶体的磁畴：每个磁畴与相邻磁畴不可察觉地融合，没有硬边——只有一个磁场逐渐溶入下一个的过渡。没有任何磁畴是孤立的；所有磁畴共同构成一个连续、不可分割的整体。",
-    exampleEn: "A building that steps down the hillside, merging with the terrain.",
-    exampleZh: "顺山势而下的建筑，与地形融为一体。",
+    exampleEn: "The left image features the Giant Wild Goose Pagoda, which forms a unified whole through the repetition of arches, walls, and eaves, along with the progressive tapering of the tower's body, avoiding any superfluous or abrupt elements. At the same time, the pagoda is situated in an area rich in historical and cultural heritage, blending seamlessly with surrounding ancient buildings and the natural environment to constitute a harmonious totality. The right image shows House X in New York; its conspicuous white color and geometric forms cause the building to jump out from its surroundings, making it unable to integrate and creating a sense of isolation. This starkly illustrates the importance of not-separateness.",
+    exampleZh: "左图为大雁塔，其通过拱门、墙面和屋檐的重复，以及塔身的层层收分，形成一个统一的整体，无多余突兀元素。同时，大雁塔位于历史文化底蕴深厚的片区，与周边古建筑和自然环境相融，共同构成和谐的整体。右图为纽约的X住宅，其醒目的白色与几何造型使建筑从周围环境中跳脱出来，无法融入周边，形成孤立感。这正体现了非分离性的重要性。",
     imgPos: "/images/Not separateness.png", imgNeg: "/images/NSNEG.png", bookImg: "/images/NSP.png"
   }
 ];

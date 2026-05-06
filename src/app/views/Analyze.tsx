@@ -387,16 +387,16 @@ Final Instruction: Compose these layers into a single coherent image that feels 
     : 0;
 
   return (
-    <div className="min-h-screen bg-stone-50 py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-muted py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
       <div className="mx-auto max-w-7xl">
         
         <div className="flex flex-col items-center mb-8 md:mb-12">
-          <div className="flex bg-stone-200/50 p-1 rounded-full mb-8">
+          <div className="flex bg-muted/50 p-1 rounded-full mb-8">
             <button 
               onClick={() => setView("diagnostic")}
               className={cn(
                 "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                view === "diagnostic" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                view === "diagnostic" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-stone-700"
               )}
             >
               {isEn ? "Expert Diagnostic" : "专家诊断"}
@@ -405,7 +405,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
               onClick={() => setView("lab")}
               className={cn(
                 "px-6 py-2 rounded-full text-sm font-bold transition-all",
-                view === "lab" ? "bg-white text-stone-900 shadow-sm" : "text-stone-500 hover:text-stone-700"
+                view === "lab" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-stone-700"
               )}
             >
               {isEn ? "Prompt Laboratory" : "提示词实验室"}
@@ -428,16 +428,16 @@ Final Instruction: Compose these layers into a single coherent image that feels 
             {view === "lab" ? (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 tracking-tight">{trans.analyze.promptLab.title}</h2>
-                  <p className="mt-4 text-stone-600 max-w-2xl mx-auto leading-relaxed">{trans.analyze.promptLab.subtitle}</p>
+                  <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground tracking-tight">{trans.analyze.promptLab.title}</h2>
+                  <p className="mt-4 text-muted-foreground max-w-2xl mx-auto leading-relaxed">{trans.analyze.promptLab.subtitle}</p>
 
                 </div>
 
                 {/* --- New Extraction Section --- */}
-                <div className="mb-12 bg-white rounded-3xl p-6 shadow-sm border border-stone-100 flex flex-col md:flex-row items-center gap-8">
+                <div className="mb-12 bg-card rounded-3xl p-6 shadow-sm border border-border flex flex-col md:flex-row items-center gap-8">
                   <div className={cn(
                     "relative w-full md:w-1/3 aspect-[4/3] rounded-2xl border-2 border-dashed overflow-hidden flex flex-col items-center justify-center transition-all",
-                    labImage ? "border-transparent bg-stone-50" : "border-stone-200 hover:border-teal-500 hover:bg-stone-50"
+                    labImage ? "border-transparent bg-stone-50" : "border-border hover:border-teal-500 hover:bg-muted"
                   )}>
                     {labImage ? (
                       <>
@@ -447,7 +447,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                     ) : (
                       <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-4">
                         <Upload className="w-8 h-8 text-stone-300 mb-2" />
-                        <span className="text-xs font-bold text-stone-500">{trans.analyze.promptLab.extractTitle}</span>
+                        <span className="text-xs font-bold text-muted-foreground">{trans.analyze.promptLab.extractTitle}</span>
                         <input type="file" hidden onChange={handleLabFileChange} accept="image/*" />
                       </label>
                     )}
@@ -455,13 +455,13 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                   
                   <div className="flex-1 space-y-4">
                     <div>
-                      <h4 className="text-lg font-bold text-stone-900">{trans.analyze.promptLab.extractTitle}</h4>
-                      <p className="text-sm text-stone-500">{trans.analyze.promptLab.extractDesc}</p>
+                      <h4 className="text-lg font-bold text-foreground">{trans.analyze.promptLab.extractTitle}</h4>
+                      <p className="text-sm text-muted-foreground">{trans.analyze.promptLab.extractDesc}</p>
                     </div>
                     <Button 
                       onClick={startHierarchyExtraction} 
                       disabled={!labImage || isExtracting}
-                      className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-8 py-6 shadow-lg shadow-teal-600/20 disabled:bg-stone-200"
+                      className="bg-teal-600 hover:bg-primary-hover text-white rounded-full px-8 py-6 shadow-lg shadow-teal-600/20 disabled:bg-muted"
                     >
                       {isExtracting ? (
                         <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {trans.analyze.promptLab.extracting}</>
@@ -473,39 +473,39 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                  <Card className="bg-white p-8 space-y-6 shadow-xl border-stone-100 rounded-3xl">
+                  <Card className="bg-card p-8 space-y-6 shadow-xl border-border rounded-3xl">
                     <div className="space-y-5">
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                           <div className="w-6 h-1 bg-stone-900 rounded-full" /> {trans.analyze.promptLab.layer1}
                         </label>
-                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer1Desc}</p>
+                        <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer1Desc}</p>
                         <textarea 
                           value={skeleton} 
                           onChange={(e) => setSkeleton(e.target.value)} 
-                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                           <div className="w-6 h-1 bg-stone-500 rounded-full" /> {trans.analyze.promptLab.layer2}
                         </label>
-                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer2Desc}</p>
+                        <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer2Desc}</p>
                         <textarea 
                           value={properties} 
                           onChange={(e) => setProperties(e.target.value)} 
-                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-xs font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                        <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                           <div className="w-6 h-1 bg-stone-300 rounded-full" /> {trans.analyze.promptLab.layer3}
                         </label>
-                        <p className="text-[10px] text-stone-500 italic">{trans.analyze.promptLab.layer3Desc}</p>
+                        <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer3Desc}</p>
                         <textarea 
                           value={detail} 
                           onChange={(e) => setDetail(e.target.value)} 
-                          className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
                         />
                       </div>
 
@@ -517,13 +517,13 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                             useScaling ? "bg-teal-500" : "bg-stone-300"
                           )}
                         >
-                          <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all", useScaling ? "left-6" : "left-1")} />
+                          <div className={cn("absolute top-1 w-3 h-3 bg-card rounded-full transition-all", useScaling ? "left-6" : "left-1")} />
                         </button>
-                        <span className="text-xs font-medium text-stone-600">{trans.analyze.promptLab.principle}</span>
+                        <span className="text-xs font-medium text-muted-foreground">{trans.analyze.promptLab.principle}</span>
                       </div>
                     </div>
 
-                    <Button onClick={handleCopyPrompt} className="w-full py-6 bg-stone-900 hover:bg-stone-800 text-white rounded-2xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95">
+                    <Button onClick={handleCopyPrompt} className="w-full py-6 bg-stone-900 hover:bg-primary-hover text-white rounded-2xl font-bold transition-all shadow-lg hover:scale-[1.02] active:scale-95">
                       {copied ? (isEn ? "Copied to Clipboard!" : "已复制到剪贴板！") : (
                         <div className="flex items-center gap-2">
                           <Copy className="w-4 h-4" />
@@ -538,7 +538,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                         <Sparkles className="w-32 h-32" />
                       </div>
-                      <h4 className="text-stone-400 uppercase tracking-widest text-[10px] font-bold mb-4">Live Preview</h4>
+                      <h4 className="text-muted-foreground uppercase tracking-widest text-[10px] font-bold mb-4">Live Preview</h4>
                       <div className="font-mono text-xs leading-relaxed text-stone-300 whitespace-pre-wrap h-[300px] overflow-y-auto custom-scrollbar">
                         {generateFullPrompt()}
                       </div>
@@ -564,25 +564,25 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8 max-w-4xl mx-auto">
                 <div className="text-center mb-6 md:mb-8">
-                  <h2 className="text-2xl md:text-3xl font-bold text-stone-900 tracking-tight">{trans.analyze.uploadTitle}</h2>
-                  <p className="mt-2 md:mt-3 text-sm md:text-base text-stone-600 max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
+                  <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{trans.analyze.uploadTitle}</h2>
+                  <p className="mt-2 md:mt-3 text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
                 </div>
 
-                <div className="bg-white rounded-3xl p-4 shadow-sm border border-stone-200 focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
+                <div className="bg-card rounded-3xl p-4 shadow-sm border border-border focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
                   <div className="flex items-start gap-3">
                     <MessageSquare className="w-5 h-5 text-teal-600 mt-1 shrink-0" />
                     <textarea 
                       value={userIntent}
                       onChange={(e) => setUserIntent(e.target.value)}
                       placeholder={isEn ? "Tell the expert your analysis intent... (e.g., Which layout has more living structure?)" : "告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具活力？）"}
-                      className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-stone-400 text-sm md:text-base h-16"
+                      className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-muted-foreground text-sm md:text-base h-16"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   {[0, 1].map((index) => (
-                    <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-stone-50/50 bg-white")}>
+                    <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-muted/50 bg-white")}>
                       {images[index] ? (
                         <>
                           <img src={images[index]} alt={`Upload ${index + 1}`} className="h-full w-full object-cover" />
@@ -590,13 +590,13 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                         </>
                       ) : (
                         <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-6 md:p-8 text-center">
-                          <div className="mb-4 md:mb-5 rounded-full bg-stone-100 p-4 md:p-5 shadow-inner">
-                            {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-stone-400" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-stone-400" />}
+                          <div className="mb-4 md:mb-5 rounded-full bg-secondary p-4 md:p-5 shadow-inner">
+                            {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" />}
                           </div>
                           <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
                             {index === 0 ? (isEn ? "Upload Main Scene" : "上传主场景") : (isEn ? "Upload Comparison (Optional)" : "上传对比场景 (可选)")}
                           </span>
-                          <span className="text-xs text-stone-500 mt-1">Supports JPG, PNG</span>
+                          <span className="text-xs text-muted-foreground mt-1">Supports JPG, PNG</span>
                           <input type="file" hidden onChange={handleFileChange} accept="image/*" multiple={index === 0} />
                         </label>
                       )}
@@ -625,14 +625,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
             {step === "processing" && (
               <div className="flex h-[400px] md:h-[550px] flex-col items-center justify-center text-center px-4">
                 <div className="relative mb-8 md:mb-10 h-24 w-24 md:h-28 md:w-28">
-                   <div className="absolute inset-0 rounded-full border-4 border-stone-200" />
+                   <div className="absolute inset-0 rounded-full border-4 border-border" />
                    <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
                    <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold text-stone-900 tracking-tight">
+                <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
                   {isEn ? "Perceiving the 15 geometric properties..." : "正在感知空间的 15 个几何属性..."}
                 </h2>
-                <p className="mt-3 text-sm md:text-base text-stone-600 flex flex-col items-center gap-2">
+                <p className="mt-3 text-sm md:text-base text-muted-foreground flex flex-col items-center gap-2">
                   {retryCount > 0 ? (
                     <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
                       {isEn ? `AI is thinking deeply... (Auto-retry ${retryCount}/2)` : `AI 专家深度思考中... (自动重试 ${retryCount}/2)`}
@@ -653,7 +653,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                     initial={{ scale: 0.98, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.1 }}
-                    className="bg-white rounded-3xl p-2 md:p-3 shadow-md flex gap-2 md:gap-3 h-[240px] md:h-[360px] w-full"
+                    className="bg-card rounded-3xl p-2 md:p-3 shadow-md flex gap-2 md:gap-3 h-[240px] md:h-[360px] w-full"
                   >
                     {images.map((img, idx) => (
                       <div 
@@ -680,31 +680,31 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                     ))}
                   </motion.div>
                   
-                  <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-stone-100 relative overflow-hidden">
+                  <div className="bg-card rounded-3xl p-5 md:p-8 shadow-sm border border-border relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
-                    <div className="mb-4 inline-block bg-stone-100 px-3 py-1 rounded-md text-xs text-stone-500 font-medium">
+                    <div className="mb-4 inline-block bg-secondary px-3 py-1 rounded-md text-xs text-muted-foreground font-medium">
                       🎯 {isEn ? "Targeting your intent: " : "针对您的问题："}{userIntent || (isEn ? "Overall Assessment" : "整体评估")}
                     </div>
-                    <h2 className="text-xl md:text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                       🏆 {safeText(analysisResult.winner_declaration, isEn ? "Beauty extraction complete" : "美度提取完成")}
                     </h2>
                     <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
                       {safeText(analysisResult.core_evaluation)}
                     </p>
-                    <div className="mt-4 md:mt-6 p-4 md:p-5 bg-stone-50 rounded-2xl border border-stone-100 text-stone-600 text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
-                      <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-stone-400 shrink-0" />
+                    <div className="mt-4 md:mt-6 p-4 md:p-5 bg-muted rounded-2xl border border-border text-muted-foreground text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
+                      <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-muted-foreground shrink-0" />
                       <span>{safeText(analysisResult.expert_footnote)}</span>
                     </div>
                   </div>
 
                   <div className="space-y-4 md:space-y-6">
-                    <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
+                    <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
                       🔍 {isEn ? "Multi-dimensional Diagnostic Report" : "深度多维诊断报告"}
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-                      <div className="bg-stone-50 rounded-2xl p-5 md:p-6 border border-stone-100">
+                      <div className="bg-muted rounded-2xl p-5 md:p-6 border border-border">
                         <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 {isEn ? "Visual & Structural Decoding" : "视觉与结构解码"}</h4>
-                        <p className="text-stone-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                        <p className="text-muted-foreground text-xs md:text-sm leading-relaxed whitespace-pre-line">
                           {safeText(analysisResult.visual_decoding)}
                         </p>
                       </div>
@@ -718,7 +718,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                   </div>
 
                   <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
-                    <h3 className="text-lg md:text-xl font-bold text-stone-900 flex items-center gap-2 border-b border-stone-200 pb-2 md:pb-3">
+                    <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
                       🛠️ {isEn ? "Structural Improvement Guide" : "结构改进指南"}
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
@@ -753,12 +753,12 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       exit={{ opacity: 0, x: -20 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <Card className="bg-white border-stone-200 shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
+                      <Card className="bg-card border-border shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
                         
-                        <div className="p-6 md:p-8 text-center border-b border-stone-100 bg-gradient-to-b from-stone-50 to-white relative pb-10">
+                        <div className="p-6 md:p-8 text-center border-b border-border bg-gradient-to-b from-stone-50 to-white relative pb-10">
                           {images.length === 2 && (
                             <div className="absolute top-3 left-0 w-full flex justify-center">
-                              <span className="bg-stone-100 text-stone-500 text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
+                              <span className="bg-secondary text-muted-foreground text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
                                 <ImageIcon className="w-3 h-3" />
                                 {isEn ? `Viewing Image ${selectedIndex + 1} Data` : `正在查看图 ${selectedIndex + 1} 数据`}
                               </span>
@@ -771,7 +771,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                         </div>
                         
                         <div className="p-4 md:p-6 bg-white">
-                          <h4 className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                          <h4 className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
                             <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> {isEn ? "15 Properties Matrix" : "15项几何属性鉴定矩阵"}
                           </h4>
                           
@@ -787,19 +787,19 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                                       "flex flex-col items-center justify-center p-2.5 md:p-3 rounded-xl border transition-all cursor-help",
                                       isPresent 
                                         ? "bg-teal-50/50 border-teal-200 hover:bg-teal-100" 
-                                        : "bg-stone-50 border-transparent opacity-50 grayscale hover:opacity-80"
+                                        : "bg-muted border-transparent opacity-50 grayscale hover:opacity-80"
                                     )}
                                   >
                                     <span className={cn(
                                       "text-[10px] md:text-xs font-bold text-center leading-tight truncate w-full",
-                                      isPresent ? "text-teal-800" : "text-stone-500 line-through"
+                                      isPresent ? "text-teal-800" : "text-muted-foreground line-through"
                                     )}>
                                       {safeText(attr.name, isEn ? "Unknown" : "未知")}
                                     </span>
                                     
                                     <div className={cn(
                                       "mt-2 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black font-mono shadow-inner",
-                                      isPresent ? "bg-teal-500 text-white" : "bg-stone-200 text-stone-400"
+                                      isPresent ? "bg-teal-500 text-white" : "bg-muted text-muted-foreground"
                                     )}>
                                       {isPresent ? "1" : "0"}
                                     </div>
@@ -808,18 +808,18 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                               })}
                             </div>
                           ) : (
-                            <p className="text-xs md:text-sm text-stone-400 text-center py-6 md:py-10">
+                            <p className="text-xs md:text-sm text-muted-foreground text-center py-6 md:py-10">
                               {isEn ? "Loading matrix data..." : "正在为您加载矩阵数据..."}
                             </p>
                           )}
-                          <p className="text-center text-[10px] text-stone-400 mt-4 italic">
+                          <p className="text-center text-[10px] text-muted-foreground mt-4 italic">
                             💡 {isEn ? "Hint: Hover over the blocks to see the reasoning" : "提示：将鼠标悬停在方块上可查看判定原因"}
                           </p>
                         </div>
                         
-                        <div className="p-3 md:p-4 bg-stone-50 border-t border-stone-100 flex flex-col gap-2">
+                        <div className="p-3 md:p-4 bg-muted border-t border-border flex flex-col gap-2">
                           <Button 
-                            className="w-full rounded-full bg-stone-900 text-white hover:bg-stone-800 py-5 md:py-6 text-sm md:text-base font-semibold shadow-md" 
+                            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary-hover py-5 md:py-6 text-sm md:text-base font-semibold shadow-md" 
                             onClick={() => { 
                               setView("lab"); 
                               if (images[selectedIndex]) setLabImage(images[selectedIndex]);
@@ -828,7 +828,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                             <Sparkles className="w-4 h-4 mr-2" />
                             {isEn ? "Extract Hierarchy & Generate Prompt" : "提取层级并生成提示词"}
                           </Button>
-                          <Button variant="outline" className="w-full rounded-full bg-white text-stone-900 hover:bg-stone-100 py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
+                          <Button variant="outline" className="w-full rounded-full bg-card text-foreground hover:bg-secondary py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
                             {isEn ? "Analyze Another Space" : "重新分析下一个空间"}
                           </Button>
                         </div>
@@ -860,7 +860,7 @@ function BeautyGauge({ n }: { n: number }) {
 
   return (
     <div className="relative w-full max-w-[260px] mx-auto flex flex-col items-center">
-      <div className="text-[10px] md:text-xs font-bold text-stone-400 uppercase tracking-widest mb-1 z-10 relative">
+      <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1 z-10 relative">
         Degree of Beauty (B)
       </div>
       
@@ -904,7 +904,7 @@ function BeautyGauge({ n }: { n: number }) {
 
       <div className="-mt-8 flex items-baseline justify-center relative z-10">
         <span className="text-5xl md:text-6xl font-black text-stone-800 font-mono tracking-tighter leading-none">{n}</span>
-        <span className="text-lg md:text-xl text-stone-400 font-medium tracking-normal ml-1">/15</span>
+        <span className="text-lg md:text-xl text-muted-foreground font-medium tracking-normal ml-1">/15</span>
       </div>
     </div>
   );
@@ -913,8 +913,8 @@ function BeautyGauge({ n }: { n: number }) {
 function StepItem({ current, target, number, label }: { current: string, target: string, number: number, label: string }) {
   const isActive = current === target;
   return (
-    <div className={cn("flex items-center gap-1.5 md:gap-2.5 transition-colors", isActive ? "text-stone-950" : "text-stone-400")}>
-      <div className={cn("flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-full text-[10px] md:text-xs font-extrabold transition-all", isActive ? "bg-stone-950 text-white md:scale-110 shadow-md" : "bg-stone-200 text-stone-500")}>
+    <div className={cn("flex items-center gap-1.5 md:gap-2.5 transition-colors", isActive ? "text-stone-950" : "text-muted-foreground")}>
+      <div className={cn("flex h-5 w-5 md:h-7 md:w-7 items-center justify-center rounded-full text-[10px] md:text-xs font-extrabold transition-all", isActive ? "bg-stone-950 text-white md:scale-110 shadow-md" : "bg-muted text-muted-foreground")}>
         {number}
       </div>
       <span className="font-semibold text-[10px] md:text-sm hidden sm:inline-block">{label}</span>

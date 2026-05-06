@@ -6,7 +6,7 @@ import {
   ArrowRight, ArrowLeft, Quote, Info, Check, X,
   Columns, ScanLine, MoveHorizontal,
   Eye, Layers, ArrowUpRight, Leaf, Building2, BookOpen, Sparkles, Microscope, Loader2, RefreshCcw,
-  Heart, Box, Brain, Activity
+  Heart, Box, Brain, Activity, Laptop, Palette, Briefcase, Code, Camera, Music, PenTool, Coffee, LayoutTemplate, Smartphone
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { useGemini } from '../hooks/useGemini';
@@ -39,7 +39,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
   return (
     <div className="w-full">
       <div className="flex justify-center mb-6">
-        <div className="inline-flex p-1 bg-stone-100/50 rounded-full border border-stone-200/50 backdrop-blur-sm">
+        <div className="inline-flex p-1 bg-stone-100/50 rounded-full border border-border/50 backdrop-blur-sm">
           {[
             { id: 'split', icon: Columns, label: 'Split' },
             { id: 'compare', icon: MoveHorizontal, label: 'Compare' },
@@ -52,8 +52,8 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
               className={cn(
                 "flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold transition-all duration-300",
                 viewMode === mode.id
-                  ? "bg-white text-stone-900 shadow-sm border border-stone-100"
-                  : "text-stone-400 hover:text-stone-600 hover:bg-stone-200/50"
+                  ? "bg-card text-foreground shadow-sm border border-border"
+                  : "text-muted-foreground hover:text-muted-foreground hover:bg-muted/50"
               )}
             >
               <mode.icon className="w-3 h-3" />
@@ -66,7 +66,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
       <div
         ref={containerRef}
         className={cn(
-          "w-full aspect-[4/3] md:aspect-[2/1] bg-stone-100 rounded-sm relative overflow-hidden border border-stone-200 select-none",
+          "w-full aspect-[4/3] md:aspect-[2/1] bg-secondary rounded-sm relative overflow-hidden border border-border select-none",
           viewMode === 'compare' ? "cursor-ew-resize touch-none" : ""
         )}
         onMouseMove={handleMouseMove}
@@ -75,13 +75,13 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
         {viewMode === 'split' && (
           <div className="grid grid-cols-2 w-full h-full divide-x divide-stone-200">
             <div className="relative overflow-hidden group">
-              <div className="absolute top-2 left-2 bg-stone-900 text-white text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
+              <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
                 <Check className="w-3 h-3" /> Strong
               </div>
               <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             </div>
             <div className="relative overflow-hidden group grayscale opacity-90">
-              <div className="absolute top-2 left-2 bg-stone-200 text-stone-500 text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
+              <div className="absolute top-2 left-2 bg-muted text-muted-foreground text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
                 <X className="w-3 h-3" /> Weak
               </div>
               <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -90,7 +90,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
         )}
         {viewMode === 'strong' && (
           <div className="w-full h-full relative">
-            <div className="absolute top-4 left-4 bg-stone-900 text-white text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm">
+            <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm">
               <Check className="w-3 h-3" /> Strong Structure
             </div>
             <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover" />
@@ -98,7 +98,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
         )}
         {viewMode === 'weak' && (
           <div className="w-full h-full relative grayscale">
-            <div className="absolute top-4 left-4 bg-stone-200 text-stone-600 text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm border border-stone-300">
+            <div className="absolute top-4 left-4 bg-muted text-muted-foreground text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm border border-stone-300">
               <X className="w-3 h-3" /> Weak Structure
             </div>
             <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover opacity-80" />
@@ -108,7 +108,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
           <div className="w-full h-full relative group">
             <div className="absolute inset-0 grayscale opacity-90">
               <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover" />
-              <div className="absolute top-4 right-4 bg-stone-200/90 text-stone-600 text-[10px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 backdrop-blur-sm pointer-events-none">
+              <div className="absolute top-4 right-4 bg-muted/90 text-muted-foreground text-[10px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 backdrop-blur-sm pointer-events-none">
                 <X className="w-3 h-3" /> Weak
               </div>
             </div>
@@ -122,10 +122,10 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
               </div>
             </div>
             <div
-              className="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
+              className="absolute top-0 bottom-0 w-0.5 bg-card shadow-[0_0_15px_rgba(0,0,0,0.3)] z-20 pointer-events-none"
               style={{ left: `${sliderPos}%` }}
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center border border-stone-200 text-stone-600">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-card/90 backdrop-blur rounded-full shadow-lg flex items-center justify-center border border-border text-muted-foreground">
                 <MoveHorizontal className="w-5 h-5" />
               </div>
             </div>
@@ -144,12 +144,12 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
     className="!pt-12 !border-0"
   >
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-      <div className="p-8 md:p-10 bg-white rounded-3xl border border-stone-200 grayscale hover:grayscale-0 transition-all duration-500 shadow-sm group">
-        <div className="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center mb-6 border border-stone-200 group-hover:bg-stone-900 group-hover:text-white transition-colors">
-          <Box className="w-5 h-5 text-stone-500 group-hover:text-white" />
+      <div className="p-8 md:p-10 bg-card rounded-3xl border border-border grayscale hover:grayscale-0 transition-all duration-500 shadow-sm group">
+        <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mb-6 border border-border group-hover:bg-stone-900 group-hover:text-white transition-colors">
+          <Box className="w-5 h-5 text-muted-foreground group-hover:text-white" />
         </div>
-        <h4 className="text-xl font-serif font-bold text-stone-900 mb-4">{isEn ? "The Cartesian 'Dead' Space" : "笛卡尔的「死寂」空间"}</h4>
-        <p className="text-sm text-stone-600 leading-relaxed font-serif">
+        <h4 className="text-xl font-serif font-bold text-foreground mb-4">{isEn ? "The Cartesian 'Dead' Space" : "笛卡尔的「死寂」空间"}</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed font-serif">
           {isEn
             ? "For 300 years, the mechanistic worldview taught us that space is a neutral, lifeless coordinate system. Matter is separate from us, and environmental geometry has no bearing on our inner emotional life."
             : "三百年来，机械论教导我们：空间只是中性、死寂的空盒子。物质与人是割裂的，周围的几何形状与我们内在的情感生活毫无瓜葛。"}
@@ -157,7 +157,7 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
       </div>
 
       <div className="p-8 md:p-10 bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl border border-amber-200 shadow-md group relative overflow-hidden">
-        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-6 shadow-sm border border-amber-100 group-hover:bg-amber-500 transition-colors relative z-10">
+        <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center mb-6 shadow-sm border border-amber-100 group-hover:bg-amber-500 transition-colors relative z-10">
           <Heart className="w-5 h-5 text-amber-500 group-hover:text-white" />
         </div>
         <h4 className="text-xl font-serif font-bold text-amber-950 mb-4 relative z-10">{isEn ? "The Organic Living Space" : "有机的「活力」空间"}</h4>
@@ -186,16 +186,16 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
         <div className="flex-1 bg-stone-900/80 p-8 rounded-3xl border border-stone-700 backdrop-blur-md hover:border-stone-500 transition-colors h-full w-full">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-stone-300">
-              <Brain className="w-6 h-6 text-stone-400" />
+              <Brain className="w-6 h-6 text-muted-foreground" />
               <span className="font-bold tracking-widest uppercase text-sm">{isEn ? "Left Hemisphere" : "左脑 (理性)"}</span>
             </div>
-            <span className="text-[10px] font-mono text-stone-500 uppercase">{isEn ? "Objective" : "客观世界"}</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase">{isEn ? "Objective" : "客观世界"}</span>
           </div>
           <h5 className="text-2xl font-serif font-bold text-white mb-4">
             {isEn ? "Structural Beauty" : "客观结构美"}
           </h5>
           <div className="space-y-4">
-            <p className="text-sm text-stone-400 leading-relaxed border-l-2 border-stone-600 pl-3">
+            <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-stone-600 pl-3">
               {isEn ? "Perceives the physical geometry, centers, boundaries, and mathematical order of the environment." : "解析物理几何：寻找中心、边界、粗糙性等客观存在的数学秩序。"}
             </p>
             <div className="bg-stone-950 p-4 rounded-xl border border-stone-800 font-mono text-amber-400/90 text-sm flex items-center justify-center">
@@ -245,7 +245,7 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
       </div>
 
       <div className="mt-12 text-center relative z-10">
-        <p className="text-stone-400 text-xs max-w-3xl mx-auto leading-relaxed">
+        <p className="text-muted-foreground text-xs max-w-3xl mx-auto leading-relaxed">
           {isEn
             ? "The essence of Living Structure theory is to bridge this gap. By measuring and designing the objective geometric properties (Left Brain), we can reliably predict and cultivate the profound psychological wholeness experienced by human beings (Right Brain)."
             : "活力结构理论的核心正是跨越这道鸿沟。通过量化设计客观的几何属性（左脑），我们能够可靠地预测并培养人类深刻的心理整体感（右脑）。这就解释了为什么一个冰冷的空间被微调后，能让人感到被“治愈”。"}
@@ -264,6 +264,10 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
 export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
   const [activeHowToIds, setActiveHowToIds] = useState<number[]>([]);
+  const [userBackground, setUserBackground] = useState<string>("architecture");
+  const [dynamicExamples, setDynamicExamples] = useState<Record<string, string>>({});
+  const [isGeneratingExample, setIsGeneratingExample] = useState(false);
+  
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
@@ -274,6 +278,55 @@ export function Theory() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<{ property: string, choiceType: string }[]>([]);
   const [report, setReport] = useState<string | null>(null);
+
+  const backgroundOptions = [
+    { id: "architecture", labelEn: "Architecture", labelZh: "建筑学", icon: Building2 },
+    { id: "industrial", labelEn: "Industrial Design", labelZh: "工业设计", icon: Box },
+    { id: "uiux", labelEn: "UI/UX Design", labelZh: "UI/UX设计", icon: Smartphone },
+    { id: "software", labelEn: "Software Eng", labelZh: "软件工程", icon: Code },
+    { id: "biology", labelEn: "Biology", labelZh: "生物医学", icon: Microscope },
+    { id: "business", labelEn: "Business", labelZh: "商业管理", icon: Briefcase },
+    { id: "art", labelEn: "Art & Media", labelZh: "艺术与传媒", icon: Palette },
+    { id: "music", labelEn: "Music", labelZh: "音乐作曲", icon: Music },
+    { id: "literature", labelEn: "Literature", labelZh: "文学创作", icon: PenTool },
+    { id: "everyday", labelEn: "Everyday Life", labelZh: "日常生活", icon: Coffee }
+  ];
+
+  const handleInspireMe = async () => {
+    const cacheKey = `${activeProp.n}-${userBackground}`;
+    if (dynamicExamples[cacheKey]) return;
+
+    setIsGeneratingExample(true);
+    const bgInfo = backgroundOptions.find(b => b.id === userBackground);
+    const bgName = bgInfo ? (isEn ? bgInfo.labelEn : bgInfo.labelZh) : userBackground;
+    
+    const prompt = `
+      You are an expert in Christopher Alexander's "The Nature of Order" and an inspiring tutor.
+      The user is learning about the property of "${activeProp.tEn}" (${activeProp.tZh}).
+      Their professional background or interest is: "${bgName}".
+      
+      Task: Give a vivid, concrete, and highly inspiring example of how the property "${activeProp.tEn}" applies to their specific field.
+      For example, if they are an industrial designer, explain it using a microwave or an iPhone. If they are a software engineer, explain it using code architecture.
+      
+      Keep it under 150 words.
+      
+      ==================================================
+      ⚠️ CRITICAL OUTPUT LANGUAGE INSTRUCTION ⚠️
+      You MUST write the final response STRICTLY in: ${isEn ? 'English' : '简体中文 (Simplified Chinese)'}.
+      ==================================================
+    `;
+
+    try {
+      const response = await analyzeStructure(prompt);
+      if (response) {
+        setDynamicExamples(prev => ({ ...prev, [cacheKey]: response }));
+      }
+    } catch (error) {
+      console.error("Failed to generate adaptive example:", error);
+    } finally {
+      setIsGeneratingExample(false);
+    }
+  };
 
   const [activeQuestions, setActiveQuestions] = useState<typeof STATIC_QUESTION_POOL>([]);
   const [isLoadingDataset, setIsLoadingDataset] = useState(false);
@@ -480,7 +533,7 @@ export function Theory() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FDFBF7] text-stone-800 pb-24">
+    <div className="flex flex-col min-h-screen bg-card text-stone-800 pb-24">
 
       <div className="w-full max-w-7xl mx-auto p-4 md:p-16 pb-0">
 
@@ -494,13 +547,13 @@ export function Theory() {
                 ? "Liking something from the heart means that it makes us more whole in ourselves. It has a healing effect on us. It makes us more human."
                 : "发自内心的喜爱，意味着它让我们在内在变得更加完整。它对我们有疗愈的作用，让我们更具人性。"}"
             </p>
-            <p className="text-sm md:text-base text-stone-500 font-medium">
+            <p className="text-sm md:text-base text-muted-foreground font-medium">
               — Christopher Alexander, The Nature of Order
             </p>
           </div>
 
           <Section title={isEn ? "Empirical Test" : "实证测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：观测与测量"} className="!pt-0 !border-0">
-            <div className="w-full bg-white border border-stone-200 text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center p-6 md:p-8">
+            <div className="w-full bg-card border border-border text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center p-6 md:p-8">
 
               <AnimatePresence mode="wait">
                 {!hasStarted && !report && (
@@ -512,15 +565,15 @@ export function Theory() {
                     className="text-center max-w-xl"
                   >
                     <Microscope className="w-12 h-12 text-amber-500 mx-auto mb-6 opacity-80" />
-                    <h3 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 mb-6">
+                    <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">
                       {isEn ? "The Empirical Mirror" : "实证之镜"}
                     </h3>
-                    <p className="text-stone-500 text-base md:text-lg mb-4 leading-relaxed font-serif">
+                    <p className="text-muted-foreground text-base md:text-lg mb-4 leading-relaxed font-serif">
                       {isEn
                         ? "This is not a test of preference. It is a scientific observation. We have been taught by the Cartesian worldview that our inner feelings and objective reality are entirely separate."
                         : "这不是一场关于主观喜好的测试，而是一次严谨的科学观测。过去三百年的笛卡尔世界观告诉我们，客观物质与主观感受是彻底割裂的。"}
                     </p>
-                    <p className="text-stone-600 text-sm md:text-base mb-10 leading-relaxed font-serif italic border-l-2 border-amber-500/50 pl-4 text-left">
+                    <p className="text-muted-foreground text-sm md:text-base mb-10 leading-relaxed font-serif italic border-l-2 border-amber-500/50 pl-4 text-left">
                       {isEn
                         ? "Please quiet your mind. When the images appear, use your inner feeling as a precision instrument. Ask yourself: Which of these two geometries is a truer, more encompassing picture of your whole self?"
                         : "请平静你的大脑。当画面出现时，请将你内心的深刻感受作为一把精密的科学量尺。问问你自己：哪一种几何形态，能更准确、更完整地映照出你作为一个人的全部本质？"}
@@ -529,7 +582,7 @@ export function Theory() {
                     <button
                       onClick={startTest}
                       disabled={isLoadingDataset}
-                      className="bg-stone-900 text-white px-8 py-3 rounded-full font-bold tracking-widest uppercase text-sm hover:bg-amber-500 transition-colors flex items-center gap-2 mx-auto shadow-md disabled:opacity-50"
+                      className="bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold tracking-widest uppercase text-sm hover:bg-amber-500 transition-colors flex items-center gap-2 mx-auto shadow-md disabled:opacity-50"
                     >
                       {isLoadingDataset ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Fetching Dataset..." : "正在抽取云端图库..."}</>
@@ -551,10 +604,10 @@ export function Theory() {
                     className="w-full max-w-4xl"
                   >
                     <div className="text-center mb-8">
-                      <div className="text-xs uppercase tracking-[0.3em] text-stone-400 mb-2">
+                      <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">
                         {isEn ? "Observation" : "观测节点"} {currentStep + 1} / {activeQuestions.length}
                       </div>
-                      <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden max-w-md mx-auto border border-stone-200">
+                      <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden max-w-md mx-auto border border-border">
                         <div
                           className="bg-amber-500 h-full transition-all duration-500"
                           style={{ width: `${((currentStep) / activeQuestions.length) * 100}%` }}
@@ -565,7 +618,7 @@ export function Theory() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 min-h-[400px] h-auto">
                       <div
                         onClick={() => handleSelect(activeQuestions[currentStep].optionA.type, activeQuestions[currentStep].property)}
-                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-stone-200 hover:border-amber-400 shadow-sm transition-all"
+                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border hover:border-amber-400 shadow-sm transition-all"
                       >
                         <img src={activeQuestions[currentStep].optionA.img} alt="Option A" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
@@ -578,7 +631,7 @@ export function Theory() {
 
                       <div
                         onClick={() => handleSelect(activeQuestions[currentStep].optionB.type, activeQuestions[currentStep].property)}
-                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-stone-200 hover:border-amber-400 shadow-sm transition-all"
+                        className="relative rounded-2xl overflow-hidden cursor-pointer group border border-border hover:border-amber-400 shadow-sm transition-all"
                       >
                         <img src={activeQuestions[currentStep].optionB.img} alt="Option B" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
@@ -600,10 +653,10 @@ export function Theory() {
                     className="flex flex-col items-center justify-center text-center"
                   >
                     <Loader2 className="w-12 h-12 text-amber-500 animate-spin mb-6" />
-                    <h3 className="text-xl font-serif text-stone-900 mb-2">
+                    <h3 className="text-xl font-serif text-foreground mb-2">
                       {isEn ? "Computing Structural Resonance..." : "正在计算几何结构与自我的共振..."}
                     </h3>
-                    <p className="text-stone-400 text-sm animate-pulse">
+                    <p className="text-muted-foreground text-sm animate-pulse">
                       {isEn ? "Analyzing objective life degree based on Chapter 8 & 9 paradigms" : "正在依据超越笛卡尔的全新科学范式，生成观测报告..."}
                     </p>
                   </motion.div>
@@ -614,7 +667,7 @@ export function Theory() {
                     key="report"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-3xl w-full bg-stone-50/80 p-6 md:p-12 rounded-2xl border border-stone-200 backdrop-blur-sm shadow-inner"
+                    className="max-w-3xl w-full bg-stone-50/80 p-6 md:p-12 rounded-2xl border border-border backdrop-blur-sm shadow-inner"
                   >
                     <div className="text-amber-600 text-xs font-bold uppercase tracking-[0.2em] mb-4 text-center flex items-center justify-center gap-2">
                       <Sparkles className="w-4 h-4" />
@@ -625,17 +678,17 @@ export function Theory() {
                       {report}
                     </p>
 
-                    <div className="flex flex-col md:flex-row items-center justify-center gap-6 border-t border-stone-200 pt-8">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-6 border-t border-border pt-8">
                       <button
                         onClick={resetTest}
-                        className="text-stone-500 hover:text-stone-900 flex items-center gap-2 text-sm transition-colors font-bold uppercase tracking-widest"
+                        className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors font-bold uppercase tracking-widest"
                       >
                         <RefreshCcw className="w-4 h-4" /> {isEn ? "New Observation" : "开启新观测"}
                       </button>
 
                       <button
                         onClick={handleShareToX}
-                        className="bg-stone-900 text-white hover:bg-amber-600 px-6 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all shadow-md"
+                        className="bg-primary text-primary-foreground hover:bg-primary-hover px-6 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all shadow-md"
                       >
                         <svg viewBox="0 0 24 24" aria-hidden="true" className="w-4 h-4 fill-current"><g><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 22.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.008 5.96H5.078z"></path></g></svg>
                         {isEn ? "Share Results" : "分享观测结果"}
@@ -656,25 +709,25 @@ export function Theory() {
           transition={{ duration: 0.8 }}
           className="text-center mt-12 mb-16"
         >
-          <div className="border-b border-stone-200 pb-12 mb-12 max-w-2xl mx-auto">
-            <div className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-6">
+          <div className="border-b border-border pb-12 mb-12 max-w-2xl mx-auto">
+            <div className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground mb-6">
               {isEn ? "Theoretical Framework" : "理论框架提取"}
             </div>
-            <div className="space-y-3 font-serif text-lg md:text-xl text-stone-600 leading-relaxed">
+            <div className="space-y-3 font-serif text-lg md:text-xl text-muted-foreground leading-relaxed">
               <p>{isEn ? "Living Structure originates from structural wholeness." : "活力结构，源于不可分割的整体性。"}</p>
               <p>{isEn ? "Vitality emerges from hierarchical coherence." : "客观的生命美感，涌现于层级的严密嵌套。"}</p>
-              <p className="font-black text-stone-900 text-3xl mt-6 tracking-widest">L = S × H</p>
+              <p className="font-black text-foreground text-3xl mt-6 tracking-widest">L = S × H</p>
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-serif font-black text-stone-900 mb-4 tracking-tight uppercase">
+          <h1 className="text-4xl md:text-6xl font-serif font-black text-foreground mb-4 tracking-tight uppercase">
             {isEn ? (
               <>THEORY OF<br />LIVING STRUCTURE</>
             ) : (
               <>生 命 结 构 理 论</>
             )}
           </h1>
-          <p className="text-stone-500 font-mono uppercase tracking-widest text-xs">
+          <p className="text-muted-foreground font-mono uppercase tracking-widest text-xs">
             {isEn ? "Vitality in Geometry & Architecture" : "几何与建筑中的活力密码"}
           </p>
         </motion.div>
@@ -687,36 +740,36 @@ export function Theory() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
             <div className="space-y-6">
               <p className="text-stone-800 text-lg leading-relaxed font-serif">{trans.theory?.origin?.content1}</p>
-              <p className="text-stone-600 text-sm leading-relaxed">{trans.theory?.origin?.content2}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">{trans.theory?.origin?.content2}</p>
             </div>
-            <div className="bg-stone-100 p-8 rounded-sm">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4">{trans.theory?.origin?.formulaTitle || "Core Formula"}</h4>
-              <div className="text-4xl font-serif font-bold text-stone-900 mb-4">L = S × H</div>
-              <div className="space-y-2 text-sm text-stone-600 font-mono">
-                <div className="flex justify-between border-b border-stone-200 pb-1"><span>L</span> <span>{trans.theory?.origin?.formulaL || "Livingness"}</span></div>
-                <div className="flex justify-between border-b border-stone-200 pb-1"><span>S</span> <span>{trans.theory?.origin?.formulaS || "Substructures"}</span></div>
+            <div className="bg-secondary p-8 rounded-sm">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">{trans.theory?.origin?.formulaTitle || "Core Formula"}</h4>
+              <div className="text-4xl font-serif font-bold text-foreground mb-4">L = S × H</div>
+              <div className="space-y-2 text-sm text-muted-foreground font-mono">
+                <div className="flex justify-between border-b border-border pb-1"><span>L</span> <span>{trans.theory?.origin?.formulaL || "Livingness"}</span></div>
+                <div className="flex justify-between border-b border-border pb-1"><span>S</span> <span>{trans.theory?.origin?.formulaS || "Substructures"}</span></div>
                 <div className="flex justify-between"><span>H</span> <span>{trans.theory?.origin?.formulaH || "Hierarchy"}</span></div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-8 border-t border-stone-100 pt-8">
+          <div className="flex flex-col md:flex-row gap-8 border-t border-border pt-8">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
+              <div className="w-12 h-12 bg-muted rounded-full overflow-hidden grayscale">
                 <ImageWithFallback src="/images/A.png" alt="C. Alexander" className="w-full h-full object-cover" />
               </div>
               <div className="text-xs">
-                <div className="font-bold text-stone-900">Christopher Alexander</div>
-                <div className="text-stone-400">The Nature of Order</div>
+                <div className="font-bold text-foreground">Christopher Alexander</div>
+                <div className="text-muted-foreground">The Nature of Order</div>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-stone-200 rounded-full overflow-hidden grayscale">
+              <div className="w-12 h-12 bg-muted rounded-full overflow-hidden grayscale">
                 <ImageWithFallback src="/images/BJ.png" alt="Bin Jiang" className="w-full h-full object-cover" />
               </div>
               <div className="text-xs">
-                <div className="font-bold text-stone-900">Bin Jiang</div>
-                <div className="text-stone-400">Structural Beauty</div>
+                <div className="font-bold text-foreground">Bin Jiang</div>
+                <div className="text-muted-foreground">Structural Beauty</div>
               </div>
             </div>
           </div>
@@ -725,11 +778,11 @@ export function Theory() {
         {/* Section 2: Aesthetic Context */}
         <Section title={trans.theory?.aesthetic?.title || "Aesthetic Context"}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div className="p-8 bg-white border border-stone-200 shadow-sm">
-              <p className="text-stone-600 leading-relaxed mb-4">{trans.theory?.aesthetic?.p1}</p>
-              <div className="h-1 w-12 bg-stone-200" />
+            <div className="p-8 bg-card border border-border shadow-sm">
+              <p className="text-muted-foreground leading-relaxed mb-4">{trans.theory?.aesthetic?.p1}</p>
+              <div className="h-1 w-12 bg-muted" />
             </div>
-            <div className="p-8 bg-stone-50 border border-stone-200">
+            <div className="p-8 bg-muted border border-border">
               <p className="text-stone-800 font-medium leading-relaxed mb-4">{trans.theory?.aesthetic?.p2}</p>
               <div className="h-1 w-12 bg-amber-200" />
             </div>
@@ -752,19 +805,19 @@ export function Theory() {
                   key={item.id}
                   onClick={() => toggleHowToCard(item.id)}
                   className={cn(
-                    "border border-stone-200 rounded-2xl cursor-pointer transition-colors overflow-hidden",
-                    isActive ? "bg-stone-900 text-white shadow-xl" : "bg-white text-stone-900 hover:bg-stone-50"
+                    "border border-border rounded-2xl cursor-pointer transition-colors overflow-hidden",
+                    isActive ? "bg-primary text-primary-foreground shadow-xl" : "bg-card text-foreground hover:bg-muted"
                   )}
                 >
                   <motion.div layout className="p-4 md:p-8 flex flex-col items-center text-center">
                     <div className={cn(
                       "w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors",
-                      isActive ? "bg-stone-800 text-teal-400" : "bg-stone-100 text-stone-600"
+                      isActive ? "bg-stone-800 text-teal-400" : "bg-secondary text-muted-foreground"
                     )}>
                       <item.icon className="w-5 h-5" />
                     </div>
                     <h4 className="font-serif font-bold text-lg mb-2">{item.title}</h4>
-                    <p className={cn("text-xs transition-colors", isActive ? "text-stone-300" : "text-stone-500")}>
+                    <p className={cn("text-xs transition-colors", isActive ? "text-stone-300" : "text-muted-foreground")}>
                       {item.shortDesc}
                     </p>
                   </motion.div>
@@ -802,10 +855,10 @@ export function Theory() {
                   onClick={() => setActivePropId(prop.n)}
                   className={`text-left px-4 py-3 rounded-md transition-all duration-200 ${activePropId === prop.n
                       ? 'bg-amber-100 text-amber-900 font-bold border-l-4 border-amber-500 shadow-sm'
-                      : 'bg-transparent text-stone-600 hover:bg-stone-100'
+                      : 'bg-transparent text-muted-foreground hover:bg-secondary'
                     }`}
                 >
-                  <span className="text-xs text-stone-400 mr-2 font-mono">{String(prop.n).padStart(2, '0')}</span>
+                  <span className="text-xs text-muted-foreground mr-2 font-mono">{String(prop.n).padStart(2, '0')}</span>
                   {language === 'zh' ? prop.tZh : prop.tEn}
                 </button>
               ))}
@@ -813,7 +866,7 @@ export function Theory() {
 
             <div className="w-full lg:w-3/4 flex flex-col gap-8">
 
-              <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+              <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden min-h-[500px] flex flex-col">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeProp.n}
@@ -823,7 +876,7 @@ export function Theory() {
                     transition={{ duration: 0.3 }}
                     className="p-6 md:p-12 flex-grow flex flex-col"
                   >
-                    <h3 className="text-4xl font-serif font-bold text-stone-900 mb-6 flex items-baseline gap-4">
+                    <h3 className="text-4xl font-serif font-bold text-foreground mb-6 flex items-baseline gap-4">
                       <span className="text-amber-500 text-2xl font-mono">{String(activeProp.n).padStart(2, '0')}</span>
                       {language === 'zh' ? activeProp.tZh : activeProp.tEn}
                     </h3>
@@ -833,7 +886,7 @@ export function Theory() {
                     </p>
 
                     <div className="flex items-center gap-2 mb-10">
-                      <span className="px-3 py-1 bg-stone-100 text-stone-600 text-xs font-mono rounded-sm border border-stone-200">
+                      <span className="px-3 py-1 bg-secondary text-muted-foreground text-xs font-mono rounded-sm border border-border">
                         {language === 'zh' ? activeProp.mechZh : activeProp.mechEn}
                       </span>
                       <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-mono rounded-sm border border-amber-200 flex items-center gap-1">
@@ -841,66 +894,139 @@ export function Theory() {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                      <div className="bg-emerald-50/50 p-6 rounded-lg border border-emerald-100 hover:shadow-sm transition-shadow">
-                        <h4 className="flex items-center gap-2 text-emerald-800 font-bold mb-4 uppercase tracking-wider text-sm">
-                          <Leaf className="w-4 h-4" />
-                          {language === 'zh' ? '在自然界中的体现' : 'Manifestation in Nature'}
-                        </h4>
-                        <p className="text-stone-600 text-sm leading-relaxed">
-                          {language === 'zh' ? activeProp.natureZh : activeProp.natureEn}
-                        </p>
+                    <div className="flex flex-col gap-12 mb-8">
+                      {/* Nature Section: Text + Illustration */}
+                      <div className="flex flex-col">
+                        <div className="bg-emerald-50/50 p-6 rounded-t-lg border border-emerald-100 hover:shadow-sm transition-shadow">
+                          <h4 className="flex items-center gap-2 text-emerald-800 font-bold mb-4 uppercase tracking-wider text-sm">
+                            <Leaf className="w-4 h-4" />
+                            {language === 'zh' ? '在自然界中的体现' : 'Manifestation in Nature'}
+                          </h4>
+                          <p className="text-muted-foreground text-sm leading-relaxed">
+                            {language === 'zh' ? activeProp.natureZh : activeProp.natureEn}
+                          </p>
+                        </div>
+                        <div className="border-x border-b border-emerald-100 rounded-b-lg bg-white/50 p-6 flex flex-col items-center">
+                          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-4 font-bold flex items-center gap-2 w-full">
+                            <BookOpen className="w-4 h-4 text-emerald-600" />
+                            {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
+                          </p>
+                          <div className="w-full flex justify-center items-center py-2">
+                            {activeProp.bookImg ? (
+                              <img
+                                src={activeProp.bookImg}
+                                alt="Book Illustration"
+                                className="max-h-[250px] md:max-h-[320px] w-auto max-w-full object-contain mix-blend-multiply opacity-85 group-hover:opacity-100 transition-opacity"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
+                                }}
+                              />
+                            ) : (
+                              <div className="text-muted-foreground text-sm font-mono flex items-center gap-2">
+                                <ScanLine className="w-4 h-4" /> Image scan pending...
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="bg-stone-50 p-6 rounded-lg border border-stone-200 hover:shadow-sm transition-shadow">
-                        <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
-                          <Building2 className="w-4 h-4" />
-                          {language === 'zh' ? '在空间设计中的体现' : 'Manifestation in Design'}
-                        </h4>
-                        <p className="text-stone-600 text-sm leading-relaxed">
-                          {language === 'zh' ? activeProp.exampleZh : activeProp.exampleEn}
-                        </p>
+                      {/* Design Section: Text + Interactive Analysis */}
+                      <div className="flex flex-col">
+                        <div className="bg-muted p-6 rounded-t-lg border border-border hover:shadow-sm transition-shadow">
+                          <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
+                            <Building2 className="w-4 h-4" />
+                            {language === 'zh' ? '在空间设计中的体现' : 'Manifestation in Design'}
+                          </h4>
+                          <p className="text-muted-foreground text-sm leading-relaxed">
+                            {language === 'zh' ? activeProp.exampleZh : activeProp.exampleEn}
+                          </p>
+                        </div>
+                        <div className="border-x border-b border-border rounded-b-lg p-6 md:p-12 bg-card">
+                          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-6 flex items-center gap-2">
+                            <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
+                          </h4>
+                          <PropertyVisuals
+                            key={activeProp.n}
+                            imgPos={activeProp.imgPos}
+                            imgNeg={activeProp.imgNeg}
+                            title={language === 'zh' ? activeProp.tZh : activeProp.tEn}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="mt-8 pt-6 border-t border-stone-100">
-                      <p className="text-xs text-stone-400 uppercase tracking-widest mb-4 font-bold flex items-center gap-2">
-                        <BookOpen className="w-4 h-4" />
-                        {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
-                      </p>
+                    {/* Adaptive Example Generation Section */}
+                    <div className="bg-amber-50/30 p-6 rounded-lg border border-amber-100/50 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-colors" />
+                      
+                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 relative z-10">
+                        <div>
+                          <h4 className="flex items-center gap-2 text-amber-800 font-bold uppercase tracking-wider text-sm mb-1">
+                            <Sparkles className="w-4 h-4 text-amber-500" />
+                            {isEn ? 'Adaptive AI Example' : '自适应 AI 案例'}
+                          </h4>
+                          <p className="text-xs text-amber-700/70">
+                            {isEn ? 'Select your background to generate a personalized example.' : '选择你的专业背景，生成量身定制的专属解析。'}
+                          </p>
+                        </div>
 
-                      <div className="w-full flex justify-center items-center py-2">
-                        {activeProp.bookImg ? (
-                          <img
-                            src={activeProp.bookImg}
-                            alt="Book Illustration"
-                            className="max-h-[250px] md:max-h-[320px] w-auto max-w-full object-contain mix-blend-multiply opacity-85 group-hover:opacity-100 transition-opacity"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
-                            }}
-                          />
-                        ) : (
-                          <div className="text-stone-400 text-sm font-mono flex items-center gap-2">
-                            <ScanLine className="w-4 h-4" /> Image scan pending...
-                          </div>
-                        )}
+                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                          <select 
+                            value={userBackground}
+                            onChange={(e) => setUserBackground(e.target.value)}
+                            className="w-full sm:w-auto px-3 py-2 bg-white border border-amber-200 rounded-md text-sm text-stone-700 outline-none focus:ring-2 focus:ring-amber-500/50 font-serif"
+                          >
+                            {backgroundOptions.map(bg => (
+                              <option key={bg.id} value={bg.id}>
+                                {isEn ? bg.labelEn : bg.labelZh}
+                              </option>
+                            ))}
+                          </select>
+                          
+                          <button
+                            onClick={handleInspireMe}
+                            disabled={isGeneratingExample || isThinking}
+                            className="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          >
+                            {isGeneratingExample || isThinking ? (
+                              <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? 'Generating...' : '生成中...'}</>
+                            ) : (
+                              <>{isEn ? 'Inspire Me' : '给我启发'}</>
+                            )}
+                          </button>
+                        </div>
                       </div>
+
+                      <AnimatePresence mode="wait">
+                        {dynamicExamples[`${activeProp.n}-${userBackground}`] ? (
+                          <motion.div
+                            key="generated-content"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-white/80 p-5 rounded-md border border-amber-100 text-stone-700 text-sm leading-relaxed font-serif shadow-inner relative z-10"
+                          >
+                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-amber-100/50 px-2 py-0.5 rounded text-[10px] text-amber-600 font-mono">
+                              {backgroundOptions.find(b => b.id === userBackground)?.icon && React.createElement(backgroundOptions.find(b => b.id === userBackground)!.icon, { className: "w-3 h-3" })}
+                              {isEn ? backgroundOptions.find(b => b.id === userBackground)?.labelEn : backgroundOptions.find(b => b.id === userBackground)?.labelZh}
+                            </div>
+                            {dynamicExamples[`${activeProp.n}-${userBackground}`]}
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="bg-white/40 p-5 rounded-md border border-amber-100/50 border-dashed text-amber-800/40 text-sm leading-relaxed font-serif text-center relative z-10 flex flex-col items-center justify-center py-8"
+                          >
+                            <Sparkles className="w-6 h-6 mb-2 opacity-30" />
+                            {isEn ? 'Click "Inspire Me" to generate an example mapped to your chosen field.' : '点击“给我启发”，生成与你所选领域深刻映射的生动案例。'}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                   </motion.div>
                 </AnimatePresence>
-              </div>
-
-              <div className="bg-white border border-stone-200 rounded-lg shadow-sm overflow-hidden p-8 md:p-12">
-                <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-stone-400 mb-6 flex items-center gap-2">
-                  <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
-                </h4>
-                <PropertyVisuals
-                  key={activeProp.n}
-                  imgPos={activeProp.imgPos}
-                  imgNeg={activeProp.imgNeg}
-                  title={language === 'zh' ? activeProp.tZh : activeProp.tEn}
-                />
               </div>
 
             </div>

@@ -29,25 +29,25 @@ const QuickStartCard = ({
     >
       <button 
         onClick={onClick}
-        className={`group relative flex flex-col items-start justify-between w-full h-full p-8 text-left bg-white border border-stone-200 hover:border-stone-900 transition-all duration-300 rounded-sm shadow-sm hover:shadow-md overflow-hidden`}
+        className={`group relative flex flex-col items-start justify-between w-full h-full p-8 text-left bg-card border border-border hover:border-stone-900 transition-all duration-300 rounded-sm shadow-sm hover:shadow-md overflow-hidden`}
       >
         <div className="relative z-10 w-full">
            <div className={`mb-6 inline-flex p-3 rounded-sm ${
              color === "teal" ? "bg-teal-50 text-teal-700" : 
              color === "amber" ? "bg-amber-50 text-amber-700" : 
-             "bg-stone-100 text-stone-700"
+             "bg-secondary text-stone-700"
            }`}>
              <Icon className="w-8 h-8" strokeWidth={1.5} />
            </div>
-           <h3 className="text-2xl font-serif font-bold text-stone-900 mb-2">
+           <h3 className="text-2xl font-serif font-bold text-foreground mb-2">
              {language === 'en' ? titleEn : titleZh}
            </h3>
-           <p className="text-stone-500 font-sans leading-relaxed text-sm">
+           <p className="text-muted-foreground font-sans leading-relaxed text-sm">
              {language === 'en' ? descEn : descZh}
            </p>
         </div>
         
-        <div className="relative z-10 w-full mt-8 flex items-center text-sm font-medium text-stone-900 group-hover:underline decoration-1 underline-offset-4">
+        <div className="relative z-10 w-full mt-8 flex items-center text-sm font-medium text-foreground group-hover:underline decoration-1 underline-offset-4">
           {language === 'en' ? 'Start Now' : '立即开始'} <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
         </div>
 
@@ -64,24 +64,24 @@ const ProgressIndicator = () => {
   const percentage = (learned / total) * 100;
 
   return (
-    <div className="w-full bg-stone-50 border-y border-stone-200 py-6">
+    <div className="w-full bg-muted border-y border-border py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
          <div className="flex items-center gap-3">
            <div className="p-2 bg-stone-900 rounded-full">
              <CheckCircle2 className="w-4 h-4 text-stone-50" />
            </div>
            <div>
-             <h4 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
+             <h4 className="text-sm font-bold text-foreground uppercase tracking-wider">
                {language === 'en' ? 'Your Progress' : '学习进度'}
              </h4>
-             <p className="text-xs text-stone-500">
+             <p className="text-xs text-muted-foreground">
                {language === 'en' ? 'Mastering the 15 Properties' : '掌握活力结构的15个属性'}
              </p>
            </div>
          </div>
          
          <div className="flex-1 max-w-md w-full flex items-center gap-4">
-           <div className="flex-1 h-2 bg-stone-200 rounded-full overflow-hidden">
+           <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
              <motion.div 
                initial={{ width: 0 }}
                animate={{ width: `${percentage}%` }}
@@ -89,7 +89,7 @@ const ProgressIndicator = () => {
                className="h-full bg-stone-900"
              />
            </div>
-           <span className="font-mono text-xs font-medium text-stone-500 whitespace-nowrap">
+           <span className="font-mono text-xs font-medium text-muted-foreground whitespace-nowrap">
              {language === 'en' ? `${learned} / ${total} Completed` : `已完成 ${learned} / ${total}`}
            </span>
          </div>
@@ -110,7 +110,7 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
   const property = trans.theory.attributes[propertyKey] || trans.theory.attributes[1];
 
   return (
-    <div className="bg-white border border-stone-200 text-stone-900 overflow-hidden relative rounded-sm shadow-sm transition-shadow hover:shadow-md">
+    <div className="bg-card border border-border text-foreground overflow-hidden relative rounded-sm shadow-sm transition-shadow hover:shadow-md">
       <div className="grid grid-cols-1 lg:grid-cols-2">
         <div className="p-10 lg:p-16 flex flex-col justify-center relative z-10">
            <div className="mb-6 flex items-center gap-2">
@@ -122,17 +122,17 @@ const FeaturedConcept = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
              </span>
            </div>
            
-           <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 mb-6">
+           <h2 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-6">
              {property.name}
            </h2>
            
-           <blockquote className="text-xl md:text-2xl font-serif italic text-stone-600 mb-8 leading-relaxed border-l-4 border-amber-400 pl-6 bg-stone-50/50 py-2">
+           <blockquote className="text-xl md:text-2xl font-serif italic text-muted-foreground mb-8 leading-relaxed border-l-4 border-amber-400 pl-6 bg-stone-50/50 py-2">
              "{property.description}"
            </blockquote>
            
            <Button 
              variant="outline"
-             className="w-fit border-stone-300 text-stone-700 hover:bg-stone-100 hover:text-stone-900 transition-colors"
+             className="w-fit border-stone-300 text-stone-700 hover:bg-secondary hover:text-foreground transition-colors"
              onClick={() => onNavigate("theory")}
            >
              {trans.discover.featuredConcept?.button || (language === 'en' ? "Explore in Theory" : "在理论库中探索")}
@@ -157,7 +157,7 @@ const InteractivePreview = () => {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
-    <div className="border border-stone-200 bg-white rounded-sm overflow-hidden">
+    <div className="border border-border bg-card rounded-sm overflow-hidden">
       <div className="grid grid-cols-1 md:grid-cols-2 h-full min-h-[400px]">
         <div 
           className="relative h-64 md:h-full cursor-pointer group overflow-hidden"
@@ -176,14 +176,14 @@ const InteractivePreview = () => {
                className="w-full h-full object-cover grayscale opacity-90"
              />
              <div className="absolute inset-0 flex items-center justify-center bg-stone-900/20">
-               <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-sm shadow-sm flex items-center gap-2">
-                 <MousePointer2 className="w-4 h-4 text-stone-400" />
-                 <span className="text-xs font-bold uppercase tracking-widest text-stone-600">
+               <div className="bg-card/90 backdrop-blur px-4 py-2 rounded-sm shadow-sm flex items-center gap-2">
+                 <MousePointer2 className="w-4 h-4 text-muted-foreground" />
+                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                    {language === 'en' ? 'Tap / Hover to Transform' : '点击 / 悬停以转换'}
                  </span>
                </div>
              </div>
-             <div className="absolute top-4 left-4 bg-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest px-2 py-1">
+             <div className="absolute top-4 left-4 bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-widest px-2 py-1">
                {language === 'en' ? 'Dead Structure' : '缺乏活力的结构'}
              </div>
            </motion.div>
@@ -206,10 +206,10 @@ const InteractivePreview = () => {
         </div>
 
         <div className="p-10 flex flex-col justify-center bg-stone-50">
-           <h3 className="text-2xl font-serif font-bold text-stone-900 mb-4">
+           <h3 className="text-2xl font-serif font-bold text-foreground mb-4">
              {language === 'en' ? 'See the Difference' : '观察差异'}
            </h3>
-           <p className="text-stone-600 mb-6 leading-relaxed">
+           <p className="text-muted-foreground mb-6 leading-relaxed">
              {language === 'en' 
                ? 'Modernist minimalism often results in "dead" structures lacking scale and centers. Living structures, like the Alhambra, teem with recursive detail and interconnected centers.'
                : '现代主义的极简设计往往导致缺乏尺度层级和中心的“死亡”结构。而活力结构（如阿尔罕布拉宫）则充满了递归的细节和相互联系的强中心。'}
@@ -217,28 +217,28 @@ const InteractivePreview = () => {
            
            <div className="space-y-4">
              <div className="flex items-start gap-3">
-               <div className={`p-1 rounded-full ${isHovering ? 'bg-stone-200 text-stone-400' : 'bg-red-100 text-red-600'}`}>
+               <div className={`p-1 rounded-full ${isHovering ? 'bg-muted text-muted-foreground' : 'bg-red-100 text-red-600'}`}>
                  <ScanEye className="w-4 h-4" />
                </div>
                <div>
-                 <h4 className={`text-sm font-bold ${isHovering ? 'text-stone-400' : 'text-stone-900'}`}>
+                 <h4 className={`text-sm font-bold ${isHovering ? 'text-muted-foreground' : 'text-foreground'}`}>
                    {language === 'en' ? 'Glass Facade' : '玻璃立面'}
                  </h4>
-                 <p className="text-xs text-stone-500">
+                 <p className="text-xs text-muted-foreground">
                    {language === 'en' ? 'Smooth, featureless, lacks differentiation.' : '平滑、无特征，缺乏空间差异性。'}
                  </p>
                </div>
              </div>
 
              <div className="flex items-start gap-3">
-               <div className={`p-1 rounded-full ${isHovering ? 'bg-teal-100 text-teal-600' : 'bg-stone-200 text-stone-400'}`}>
+               <div className={`p-1 rounded-full ${isHovering ? 'bg-teal-100 text-teal-600' : 'bg-muted text-muted-foreground'}`}>
                  <Sparkles className="w-4 h-4" />
                </div>
                <div>
-                 <h4 className={`text-sm font-bold ${isHovering ? 'text-stone-900' : 'text-stone-400'}`}>
+                 <h4 className={`text-sm font-bold ${isHovering ? 'text-foreground' : 'text-muted-foreground'}`}>
                    {language === 'en' ? 'Intricate Detail' : '精细结构'}
                  </h4>
-                 <p className="text-xs text-stone-500">
+                 <p className="text-xs text-muted-foreground">
                    {language === 'en' ? 'Fractal scaling, strong centers, deep interlock.' : '分形尺度，强中心，深度交错与互锁。'}
                  </p>
                </div>
@@ -254,17 +254,17 @@ const TheoryFounder = ({ nameEn, nameZh, roleEn, roleZh, descEn, descZh, image, 
   const { language } = useLanguage(); 
   return (
     <div className={`flex flex-col md:flex-row items-center gap-8 ${align === "right" ? "md:flex-row-reverse" : ""}`}>
-      <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 relative rounded-full overflow-hidden border border-stone-200 shadow-sm group cursor-pointer focus:outline-none">
+      <div className="w-32 h-32 md:w-48 md:h-48 shrink-0 relative rounded-full overflow-hidden border border-border shadow-sm group cursor-pointer focus:outline-none">
         <ImageWithFallback src={image} alt={nameEn} className="w-full h-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0 group-active:grayscale-0" />
       </div>
       <div className={`text-center ${align === "left" ? "md:text-left" : "md:text-right"}`}>
-        <h3 className="text-2xl font-serif font-bold text-stone-900 mb-1">
+        <h3 className="text-2xl font-serif font-bold text-foreground mb-1">
           {language === 'en' ? nameEn : nameZh}
         </h3>
-        <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-4">
+        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4">
           {language === 'en' ? roleEn : roleZh}
         </p>
-        <p className="text-stone-600 text-sm leading-relaxed max-w-lg">
+        <p className="text-muted-foreground text-sm leading-relaxed max-w-lg">
           {language === 'en' ? descEn : descZh}
         </p>
       </div>
@@ -344,7 +344,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
   const isEn = language === 'en';
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] pb-24">
+    <div className="min-h-screen bg-card pb-24">
       
       {/* 💡 1. 全新重构的 Hero Section (包含你的电梯演讲与核心功能简介) */}
       <section className="pt-32 pb-24 px-4 max-w-5xl mx-auto text-center">
@@ -357,15 +357,15 @@ export function Discover({ onNavigate }: DiscoverProps) {
              {isEn ? "Spatial Diagnosis & Healing Tool" : "空间诊断与疗愈工具"}
           </Badge>
           
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-stone-900 tracking-tight mb-6">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-black text-foreground tracking-tight mb-6">
             {isEn ? "Healing Mirror" : "愈合之镜"}
           </h1>
           
-          <h2 className="text-xl md:text-2xl font-serif text-stone-500 mb-10 italic">
+          <h2 className="text-xl md:text-2xl font-serif text-muted-foreground mb-10 italic">
             {isEn ? "Quantifying the life of space, awakening inner wholeness." : "量化空间的生命力，照见内心的整体性。"}
           </h2>
           
-          <p className="text-base md:text-lg text-stone-600 font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
+          <p className="text-base md:text-lg text-muted-foreground font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
             {isEn
               ? "Space is not a dead box, but a true mirror of your inner state. Upload an image, and our structural algorithm (L = S × H) will measure the objective 'Livingness' of your environment. By applying the 15 properties of life for spatial micro-interventions, we help you repair fragmentation and rediscover profound inner peace."
               : "这是一款基于「活力结构」理论的空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。只需上传一张照片，「愈合之镜」将通过底层结构算法（L = S × H）精准测算你所在空间的客观生命力。我们基于15种属性为你提供空间“微介入”处方，通过极简的物理调整，修补环境的割裂，助你找回内心的平静与完整。"}
@@ -373,7 +373,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           
           <Button 
             onClick={() => onNavigate("analyze")}
-            className="bg-teal-600 hover:bg-teal-700 text-white px-10 py-7 text-sm uppercase tracking-widest transition-all rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 font-bold"
+            className="bg-teal-600 hover:bg-primary-hover text-white px-10 py-7 text-sm uppercase tracking-widest transition-all rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 font-bold"
           >
             {isEn ? 'Begin Spatial Diagnosis' : '开启空间实证诊断'}
           </Button>
@@ -385,7 +385,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
 
       {/* 3. Platform Statement */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-32">
-        <div className="bg-stone-50 border border-stone-200 p-12 md:p-16 relative">
+        <div className="bg-muted border border-border p-12 md:p-16 relative">
           <Quote className="absolute top-8 left-8 w-6 h-6 text-stone-300" />
           <div className="relative z-10 text-center space-y-6">
             <p className="text-lg font-serif text-stone-800 leading-relaxed italic max-w-2xl mx-auto">
@@ -400,10 +400,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
       {/* 4. Theory Founders */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto mb-32 space-y-20">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-serif font-bold text-stone-900">
+          <h2 className="text-3xl font-serif font-bold text-foreground">
             {language === 'en' ? 'Theory Founders' : '理论创始人'}
           </h2>
-          <p className="text-stone-400 text-xs mt-3 font-mono uppercase tracking-widest">
+          <p className="text-muted-foreground text-xs mt-3 font-mono uppercase tracking-widest">
             {language === 'en' ? 'Pioneers of Structural Wholeness' : '结构整体性的先驱'}
           </p>
         </div>
@@ -414,7 +414,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
           descZh="以《建筑模式语言》和《秩序的本质》闻名于世。他界定了活力结构的15个基本属性，提出空间本身具有一种源于几何连贯性的‘活力’。"
           image="/images/A.png" align="left"
         />
-        <div className="w-16 h-px bg-stone-200 mx-auto" />
+        <div className="w-16 h-px bg-muted mx-auto" />
         <TheoryFounder 
           nameEn="Bin Jiang" nameZh="江斌 (Bin Jiang)"
           roleEn="Professor of Urban Design & Computational Media Arts" roleZh="城市治理与设计和计算媒体与艺术双聘教授"
@@ -427,11 +427,11 @@ export function Discover({ onNavigate }: DiscoverProps) {
       {/* 5. Quick Start Dashboard */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
         <div className="flex items-center gap-4 mb-12">
-          <div className="h-px bg-stone-200 flex-1" />
-          <h2 className="text-sm font-serif font-bold text-stone-400 uppercase tracking-widest">
+          <div className="h-px bg-muted flex-1" />
+          <h2 className="text-sm font-serif font-bold text-muted-foreground uppercase tracking-widest">
             {language === 'en' ? 'Start Exploring' : '开始探索'}
           </h2>
-          <div className="h-px bg-stone-200 flex-1" />
+          <div className="h-px bg-muted flex-1" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <QuickStartCard titleEn="Learn Theory" titleZh="理论学习" descEn="Master the 15 fundamental properties of living structure through interactive definitions and case studies." descZh="通过交互式定义与真实案例分析，深入掌握活力结构的15个基本属性。" icon={BookOpen} onClick={() => onNavigate("theory")} color="stone" />
@@ -446,10 +446,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
       {/* 7. Featured Concept */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16 flex items-baseline justify-between">
-           <h2 className="text-3xl font-serif font-bold text-stone-900">
+           <h2 className="text-3xl font-serif font-bold text-foreground">
              {trans.discover.featuredConcept?.title || (language === 'en' ? "Featured Concept" : "精选概念")}
            </h2>
-           <button onClick={() => onNavigate("theory")} className="text-stone-400 hover:text-stone-900 text-xs font-medium uppercase tracking-widest flex items-center gap-2 transition-colors">
+           <button onClick={() => onNavigate("theory")} className="text-muted-foreground hover:text-foreground text-xs font-medium uppercase tracking-widest flex items-center gap-2 transition-colors">
              {language === 'en' ? 'View All 15 Properties' : '查看全部15个属性'} <ChevronRight className="w-3 h-3" />
            </button>
         </div>
@@ -459,10 +459,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
       {/* 8. Interactive Preview */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16">
-           <h2 className="text-3xl font-serif font-bold text-stone-900">
+           <h2 className="text-3xl font-serif font-bold text-foreground">
              {language === 'en' ? 'Interactive Preview' : '互动预览'}
            </h2>
-           <p className="text-stone-500 mt-2 font-light">
+           <p className="text-muted-foreground mt-2 font-light">
              {language === 'en' ? 'Test your intuition before diving deep.' : '在深入学习具体理论之前，先通过直觉感受差异。'}
            </p>
         </div>
@@ -470,7 +470,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
       </section>
 
       {/* 9. Footer Quote */}
-      <section className="border-t border-stone-200 bg-white py-24 text-center mt-12">
+      <section className="border-t border-border bg-card py-24 text-center mt-12">
         <div className="max-w-3xl mx-auto px-4">
           <Quote className="h-6 w-6 text-stone-300 mx-auto mb-8" />
           <p className="text-xl font-serif italic text-stone-800 leading-relaxed mb-6">
@@ -478,7 +478,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
               ? '"We must learn to see the world not as a collection of things, but as a structure of centers."' 
               : '“我们必须学会不再将世界看作一堆事物的集合，而是将其视为一个由众多‘中心’组成的结构。”'}
           </p>
-          <div className="text-xs font-bold text-stone-400 uppercase tracking-widest">
+          <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             {language === 'en' ? 'Christopher Alexander' : '克里斯托弗·亚历山大'}
           </div>
         </div>

@@ -26,7 +26,7 @@ const MOOD_OPTIONS = [
   { id: "living", icon: Sun, color: "text-teal-500", bg: "bg-teal-50", border: "border-teal-200", labelEn: "Living", labelZh: "充满生机" },
   { id: "calm", icon: Wind, color: "text-sky-500", bg: "bg-sky-50", border: "border-sky-200", labelEn: "Calm", labelZh: "宁静安和" },
   { id: "fragmented", icon: Zap, color: "text-amber-500", bg: "bg-amber-50", border: "border-amber-200", labelEn: "Fragmented", labelZh: "割裂混乱" },
-  { id: "rigid", icon: Box, color: "text-stone-500", bg: "bg-stone-100", border: "border-stone-300", labelEn: "Rigid", labelZh: "死板压抑" }
+  { id: "rigid", icon: Box, color: "text-muted-foreground", bg: "bg-stone-100", border: "border-stone-300", labelEn: "Rigid", labelZh: "死板压抑" }
 ];
 
 const LiveableLabLogo = ({ isEn, className }: { isEn: boolean, className?: string }) => (
@@ -35,10 +35,10 @@ const LiveableLabLogo = ({ isEn, className }: { isEn: boolean, className?: strin
       <Eye className="w-6 h-6 text-amber-300 group-hover:text-white" />
     </div>
     <div className="flex flex-col text-left">
-      <span className="text-xl font-serif font-black text-stone-900 leading-none">
+      <span className="text-xl font-serif font-black text-foreground leading-none">
         {isEn ? "LivableCityLAB" : "宜居城市实验室"}
       </span>
-      <span className="text-[9px] uppercase tracking-[0.2em] text-stone-400 group-hover:text-amber-600 transition-colors">
+      <span className="text-[9px] uppercase tracking-[0.2em] text-muted-foreground group-hover:text-amber-600 transition-colors">
         {isEn ? "宜居城市实验室 " : "LivableCityLAB "}
       </span>
     </div>
@@ -396,17 +396,17 @@ export function Practice() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] py-12 px-4 selection:bg-teal-100">
+    <div className="min-h-screen bg-card py-12 px-4 selection:bg-teal-100">
       <div className="mx-auto max-w-7xl space-y-10">
 
         <header className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[10px] font-bold text-teal-600 uppercase tracking-widest">
             <Heart className="w-3 h-3 text-red-400" /> Wholeness Therapy
           </div>
-          <h1 className="text-4xl font-serif font-black text-stone-900 italic">
+          <h1 className="text-4xl font-serif font-black text-foreground italic">
             {isEn ? "The Healing Mirror" : "愈合之镜"}
           </h1>
-          <p className="text-stone-500 max-w-xl mx-auto text-sm leading-relaxed">
+          <p className="text-muted-foreground max-w-xl mx-auto text-sm leading-relaxed">
             {isEn
               ? "Upload a photo or describe your environment. We will use the organic view of space to help you find wholeness. Healing the room is healing yourself."
               : "上传环境照片或诉说感受。我们将运用“有机空间观”助你找回内心的整体性。治愈空间，即是治愈自我。"}
@@ -417,14 +417,14 @@ export function Practice() {
 
           <div className="lg:col-span-4 space-y-6">
 
-            <Card className="p-0 bg-white/50 backdrop-blur border-stone-200 shadow-sm flex flex-col items-center overflow-hidden h-72 group cursor-pointer hover:border-amber-300 transition-all duration-500">
+            <Card className="p-0 bg-card/50 backdrop-blur border-border shadow-sm flex flex-col items-center overflow-hidden h-72 group cursor-pointer hover:border-amber-300 transition-all duration-500">
               <BreathingCircle isEn={isEn} />
             </Card>
 
-            <Card className="p-6 bg-white/50 backdrop-blur border-stone-200 shadow-sm relative overflow-visible">
+            <Card className="p-6 bg-card/50 backdrop-blur border-border shadow-sm relative overflow-visible">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4 text-stone-400" />
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                   <h3 className="text-sm font-bold text-stone-700">{isEn ? "Spatial Mood" : "空间心境"}</h3>
                 </div>
               </div>
@@ -440,23 +440,23 @@ export function Practice() {
                         className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
                           day.isToday ? "cursor-pointer ring-2 ring-offset-2 ring-stone-200 hover:ring-teal-400" : "",
-                          mood ? mood.bg : "bg-stone-100 border border-stone-200",
+                          mood ? mood.bg : "bg-secondary border border-border",
                           day.isToday && !mood && "animate-pulse border-dashed border-teal-300 bg-teal-50/50"
                         )}
                       >
                         {mood ? <mood.icon className={cn("w-4 h-4", mood.color)} /> : (day.isToday ? <Plus className="w-4 h-4 text-teal-400" /> : <div className="w-1.5 h-1.5 rounded-full bg-stone-300" />)}
                       </div>
-                      <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-600" : "text-stone-400")}>{day.dayName}</span>
+                      <span className={cn("text-[10px] font-bold", day.isToday ? "text-teal-600" : "text-muted-foreground")}>{day.dayName}</span>
                     </div>
                   );
                 })}
               </div>
 
-              <div className="border-t border-stone-100 pt-6">
+              <div className="border-t border-border pt-6">
                 <button
                   onClick={generateWeeklyReport}
                   disabled={isGeneratingReport}
-                  className="w-full bg-stone-900 text-white hover:bg-teal-600 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary-hover rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:opacity-50"
                 >
                   {isGeneratingReport ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? "Generating..." : "正在倾听记忆..."}</>
@@ -470,9 +470,9 @@ export function Practice() {
                 {showMoodSelector && (
                   <motion.div
                     initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-20 left-0 right-0 mt-2 p-4 bg-white border border-stone-200 rounded-2xl shadow-xl z-20"
+                    className="absolute top-20 left-0 right-0 mt-2 p-4 bg-card border border-border rounded-2xl shadow-xl z-20"
                   >
-                    <p className="text-xs text-stone-500 font-bold mb-3 text-center uppercase tracking-widest">{isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}</p>
+                    <p className="text-xs text-muted-foreground font-bold mb-3 text-center uppercase tracking-widest">{isEn ? "How does your space feel today?" : "此刻的空间让你感觉如何？"}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {MOOD_OPTIONS.map(mood => (
                         <button key={mood.id} onClick={() => handleMoodSelect(mood.id)} className={cn("flex items-center gap-3 p-3 rounded-xl border transition-all hover:scale-[1.02] active:scale-95", mood.bg, mood.border)}>
@@ -488,23 +488,23 @@ export function Practice() {
           </div>
 
           <div className="lg:col-span-8">
-            <Card className="bg-white h-[750px] shadow-2xl border-stone-200 flex flex-col overflow-hidden relative">
+            <Card className="bg-card h-[750px] shadow-2xl border-border flex flex-col overflow-hidden relative">
 
-              <div className="p-6 border-b border-stone-100 flex justify-between items-center bg-stone-50/50">
+              <div className="p-6 border-b border-border flex justify-between items-center bg-stone-50/50">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-10 h-10 rounded-full bg-stone-900 flex items-center justify-center text-white shadow-lg"><Sparkles className="w-5 h-5 text-teal-300" /></div>
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-teal-500 rounded-full border-2 border-white" />
                   </div>
                   <div>
-                    <h3 className="font-serif font-bold text-stone-900">{isEn ? "Spatial Empathy" : "空间共情"}</h3>
+                    <h3 className="font-serif font-bold text-foreground">{isEn ? "Spatial Empathy" : "空间共情"}</h3>
                     <div className="flex items-center gap-2">
                       <span className="flex h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
-                      <p className="text-[10px] text-stone-400 font-mono uppercase">{isEn ? "Wholeness Awareness Active" : "整体性感知已激活"}</p>
+                      <p className="text-[10px] text-muted-foreground font-mono uppercase">{isEn ? "Wholeness Awareness Active" : "整体性感知已激活"}</p>
                     </div>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Reset?')) setMessages([{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }]); }} className="text-stone-400 hover:text-red-500 transition-colors">
+                <Button variant="ghost" size="sm" onClick={() => { if (window.confirm('Reset?')) setMessages([{ id: "0", role: "ai", content: isEn ? welcomeEn : welcomeZh, timestamp: Date.now() }]); }} className="text-muted-foreground hover:text-red-500 transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
@@ -524,12 +524,12 @@ export function Practice() {
 
                       <div className={cn(
                         "max-w-[85%] p-6 rounded-3xl text-sm leading-loose shadow-sm",
-                        msg.role === "user" ? "bg-stone-900 text-stone-50 rounded-br-none font-sans" : "bg-white border border-stone-200 text-stone-800 rounded-bl-none font-serif"
+                        msg.role === "user" ? "bg-stone-900 text-stone-50 rounded-br-none font-sans" : "bg-card border border-border text-stone-800 rounded-bl-none font-serif"
                       )}>
                         <div className="whitespace-pre-line">{msg.content}</div>
 
                         {msg.prescription && msg.prescription.length > 0 && (
-                          <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
+                          <div className="mt-4 pt-4 border-t border-border flex flex-wrap gap-2">
                             {msg.prescription.map(p => (
                               <span key={p} className="px-2 py-1 bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider rounded border border-teal-100 flex items-center gap-1 shadow-sm">
                                 <Heart className="w-3 h-3 text-red-300" /> {p}
@@ -545,7 +545,7 @@ export function Practice() {
 
                 {isScanning && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-start gap-4">
-                    <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-stone-50 border border-teal-100 flex items-center justify-center">
+                    <div className="relative w-64 h-40 rounded-xl overflow-hidden bg-muted border border-teal-100 flex items-center justify-center">
                       <motion.div
                         className="absolute inset-0 bg-gradient-to-t from-teal-100/50 to-transparent"
                         animate={{ opacity: [0.3, 0.8, 0.3] }}
@@ -559,9 +559,9 @@ export function Practice() {
                 <div ref={messagesEndRef} />
               </div>
 
-              <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-stone-200">
+              <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-border">
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto">
-                  <div className="relative flex flex-col bg-white rounded-3xl border border-stone-200 shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
+                  <div className="relative flex flex-col bg-card rounded-3xl border border-border shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
 
                     <AnimatePresence>
                       {previewImage && (
@@ -570,19 +570,19 @@ export function Practice() {
                             <img src={previewImage} className="w-full h-full object-cover" alt="selected" />
                             <button onClick={clearImage} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl-lg"><X size={12} /></button>
                           </div>
-                          <p className="text-[10px] text-stone-400 font-bold uppercase">{isEn ? "Ready to heal" : "准备倾听"}</p>
+                          <p className="text-[10px] text-muted-foreground font-bold uppercase">{isEn ? "Ready to heal" : "准备倾听"}</p>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
                     <div className="flex items-end">
-                      <button onClick={() => fileInputRef.current?.click()} className="p-3 text-stone-400 hover:text-teal-600 transition-colors" title={isEn ? "Upload Photo" : "上传照片"}>
+                      <button onClick={() => fileInputRef.current?.click()} className="p-3 text-muted-foreground hover:text-teal-600 transition-colors" title={isEn ? "Upload Photo" : "上传照片"}>
                         <Camera className="w-5 h-5" />
                       </button>
 
                       <button
                         onClick={toggleListening}
-                        className={cn("p-3 transition-colors", isListening ? "text-red-500 animate-pulse" : "text-stone-400 hover:text-teal-600")}
+                        className={cn("p-3 transition-colors", isListening ? "text-red-500 animate-pulse" : "text-muted-foreground hover:text-teal-600")}
                         title={isEn ? "Voice Input" : "语音输入"}
                       >
                         <Mic className="w-5 h-5" />
@@ -601,7 +601,7 @@ export function Practice() {
                         className="flex-1 bg-transparent resize-none outline-none p-3 text-sm text-stone-800 placeholder:text-stone-300 h-12 py-3"
                         rows={1}
                       />
-                      <button onClick={handleSendMessage} disabled={(!inputText.trim() && !previewImage) || isTyping} className="m-1 rounded-2xl bg-stone-900 hover:bg-teal-600 text-white h-10 w-10 flex items-center justify-center transition-all shadow-md active:scale-90"><Send className="w-4 h-4" /></button>
+                      <button onClick={handleSendMessage} disabled={(!inputText.trim() && !previewImage) || isTyping} className="m-1 rounded-2xl bg-stone-900 hover:bg-primary-hover text-white h-10 w-10 flex items-center justify-center transition-all shadow-md active:scale-90"><Send className="w-4 h-4" /></button>
                     </div>
                   </div>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageSelect} />
@@ -628,22 +628,22 @@ export function Practice() {
 
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-xl bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-stone-200/60"
+              className="relative w-full max-w-xl bg-card rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-border/60"
             >
               <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-teal-50 via-stone-50 to-white z-0" />
               <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] opacity-30 pointer-events-none z-0" />
 
-              <button onClick={() => setWeeklyReport(null)} className="absolute top-6 right-6 text-stone-400 hover:text-stone-900 z-20 bg-white/50 backdrop-blur rounded-full p-1 transition-colors"><X className="w-5 h-5" /></button>
+              <button onClick={() => setWeeklyReport(null)} className="absolute top-6 right-6 text-muted-foreground hover:text-foreground z-20 bg-card/50 backdrop-blur rounded-full p-1 transition-colors"><X className="w-5 h-5" /></button>
 
               <div className="relative z-10 flex flex-col max-h-[80vh]">
                 <div className="px-8 pt-10 pb-6 text-center shrink-0">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-white shadow-sm border border-teal-100 flex items-center justify-center mb-4">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-card shadow-sm border border-teal-100 flex items-center justify-center mb-4">
                     <Sparkles className="w-5 h-5 text-teal-500" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-serif font-black text-stone-800 tracking-wide">
                     {isEn ? "Weekly Resonance" : "空间与心灵共振周报"}
                   </h2>
-                  <div className="flex items-center justify-center gap-2 mt-3 text-[10px] font-mono text-stone-400 uppercase tracking-widest">
+                  <div className="flex items-center justify-center gap-2 mt-3 text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
                     <CalendarIcon className="w-3 h-3" /> {new Date().toLocaleDateString()}
                   </div>
                 </div>
@@ -651,15 +651,15 @@ export function Practice() {
                 <div className="px-8 md:px-12 pb-8 overflow-y-auto flex-1 scrollbar-hide">
                   <div className="relative">
                     <Quote className="absolute -top-2 -left-4 w-8 h-8 text-teal-500/10 rotate-180" />
-                    <div className="text-stone-600 leading-loose font-serif whitespace-pre-line text-sm md:text-base text-justify relative z-10">
+                    <div className="text-muted-foreground leading-loose font-serif whitespace-pre-line text-sm md:text-base text-justify relative z-10">
                       {weeklyReport}
                     </div>
                     <Quote className="absolute -bottom-4 -right-4 w-8 h-8 text-teal-500/10" />
                   </div>
                 </div>
 
-                <div className="px-8 py-6 bg-stone-50/80 backdrop-blur border-t border-stone-100 flex justify-center shrink-0">
-                  <Button onClick={() => setWeeklyReport(null)} className="bg-stone-900 hover:bg-teal-600 text-white rounded-full px-10 py-5 shadow-md transition-all active:scale-95">
+                <div className="px-8 py-6 bg-stone-50/80 backdrop-blur border-t border-border flex justify-center shrink-0">
+                  <Button onClick={() => setWeeklyReport(null)} className="bg-stone-900 hover:bg-primary-hover text-white rounded-full px-10 py-5 shadow-md transition-all active:scale-95">
                     {isEn ? "Embrace the Healing" : "收下这份疗愈"}
                   </Button>
                 </div>
@@ -789,11 +789,11 @@ function MirrorOfTheSelfMode({ isEn, onClose }: { isEn: boolean, onClose: () => 
       </div>
 
       <div className="w-full flex p-6 z-20 h-24 shrink-0 items-center justify-between px-6 md:px-10">
-        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center justify-center bg-white/5 backdrop-blur-xl px-4 py-2 rounded-2xl shadow-2xl border border-white/10">
+        <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1 }} className="flex items-center justify-center bg-card/5 backdrop-blur-xl px-4 py-2 rounded-2xl shadow-2xl border border-white/10">
           <img src="/logo-white.jpg" alt="LivableCityLAB Logo" className="h-10 md:h-12 w-auto object-contain mix-blend-screen opacity-90" />
         </motion.div>
 
-        <button onClick={onClose} className="text-amber-100/50 hover:text-white transition-colors p-3 bg-white/5 rounded-full backdrop-blur-md h-fit">
+        <button onClick={onClose} className="text-amber-100/50 hover:text-white transition-colors p-3 bg-card/5 rounded-full backdrop-blur-md h-fit">
           <X className="w-6 h-6" />
         </button>
       </div>
@@ -870,7 +870,7 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
     <>
       <div className="flex w-full h-full items-center justify-center p-6 md:p-8">
         <div
-          className="flex flex-col items-center justify-center w-full h-full cursor-pointer group rounded-2xl transition-colors duration-500 hover:bg-stone-50/50"
+          className="flex flex-col items-center justify-center w-full h-full cursor-pointer group rounded-2xl transition-colors duration-500 hover:bg-muted/50"
           onClick={() => setIsObserving(true)}
         >
           <div className="absolute top-4 left-4 md:top-6 md:left-6 flex items-center gap-3">
@@ -879,7 +879,7 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
             </motion.div>
           </div>
 
-          <div className="mb-4 md:mb-6 flex items-center gap-2 text-stone-400 group-hover:text-amber-600 transition-colors mt-16 md:mt-20">
+          <div className="mb-4 md:mb-6 flex items-center gap-2 text-muted-foreground group-hover:text-amber-600 transition-colors mt-16 md:mt-20">
             <Scan className="h-4 w-4" />
             <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{isEn ? "Empirical Observation" : "实证观测前置"}</span>
           </div>
@@ -891,14 +891,14 @@ function BreathingCircle({ isEn }: { isEn: boolean }) {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-stone-900 flex flex-col items-center justify-center text-white shadow-xl z-10 transition-colors duration-500 group-hover:bg-amber-600"
+              className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-stone-900 flex flex-col items-center justify-center text-white shadow-xl z-10 transition-colors duration-500 group-hover:bg-primary-hover"
               whileTap={{ scale: 0.95 }}
             >
               <Eye className="w-5 h-5 md:w-6 md:h-6 mb-1 opacity-80" />
               <span className="text-[8px] md:text-[9px] uppercase tracking-widest font-bold opacity-80">{isEn ? "Mirror" : "明镜"}</span>
             </motion.div>
           </div>
-          <p className="mt-6 md:mt-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-stone-400 text-center leading-relaxed transition-colors duration-500 group-hover:text-amber-600">
+          <p className="mt-6 md:mt-8 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground text-center leading-relaxed transition-colors duration-500 group-hover:text-amber-600">
             {isEn ? "Click to Calibrate\nInner Instrument" : "点击卡片·校准内在量尺"}
           </p>
         </div>

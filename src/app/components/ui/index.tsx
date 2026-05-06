@@ -18,9 +18,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", ...props }, ref) => {
     const variants = {
       primary: "bg-slate-900 text-white hover:bg-slate-800 shadow-sm",
-      secondary: "bg-stone-100 text-stone-900 hover:bg-stone-200",
-      outline: "border border-stone-300 bg-transparent hover:bg-stone-50 text-stone-700",
-      ghost: "hover:bg-stone-100 text-stone-600",
+      secondary: "bg-secondary text-foreground hover:bg-muted",
+      outline: "border border-stone-300 bg-transparent hover:bg-muted text-stone-700",
+      ghost: "hover:bg-secondary text-muted-foreground",
     };
     const sizes = {
       sm: "h-8 px-3 text-xs",
@@ -48,7 +48,7 @@ export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("rounded-lg border border-stone-200 bg-white text-stone-950 shadow-sm", className)}
+      className={cn("rounded-lg border border-border bg-white text-stone-950 shadow-sm", className)}
       {...props}
     />
   )
@@ -75,8 +75,8 @@ export const Badge = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLD
     <div
       ref={ref}
       className={cn(
-        "inline-flex items-center rounded-full border border-stone-200 px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-stone-400 focus:ring-offset-2",
-        "bg-stone-50 text-stone-600",
+        "inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-stone-400 focus:ring-offset-2",
+        "bg-muted text-muted-foreground",
         className
       )}
       {...props}
@@ -92,7 +92,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-stone-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-10 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         ref={ref}
@@ -137,7 +137,7 @@ const TooltipContent = React.forwardRef<
     ref={ref}
     sideOffset={sideOffset}
     className={cn(
-      "z-50 overflow-hidden rounded-md border border-stone-200 bg-white px-3 py-1.5 text-sm text-stone-950 shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+      "z-50 overflow-hidden rounded-md border border-border bg-white px-3 py-1.5 text-sm text-stone-950 shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
       className
     )}
     {...props}
@@ -160,10 +160,10 @@ export const Tooltip = ({ children, content, ...props }: { children: React.React
 export { Switch } from "./switch";
 // --- Section ---
 export const Section = ({ title, subTitle, children, className }: { title: string, subTitle?: string, children: React.ReactNode, className?: string }) => (
-  <section className={cn("mb-16 md:mb-32 pt-8 md:pt-12 border-t border-stone-200", className)}>
+  <section className={cn("mb-16 md:mb-32 pt-8 md:pt-12 border-t border-border", className)}>
     <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-8 md:mb-16 items-baseline">
-      <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-900 uppercase tracking-widest shrink-0 w-auto md:w-80">{title}</h2>
-      {subTitle && <h3 className="text-lg md:text-xl font-sans text-stone-400 font-light">{subTitle}</h3>}
+      <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground uppercase tracking-widest shrink-0 w-auto md:w-80">{title}</h2>
+      {subTitle && <h3 className="text-lg md:text-xl font-sans text-muted-foreground font-light">{subTitle}</h3>}
     </div>
     {children}
   </section>
