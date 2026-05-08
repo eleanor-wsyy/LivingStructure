@@ -329,7 +329,7 @@ export function Theory() {
         if (imageMatch && imageMatch[1]) {
           const imagePrompt = imageMatch[1].replace(/\n/g, ' ').trim();
           const seed = Math.floor(Math.random() * 100000);
-          imageUrl = `https://pollinations.ai/p/${encodeURIComponent(imagePrompt)}?width=800&height=400&nologo=true&seed=${seed}`;
+          imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=400&nologo=true&seed=${seed}`;
           text = response.replace(imageMatch[0], '').trim();
         }
         
