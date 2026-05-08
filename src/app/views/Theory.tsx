@@ -416,15 +416,15 @@ export function Theory() {
                 id: `A${index + 1}`,
                 type: isStrongA ? "strong" : "weak",
                 img: isStrongA ? pair.after : pair.before,
-                descEn: isStrongA ? "More Living (Felt More Alive)" : "Less Living (Felt Less Alive)",
-                descZh: isStrongA ? "更有生命力 (Felt More Alive)" : "较少生命力 (Felt Less Alive)"
+                descEn: "",
+                descZh: ""
               },
               optionB: {
                 id: `B${index + 1}`,
                 type: !isStrongA ? "strong" : "weak",
                 img: !isStrongA ? pair.after : pair.before,
-                descEn: !isStrongA ? "More Living (Felt More Alive)" : "Less Living (Felt Less Alive)",
-                descZh: !isStrongA ? "更有生命力 (Felt More Alive)" : "较少生命力 (Felt Less Alive)"
+                descEn: "",
+                descZh: ""
               }
             };
           });
@@ -566,7 +566,7 @@ export function Theory() {
             </p>
           </div>
 
-          <Section title={isEn ? "Empirical Test" : "实证测试"} subTitle={isEn ? "The Mirror of the Self" : "自我之镜：观测与测量"} className="!pt-0 !border-0">
+          <Section title={isEn ? "The Mirror of the Self Test" : "自我之镜测试"} subTitle={isEn ? "Intuitive Observation" : "直观感受测试"} className="!pt-0 !border-0">
             <div className="w-full bg-card border border-border text-stone-800 rounded-3xl overflow-hidden shadow-xl relative min-h-[500px] md:min-h-[600px] flex flex-col items-center justify-center p-6 md:p-8">
 
               <AnimatePresence mode="wait">
@@ -580,7 +580,7 @@ export function Theory() {
                   >
                     <Microscope className="w-12 h-12 text-amber-500 mx-auto mb-6 opacity-80" />
                     <h3 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6">
-                      {isEn ? "The Empirical Mirror" : "实证之镜"}
+                      {isEn ? "The Mirror of the Self Test" : "自我之镜测试"}
                     </h3>
                     <p className="text-muted-foreground text-base md:text-lg mb-4 leading-relaxed font-serif">
                       {isEn
@@ -589,8 +589,8 @@ export function Theory() {
                     </p>
                     <p className="text-muted-foreground text-sm md:text-base mb-10 leading-relaxed font-serif italic border-l-2 border-amber-500/50 pl-4 text-left">
                       {isEn
-                        ? "Please quiet your mind. When the images appear, use your inner feeling as a precision instrument. Ask yourself: Which of these two geometries is a truer, more encompassing picture of your whole self?"
-                        : "请平静你的大脑。当画面出现时，请将你内心的深刻感受作为一把精密的科学量尺。问问你自己：哪一种几何形态，能更准确、更完整地映照出你作为一个人的全部本质？"}
+                        ? "Please quiet your mind. When the two images appear, rely purely on your intuition. Ask yourself: Which of these two spaces makes you feel more comfortable, whole, and alive? Click on the image that resonates more with your inner self."
+                        : "请平静你的大脑。当两张图片出现时，请完全放下理性分析，依靠你的直觉。问问你自己：哪一个空间让你感觉更舒适、更有生机、更像完整的你自己？点击那张与你内心产生共鸣的图片。"}
                     </p>
 
                     <button
@@ -636,11 +636,6 @@ export function Theory() {
                       >
                         <img src={activeQuestions[currentStep].optionA.img} alt="Option A" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
-                        <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-stone-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                          <p className="text-white text-sm font-medium text-center font-serif">
-                            {isEn ? activeQuestions[currentStep].optionA.descEn : activeQuestions[currentStep].optionA.descZh}
-                          </p>
-                        </div>
                       </div>
 
                       <div
@@ -649,11 +644,6 @@ export function Theory() {
                       >
                         <img src={activeQuestions[currentStep].optionB.img} alt="Option B" className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
                         <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
-                        <div className="absolute bottom-0 w-full p-6 bg-gradient-to-t from-stone-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                          <p className="text-white text-sm font-medium text-center font-serif">
-                            {isEn ? activeQuestions[currentStep].optionB.descEn : activeQuestions[currentStep].optionB.descZh}
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -670,9 +660,6 @@ export function Theory() {
                     <h3 className="text-xl font-serif text-foreground mb-2">
                       {isEn ? "Computing Structural Resonance..." : "正在计算几何结构与自我的共振..."}
                     </h3>
-                    <p className="text-muted-foreground text-sm animate-pulse">
-                      {isEn ? "Analyzing objective life degree based on Chapter 8 & 9 paradigms" : "正在依据超越笛卡尔的全新科学范式，生成观测报告..."}
-                    </p>
                   </motion.div>
                 )}
 
