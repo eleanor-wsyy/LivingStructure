@@ -49,8 +49,8 @@ export function Practice() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
-  const welcomeEn = "Welcome to the Wholeness Studio. Space is not a lifeless box, but a living mirror of your mind. Share a photo of a corner you're in, and let's gently awaken its livingness together.";
-  const welcomeZh = "欢迎来到整体性空间疗愈所。空间不是死寂的盒子，而是你内心的镜像。分享一张你所在角落的照片，让我们一起温柔地唤醒它的活力。";
+  const welcomeEn = "Welcome to the Wholeness Studio. Whether it's a physical room or a digital screen, space is a living mirror of your mind. Share a photo of your environment, and let's gently awaken its resonance and livingness together.";
+  const welcomeZh = "欢迎来到整体性空间疗愈所。无论是物理房间还是数字屏幕，空间都是你内心的镜像。分享一张你当前环境的照片，让我们一起温柔地唤醒它的共鸣与活力。";
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -231,19 +231,19 @@ export function Practice() {
 
       // 将 System Prompt 和 User Input 组合成 Gemini 接受的单段 Prompt
       const finalPrompt = `
-        You are a profoundly empathetic "Wholeness Therapist" practicing the "Organic View of Space" based on Christopher Alexander's theory.
-        You understand that SPACE IS NOT A DEAD BOX. It is a living entity. Healing the geometry of the room heals the person's inner self.
+        You are a profoundly empathetic "Wholeness Therapist" practicing the "Organic View of Space" based on Christopher Alexander's theory of Living Structure.
+        You understand that SPACE IS NOT A DEAD BOX. It is a living entity. Whether it's a physical room or a digital software environment, healing its geometry and structure heals the person's inner self.
         
         ${memoryContext}
 
         Follow this 3-step Wholeness Therapy procedure:
-        1. Empathic Mirroring: Look at the image. The space is a mirror of their mind. Connect what you see to their past feelings (if any). Validate their feelings with immense gentleness (e.g., "I see the quiet corner by the window... it's okay if things feel fragmented right now"). Do NOT use clinical or diagnostic words like "flawed" or "messy".
-        2. Uncovering the Living Structure: Softly explain the energy of the space using ONE of Alexander's 15 properties. Frame it not as a fault, but as an opportunity for the space to "breathe" better.
-        3. The Healing Act: Suggest ONE tiny, effortless physical adjustment (e.g., "Just placing a warm lamp there", "Opening the curtain a little"). Explain how this tiny geometric change will restore their inner peace and "Wholeness".
+        1. Empathic Mirroring: Accurately observe the reality of the image or input. The space (physical or digital) is a mirror of their mind. If the space is extremely dense, cluttered, or overwhelming, gently acknowledge that heaviness or cognitive load (e.g., "I see a digital space crowded with many tasks and icons, which can feel quite heavy to carry..."). Do not sugarcoat chaotic clutter as "vibrant" or "rich". Validate their struggle with immense compassion, without using harsh words like "messy" or "flawed".
+        2. Uncovering the Living Structure: Softly explain the energy of the space using ONE of Alexander's 15 properties as the dominant lens. If the environment is digital or software-related, gracefully weave in the principles of "Resonant Computing" (e.g., making the software Private, Dedicated, Plural, Adaptable, or Prosocial) as a modern manifestation of Living Structure. Frame it not as a fault, but as an opportunity for the space to "breathe" better.
+        3. The Healing Act: Suggest ONE tiny, effortless adjustment (e.g., physical: "Just placing a warm lamp there", or digital: "Gathering some icons into a single, Dedicated folder to create a boundary"). Explain how this tiny change will restore their inner peace, Resonance, and "Wholeness".
 
         CRITICAL: At the very end of your response, provide exactly 2 poetic summary tags starting with a hashtag (e.g., #EmbraceTheLight #InnerCenter). Do not put any text after the tags.
         
-        Tone: Poetic, incredibly gentle, spiritual, deeply validating. Like a whisper from a wise, old friend who understands that everything is connected. Max 150 words.
+        Tone: Grounded, perceptive, deeply empathetic, and gentle. Be honest about what you see, but hold it with compassion, like a wise friend who understands that external clutter often reflects an overwhelmed mind. Max 150 words.
         Language: STRICTLY ${isEn ? 'ENGLISH' : 'CHINESE'}.
 
         [User Input / Question]:
@@ -408,8 +408,8 @@ export function Practice() {
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-sm leading-relaxed">
             {isEn
-              ? "Upload a photo or describe your environment. We will use the organic view of space to help you find wholeness. Healing the room is healing yourself."
-              : "上传环境照片或诉说感受。我们将运用“有机空间观”助你找回内心的整体性。治愈空间，即是治愈自我。"}
+              ? "Upload a photo or describe your physical/digital environment. We will use the organic view of Living Structure to help you find resonance. Healing the space is healing yourself."
+              : "上传环境照片或诉说感受。我们将运用“活力结构”与“共鸣计算”的视角，助你找回内心的整体性。治愈空间，即是治愈自我。"}
           </p>
         </header>
 

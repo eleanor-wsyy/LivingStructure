@@ -265,7 +265,7 @@ export function Theory() {
   const [activePropId, setActivePropId] = useState<number>(1);
   const [activeHowToIds, setActiveHowToIds] = useState<number[]>([]);
   const [userBackground, setUserBackground] = useState<string>("architecture");
-  const [dynamicExamples, setDynamicExamples] = useState<Record<string, string>>({});
+  const [dynamicExamples, setDynamicExamples] = useState<Record<string, { text: string; imageUrl?: string }>>({});
   const [isGeneratingExample, setIsGeneratingExample] = useState(false);
   
   const { trans, language } = useLanguage();
@@ -305,21 +305,35 @@ export function Theory() {
       The user is learning about the property of "${activeProp.tEn}" (${activeProp.tZh}).
       Their professional background or interest is: "${bgName}".
       
-      Task: Give a vivid, concrete, and highly inspiring example of how the property "${activeProp.tEn}" applies to their specific field.
+      Task 1: Give a vivid, concrete, and highly inspiring example of how the property "${activeProp.tEn}" applies to their specific field.
       For example, if they are an industrial designer, explain it using a microwave or an iPhone. If they are a software engineer, explain it using code architecture.
-      
       Keep it under 150 words.
+
+      Task 2: Provide a highly detailed English image generation prompt (max 20 words) that visualizes this exact example beautifully. Enclose it EXACTLY in this format: [IMAGE: <prompt>]
       
       ==================================================
       ⚠️ CRITICAL OUTPUT LANGUAGE INSTRUCTION ⚠️
-      You MUST write the final response STRICTLY in: ${isEn ? 'English' : '简体中文 (Simplified Chinese)'}.
+      The example text MUST be STRICTLY in: ${isEn ? 'English' : '简体中文 (Simplified Chinese)'}.
+      The [IMAGE: <prompt>] tag MUST be in English.
       ==================================================
     `;
 
     try {
       const response = await analyzeStructure(prompt);
       if (response) {
-        setDynamicExamples(prev => ({ ...prev, [cacheKey]: response }));
+        let text = response;
+        let imageUrl: string | undefined = undefined;
+        
+        // Extract image prompt if it exists (using /is to match across newlines if any)
+        const imageMatch = response.match(/\[IMAGE:\s*(.*?)\]/is);
+        if (imageMatch && imageMatch[1]) {
+          const imagePrompt = imageMatch[1].replace(/\n/g, ' ').trim();
+          const seed = Math.floor(Math.random() * 100000);
+          imageUrl = `https://pollinations.ai/p/${encodeURIComponent(imagePrompt)}?width=800&height=400&nologo=true&seed=${seed}`;
+          text = response.replace(imageMatch[0], '').trim();
+        }
+        
+        setDynamicExamples(prev => ({ ...prev, [cacheKey]: { text, imageUrl } }));
       }
     } catch (error) {
       console.error("Failed to generate adaptive example:", error);
@@ -1005,11 +1019,28 @@ export function Theory() {
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-white/80 p-5 rounded-md border border-amber-100 text-stone-700 text-sm leading-relaxed font-serif shadow-inner relative z-10"
                           >
-                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-amber-100/50 px-2 py-0.5 rounded text-[10px] text-amber-600 font-mono">
+                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-amber-100/80 px-2 py-0.5 rounded text-[10px] text-amber-700 font-mono z-20 shadow-sm border border-amber-200">
                               {backgroundOptions.find(b => b.id === userBackground)?.icon && React.createElement(backgroundOptions.find(b => b.id === userBackground)!.icon, { className: "w-3 h-3" })}
                               {isEn ? backgroundOptions.find(b => b.id === userBackground)?.labelEn : backgroundOptions.find(b => b.id === userBackground)?.labelZh}
                             </div>
-                            {dynamicExamples[`${activeProp.n}-${userBackground}`]}
+                            
+                            {dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl && (
+                              <div className="mb-5 rounded-lg overflow-hidden shadow-sm border border-amber-200/60 relative bg-amber-50">
+                                <img 
+                                  src={dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl} 
+                                  alt="AI generated example" 
+                                  referrerPolicy="no-referrer"
+                                  className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-700"
+                                />
+                                <div className="absolute bottom-2 right-2 bg-stone-900/60 backdrop-blur px-2 py-0.5 rounded text-[8px] text-white/90 uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                                  <Sparkles className="w-2.5 h-2.5 text-amber-300" /> AI GENERATED
+                                </div>
+                              </div>
+                            )}
+                            
+                            <div className="whitespace-pre-line text-justify text-stone-800">
+                              {dynamicExamples[`${activeProp.n}-${userBackground}`].text}
+                            </div>
                           </motion.div>
                         ) : (
                           <motion.div
