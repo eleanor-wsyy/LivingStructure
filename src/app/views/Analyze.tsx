@@ -261,7 +261,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       // 🏆 动态语言变量
       const targetLanguage = isEn ? "English" : "Simplified Chinese (简体中文)";
       
-      // 🏆 动态属性名称（确保前端 UI 显示的语言也是对的）
+      // 🏆 动态属性名称
       const attributeNames = isEn 
         ? "1. Levels of Scale  2. Strong Centers  3. Boundaries  4. Alternating Repetition  5. Positive Space  6. Good Shape  7. Local Symmetries  8. Deep Interlock and Ambiguity  9. Contrast  10. Gradients  11. Roughness  12. Echoes  13. The Void  14. Simplicity and Inner Calm  15. Not Separateness"
         : "1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性";
@@ -275,8 +275,8 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         🚨 [Core Judgement Rules] 🚨
         1. "Degree of Beauty" (B) strictly depends on the presence of the 15 geometric properties.
         2. STRICT BINARY SCORING: 1 (Present, strengthening the Wholeness), 0 (Absent or disjointed). No partial scores!
-        3. 🌐 LANGUAGE RULE: ALL your generated JSON values (analysis, explanations, advice, and attribute names) MUST be written in fluent ${targetLanguage}.
-        4. ⚡ PERFORMANCE RULE: Keep ALL text fields and "desc" explanations extremely short and concise (max 10-15 words). This is critical to prevent system timeouts.
+        3. 🌐 LANGUAGE RULE: ALL your generated JSON values MUST be written in fluent ${targetLanguage}.
+        4. ⚡ PERFORMANCE RULE: Keep ALL text fields extremely short and concise (max 10-15 words). This is critical to prevent system timeouts.
 
         [The 15 Properties Map (You MUST use these exact terms for the "name" field in your JSON)]
         ${attributeNames}
@@ -286,28 +286,31 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         You must directly answer this intent in your "core_evaluation".
 
         [Task]
-        ${isCompare ? "The user uploaded 2 images for comparison. Analyze which one possesses a higher degree of life and why." : "Analyze the living structure of this single image and calculate its degree of beauty."}
+        ${isCompare ? "The user uploaded 2 images for comparison. Analyze which one possesses a higher degree of life, and then provide specific feedback for EACH image." : "Analyze the living structure of this single image and calculate its degree of beauty."}
 
-        OUTPUT STRICTLY AS A JSON OBJECT. STRUCTURE EXACTLY AS FOLLOWS (but translate the values into ${targetLanguage}):
+        OUTPUT STRICTLY AS A JSON OBJECT. STRUCTURE EXACTLY AS FOLLOWS (translate values into ${targetLanguage}):
         {
           "winner_declaration": "${isCompare ? 'State which image has a higher degree of life.' : 'State the core theoretical verdict.'}",
           "core_evaluation": "Deep architectural analysis addressing the user's intent. Focus on Centers and Wholeness.",
           "expert_footnote": "Quote or reference a specific concept from 'The Nature of Order' to support your claim.",
-          "visual_decoding": "Decode the visual and structural patterns...",
-          "personal_perspective": "Emotional, spatial feeling, and psychological impact...",
-          "action_advice_urban": "Macro-level structural improvement strategy...",
-          "action_advice_personal": "Micro-level geometric optimization advice...",
           "summary": "One concise, profound academic summary.",
           "image_stats": [
             {
+              "visual_decoding": "Decode the visual and structural patterns of Image 1...",
+              "personal_perspective": "Emotional, spatial feeling, and psychological impact of Image 1...",
+              "action_advice_urban": "Macro-level structural improvement strategy for Image 1...",
+              "action_advice_personal": "Micro-level geometric optimization advice for Image 1...",
               "all_attributes": [
-                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain how it manifests in ${targetLanguage}]"},
-                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain why the center is weak in ${targetLanguage}]"},
-                {"name": "${isEn ? 'Boundaries' : '边界'}", "score": 1, "desc": "..."}
+                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain]"},
+                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain]"}
                 // ... Output ALL 15 properties.
               ]
             }${isCompare ? `,
             {
+              "visual_decoding": "Decode the visual and structural patterns of Image 2...",
+              "personal_perspective": "Emotional, spatial feeling of Image 2...",
+              "action_advice_urban": "Macro-level strategy for Image 2...",
+              "action_advice_personal": "Micro-level optimization for Image 2...",
               "all_attributes": [
                 {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 0, "desc": "..."},
                 {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 1, "desc": "..."}
@@ -686,14 +689,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       🎯 {isEn ? "Targeting your intent: " : "针对您的问题："}{userIntent || (isEn ? "Overall Assessment" : "整体评估")}
                     </div>
                     <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
-                      🏆 {safeText(analysisResult.winner_declaration, isEn ? "Beauty extraction complete" : "美度提取完成")}
+                      🏆 {safeText(analysisResult?.winner_declaration, isEn ? "Beauty extraction complete" : "美度提取完成")}
                     </h2>
                     <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
-                      {safeText(analysisResult.core_evaluation)}
+                      {safeText(analysisResult?.core_evaluation)}
                     </p>
                     <div className="mt-4 md:mt-6 p-4 md:p-5 bg-muted rounded-2xl border border-border text-muted-foreground text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
                       <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-muted-foreground shrink-0" />
-                      <span>{safeText(analysisResult.expert_footnote)}</span>
+                      <span>{safeText(analysisResult?.expert_footnote)}</span>
                     </div>
                   </div>
 
@@ -705,13 +708,13 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       <div className="bg-muted rounded-2xl p-5 md:p-6 border border-border">
                         <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 {isEn ? "Visual & Structural Decoding" : "视觉与结构解码"}</h4>
                         <p className="text-muted-foreground text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(analysisResult.visual_decoding)}
+                          {safeText(currentStats?.visual_decoding)}
                         </p>
                       </div>
                       <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
                         <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 {isEn ? "Emotional & Healing Experience" : "情绪与疗愈体验"}</h4>
                         <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(analysisResult.personal_perspective)}
+                          {safeText(currentStats?.personal_perspective)}
                         </p>
                       </div>
                     </div>
@@ -725,13 +728,13 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
                         <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ {isEn ? "Macro-scale Strategy" : "宏观尺度策略"}</h4>
                         <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(analysisResult.action_advice_urban)}
+                          {safeText(currentStats?.action_advice_urban)}
                         </p>
                       </div>
                       <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
                         <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 {isEn ? "Micro-scale Optimization" : "微观尺度优化"}</h4>
                         <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(analysisResult.action_advice_personal)}
+                          {safeText(currentStats?.action_advice_personal)}
                         </p>
                       </div>
                     </div>
@@ -739,7 +742,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
                   <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
                     <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
-                      "{safeText(analysisResult.summary, isEn ? "The 15 properties collectively shape the sense of life in space." : "15个属性共同塑造了空间的生命感。")}"
+                      "{safeText(analysisResult?.summary, isEn ? "The 15 properties collectively shape the sense of life in space." : "15个属性共同塑造了空间的生命感。")}"
                     </p>
                   </div>
                 </div>
