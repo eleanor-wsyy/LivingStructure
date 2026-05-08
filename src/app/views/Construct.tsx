@@ -448,14 +448,14 @@ const ChineseArchitecturalSystem = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-8 grid grid-cols-1 gap-6">
-          <div className="bg-stone-950 p-2 rounded-2xl shadow-xl relative overflow-hidden">
-            <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-stone-900 flex items-center justify-center">
+        <div className="lg:col-span-8 grid grid-cols-1 gap-6 self-start">
+          <div className="bg-stone-950 p-2 rounded-2xl shadow-xl relative overflow-hidden h-fit">
+            <div className="relative w-full overflow-hidden rounded-xl bg-stone-900 flex items-center justify-center">
               <ImageWithFallback
                 src={selectedCase.diagramUrl}
                 alt="Structural Diagram"
                 className={cn(
-                  "w-full h-full object-contain transition-all duration-700",
+                  "w-full h-auto object-contain transition-all duration-700",
                   highlightCenters ? "opacity-40 scale-100 blur-[2px]" : "opacity-100 scale-100"
                 )}
               />
