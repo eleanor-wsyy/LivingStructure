@@ -215,7 +215,17 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
   }, [studioTitle]);
 
   return (
-    <div className="flex h-[100dvh] w-full bg-background font-sans text-foreground selection:bg-primary/20 overflow-hidden relative">
+    <div
+      className="flex h-[100dvh] w-full font-sans text-foreground selection:bg-primary/20 overflow-hidden relative"
+      style={{
+        backgroundImage: `url('/carpet.jpg')`,
+        backgroundSize: '800px auto',
+        backgroundRepeat: 'repeat',
+        backgroundAttachment: 'fixed',
+        backgroundColor: '#1a0a00',
+        '--background': 'rgba(250, 249, 245, 0.82)'
+      } as React.CSSProperties}
+    >
       <div 
         className="pointer-events-none absolute inset-0 z-50 opacity-[0.03] mix-blend-multiply"
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
@@ -259,7 +269,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
       </aside>
 
       {/* --- Main Area --- */}
-      <div className="flex flex-1 flex-col overflow-hidden relative bg-background">
+      <div className="flex flex-1 flex-col overflow-hidden relative" style={{ backgroundColor: 'rgba(250, 249, 245, 0.90)' }}>
         <header className="flex h-14 items-center justify-between border-b border-border bg-card/90 backdrop-blur-md px-4 md:hidden z-30 relative shadow-sm">
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground shadow-sm">
