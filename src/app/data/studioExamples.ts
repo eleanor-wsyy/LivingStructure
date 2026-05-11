@@ -14,6 +14,8 @@ export interface StudioExample {
   location: string;
   beforeImg: string;
   afterImg: string;
+  beforeVasImg?: string;   // 书中真实热力图（可选）
+  afterVasImg?: string;
   beforeL: number;
   afterL: number;
   beforeB: number;
@@ -35,6 +37,8 @@ export const studioExamples: StudioExample[] = [
     location: "Aabenraa, Denmark",
     beforeImg: "/cnts/media-before.png",
     afterImg: "/cnts/media-after.png",
+    beforeVasImg: "/cnts/media-before-vas.png",
+    afterVasImg: "/cnts/media-after-vas.png",
     beforeL: 17.9,
     afterL: 29.6,
     beforeB: 4.5,
@@ -60,6 +64,8 @@ export const studioExamples: StudioExample[] = [
     location: "Sarasota, Florida, USA",
     beforeImg: "/cnts/edsmith-before.png",
     afterImg: "/cnts/edsmith-after.png",
+    beforeVasImg: "/cnts/edsmith-before-vas.png",
+    afterVasImg: "/cnts/edsmith-after-vas.png",
     beforeL: 28.8,
     afterL: 62.4,
     beforeB: 7.6,
@@ -85,6 +91,8 @@ export const studioExamples: StudioExample[] = [
     location: "Marzahn, Berlin, Germany",
     beforeImg: "/cnts/marzahn-before.png",
     afterImg: "/cnts/marzahn-after.png",
+    beforeVasImg: "/cnts/marzahn-before-vas.png",
+    afterVasImg: "/cnts/marzahn-after-vas.png",
     beforeL: 12.4,
     afterL: 38.7,
     beforeB: 3,
@@ -111,6 +119,8 @@ export const studioExamples: StudioExample[] = [
     location: "Berlin, Germany",
     beforeImg: "/cnts/maybachufer-before.png",
     afterImg: "/cnts/maybachufer-after.png",
+    beforeVasImg: "/cnts/maybachufer-before-vas.png",
+    afterVasImg: "/cnts/maybachufer-after-vas.png",
     beforeL: 15.2,
     afterL: 45.3,
     beforeB: 5,
@@ -138,6 +148,8 @@ export const studioExamples: StudioExample[] = [
     location: "Nagybörzsöny, Hungary",
     beforeImg: "/cnts/nagyborzsony-before.png",
     afterImg: "/cnts/nagyborzsony-after.png",
+    beforeVasImg: "/cnts/nagyborzsony-before-vas.png",
+    afterVasImg: "/cnts/nagyborzsony-after-vas.png",
     beforeL: 10.8,
     afterL: 34.2,
     beforeB: 3,

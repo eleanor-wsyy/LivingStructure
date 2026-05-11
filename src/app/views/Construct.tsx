@@ -111,8 +111,12 @@ const HighLowGallery = ({ isEn }: { isEn: boolean }) => {
                 <span className="text-xs font-bold uppercase tracking-widest text-red-600">Before</span>
               </div>
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-secondary border border-border shadow-lg">
-                <ImageWithFallback src={ex.beforeImg} alt="Before" className="w-full h-full object-cover" />
-                <AnimatePresence>{showVas && <VasOverlay foci={ex.beforeVasFoci} />}</AnimatePresence>
+                <ImageWithFallback
+                  src={showVas && ex.beforeVasImg ? ex.beforeVasImg : ex.beforeImg}
+                  alt={showVas && ex.beforeVasImg ? "Before VAS" : "Before"}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                />
+                <AnimatePresence>{showVas && !ex.beforeVasImg && <VasOverlay foci={ex.beforeVasFoci} />}</AnimatePresence>
               </div>
               <div className="bg-card rounded-2xl p-5 border border-border shadow-sm space-y-3">
                 <ScoreBar label="L-Score (Livingness)" value={ex.beforeL} max={70} color="text-red-500" />
@@ -130,8 +134,12 @@ const HighLowGallery = ({ isEn }: { isEn: boolean }) => {
                 <span className="text-xs font-bold uppercase tracking-widest text-teal-700">After</span>
               </div>
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-secondary border border-border shadow-lg">
-                <ImageWithFallback src={ex.afterImg} alt="After" className="w-full h-full object-cover" />
-                <AnimatePresence>{showVas && <VasOverlay foci={ex.afterVasFoci} />}</AnimatePresence>
+                <ImageWithFallback
+                  src={showVas && ex.afterVasImg ? ex.afterVasImg : ex.afterImg}
+                  alt={showVas && ex.afterVasImg ? "After VAS" : "After"}
+                  className="w-full h-full object-cover transition-opacity duration-300"
+                />
+                <AnimatePresence>{showVas && !ex.afterVasImg && <VasOverlay foci={ex.afterVasFoci} />}</AnimatePresence>
               </div>
               <div className="bg-card rounded-2xl p-5 border border-border shadow-sm space-y-3">
                 <ScoreBar label="L-Score (Livingness)" value={ex.afterL} max={70} color="text-teal-600" />
