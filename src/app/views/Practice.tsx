@@ -137,34 +137,7 @@ export function Practice() {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewImage(objectUrl);
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const MAX_WIDTH = 800;
-        let width = img.width;
-        let height = img.height;
-
-        if (width > MAX_WIDTH) {
-          height = Math.round((height * MAX_WIDTH) / width);
-          width = MAX_WIDTH;
-        }
-
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx?.drawImage(img, 0, 0, width, height);
-
-        base64ImageRef.current = canvas.toDataURL("image/jpeg", 0.7);
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
+    processImageFile(file);
   };
 
   const clearImage = () => {
@@ -172,6 +145,31 @@ export function Practice() {
     base64ImageRef.current = null;
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+
+  // Shared image processor
+  const processImageFile = (file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewImage(objectUrl);
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        let w = img.width, h = img.height;
+        if (w > MAX_WIDTH) { h = Math.round((h * MAX_WIDTH) / w); w = MAX_WIDTH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d')?.drawImage(img, 0, 0, w, h);
+        base64ImageRef.current = canvas.toDataURL('image/jpeg', 0.7);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Drag state
+  const [isDraggingOver, setIsDraggingOver] = React.useState(false);
 
   const generateLast7Days = () => {
     const days = [];
@@ -561,7 +559,20 @@ export function Practice() {
 
               <div className="p-6 bg-stone-50/80 backdrop-blur-md border-t border-border">
                 <div className="flex flex-col gap-4 max-w-3xl mx-auto">
-                  <div className="relative flex flex-col bg-card rounded-3xl border border-border shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2">
+                  <div
+                    className={cn(
+                      "relative flex flex-col bg-card rounded-3xl border shadow-sm focus-within:shadow-xl focus-within:border-teal-400 transition-all p-2",
+                      isDraggingOver ? "border-teal-500 bg-teal-50/40 scale-[1.01]" : "border-border"
+                    )}
+                    onDragOver={(e) => { e.preventDefault(); setIsDraggingOver(true); }}
+                    onDragLeave={() => setIsDraggingOver(false)}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      setIsDraggingOver(false);
+                      const file = e.dataTransfer.files[0];
+                      if (file) processImageFile(file);
+                    }}
+                  >
 
                     <AnimatePresence>
                       {previewImage && (
@@ -597,7 +608,16 @@ export function Practice() {
                             handleSendMessage();
                           }
                         }}
-                        placeholder={isEn ? "Share a corner of your space, or whisper your feelings..." : "分享你此刻的空间，或诉说你的感受..."}
+                        onPaste={(e) => {
+                          const items = Array.from(e.clipboardData.items);
+                          const imageItem = items.find(it => it.type.startsWith('image/'));
+                          if (imageItem) {
+                            e.preventDefault();
+                            const file = imageItem.getAsFile();
+                            if (file) processImageFile(file);
+                          }
+                        }}
+                        placeholder={isEn ? "Share a corner of your space, or paste an image (Ctrl+V)..." : "分享你此刻的空间，或直接粘贴图片 (Ctrl+V)..."}
                         className="flex-1 bg-transparent resize-none outline-none p-3 text-sm text-stone-800 placeholder:text-stone-300 h-12 py-3"
                         rows={1}
                       />

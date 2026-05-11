@@ -174,6 +174,52 @@ Final Instruction: Compose these layers into a single coherent image that feels 
     setImages(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
+  // ─── Shared helper: compress a File/Blob and add to images[] ───
+  const processFile = (file: File, targetIndex?: number) => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        let w = img.width, h = img.height;
+        if (w > MAX_WIDTH) { h = Math.round((h * MAX_WIDTH) / w); w = MAX_WIDTH; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d')?.drawImage(img, 0, 0, w, h);
+        const b64 = canvas.toDataURL('image/jpeg', 0.7);
+        setImages(prev => {
+          const next = [...prev];
+          if (targetIndex !== undefined && targetIndex < 2) {
+            next[targetIndex] = b64;
+          } else {
+            next.push(b64);
+          }
+          return next.slice(0, 2);
+        });
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Drag-over target slot state
+  const [dragTarget, setDragTarget] = React.useState<number | null>(null);
+
+  // Global paste: Ctrl+V anywhere on this page
+  React.useEffect(() => {
+    const handleGlobalPaste = (e: ClipboardEvent) => {
+      const items = Array.from(e.clipboardData?.items || []);
+      const imageItem = items.find(it => it.type.startsWith('image/'));
+      if (imageItem) {
+        const file = imageItem.getAsFile();
+        if (file) processFile(file);
+      }
+    };
+    window.addEventListener('paste', handleGlobalPaste);
+    return () => window.removeEventListener('paste', handleGlobalPaste);
+  }, []);
+
   const loadDefaultExamples = async () => {
     try {
       const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"]; 
@@ -585,7 +631,22 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   {[0, 1].map((index) => (
-                    <div key={index} className={cn("relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden", images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-muted/50 bg-white")}>
+                    <div
+                      key={index}
+                      onDragOver={(e) => { e.preventDefault(); setDragTarget(index); }}
+                      onDragLeave={() => setDragTarget(null)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setDragTarget(null);
+                        const file = e.dataTransfer.files[0];
+                        if (file) processFile(file, index);
+                      }}
+                      className={cn(
+                        "relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden",
+                        dragTarget === index ? "border-teal-500 bg-teal-50/60 scale-[1.02]" : "",
+                        images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-muted/50 bg-white"
+                      )}
+                    >
                       {images[index] ? (
                         <>
                           <img src={images[index]} alt={`Upload ${index + 1}`} className="h-full w-full object-cover" />
@@ -599,7 +660,9 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                           <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
                             {index === 0 ? (isEn ? "Upload Main Scene" : "上传主场景") : (isEn ? "Upload Comparison (Optional)" : "上传对比场景 (可选)")}
                           </span>
-                          <span className="text-xs text-muted-foreground mt-1">Supports JPG, PNG</span>
+                          <span className="text-xs text-muted-foreground mt-1">
+                            {isEn ? "Click · Drag & Drop · Paste (Ctrl+V)" : "点击 · 拖拽 · 粘贴 (Ctrl+V)"}
+                          </span>
                           <input type="file" hidden onChange={handleFileChange} accept="image/*" multiple={index === 0} />
                         </label>
                       )}
