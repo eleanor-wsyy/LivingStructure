@@ -261,89 +261,53 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
 
 // --- Main Page Component ---
 
-export function Theory() {
-  const [activePropId, setActivePropId] = useState<number>(1);
-  const [activeHowToIds, setActiveHowToIds] = useState<number[]>([]);
-  const [userBackground, setUserBackground] = useState<string>("architecture");
-  const [dynamicExamples, setDynamicExamples] = useState<Record<string, { text: string; imageUrl?: string }>>({});
-  const [isGeneratingExample, setIsGeneratingExample] = useState(false);
-  
+export function Theory({ onNavigate }: { onNavigate: (page: string) => void }) {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
-
-  const activeProp = properties.find(p => p.n === activePropId) || properties[0];
-
   const { analyzeStructure, isThinking } = useGemini();
+
+  const [activeHowToIds, setActiveHowToIds] = useState<number[]>([]);
+  const [activeQuestions, setActiveQuestions] = useState<typeof STATIC_QUESTION_POOL>([]);
+  const [isLoadingDataset, setIsLoadingDataset] = useState(false);
+
   const [hasStarted, setHasStarted] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<{ property: string, choiceType: string }[]>([]);
   const [report, setReport] = useState<string | null>(null);
 
-  const backgroundOptions = [
-    { id: "architecture", labelEn: "Architecture", labelZh: "建筑学", icon: Building2 },
-    { id: "industrial", labelEn: "Industrial Design", labelZh: "工业设计", icon: Box },
-    { id: "uiux", labelEn: "UI/UX Design", labelZh: "UI/UX设计", icon: Smartphone },
-    { id: "software", labelEn: "Software Eng", labelZh: "软件工程", icon: Code },
-    { id: "biology", labelEn: "Biology", labelZh: "生物医学", icon: Microscope },
-    { id: "business", labelEn: "Business", labelZh: "商业管理", icon: Briefcase },
-    { id: "art", labelEn: "Art & Media", labelZh: "艺术与传媒", icon: Palette },
-    { id: "music", labelEn: "Music", labelZh: "音乐作曲", icon: Music },
-    { id: "literature", labelEn: "Literature", labelZh: "文学创作", icon: PenTool },
-    { id: "everyday", labelEn: "Everyday Life", labelZh: "日常生活", icon: Coffee }
-  ];
+  // --- Redirection CTA to Properties Page ---
+  const PropertiesCTA = () => (
+    <Section 
+      title={isEn ? "The 15 Properties" : "15 个核心属性"} 
+      subTitle={isEn ? "Deep dive into the geometric code of life." : "深入探索生命的几何密码。"}
+      className="!pt-0"
+    >
+      <div className="bg-stone-900 rounded-[3rem] p-8 md:p-16 text-center relative overflow-hidden group">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent pointer-events-none" />
+        <Sparkles className="w-16 h-16 text-amber-500/20 mx-auto mb-8 animate-pulse" />
+        <h3 className="text-3xl md:text-5xl font-serif font-black text-white mb-6 tracking-tight uppercase">
+          {isEn ? "Master the 15 Properties" : "掌握 15 个核心属性"}
+        </h3>
+        <p className="text-stone-400 text-lg md:text-xl font-serif leading-relaxed max-w-2xl mx-auto mb-12 italic">
+          {isEn 
+            ? "From 'Levels of Scale' to 'Not-Separateness', discover how Christopher Alexander defined the structural patterns of vitality."
+            : "从“尺度层级”到“非分离性”，探索克里斯托弗·亚历山大如何定义活力的结构模式。"}
+        </p>
+        <button 
+          onClick={() => onNavigate("properties")}
+          className="bg-amber-500 hover:bg-amber-400 text-stone-950 px-10 py-4 rounded-full font-black tracking-[0.2em] uppercase text-sm shadow-xl shadow-amber-500/20 transition-all hover:scale-105 active:scale-95 group flex items-center gap-3 mx-auto"
+        >
+          {isEn ? "Explore Properties" : "立即进入探索"}
+          <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        </button>
 
-  const handleInspireMe = async () => {
-    const cacheKey = `${activeProp.n}-${userBackground}`;
-    if (dynamicExamples[cacheKey]) return;
+        {/* Decorative Grid */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/grid-me.png')]" />
+      </div>
+    </Section>
+  );
 
-    setIsGeneratingExample(true);
-    const bgInfo = backgroundOptions.find(b => b.id === userBackground);
-    const bgName = bgInfo ? (isEn ? bgInfo.labelEn : bgInfo.labelZh) : userBackground;
-    
-    const prompt = `
-      You are an expert in Christopher Alexander's "The Nature of Order" and an inspiring tutor.
-      The user is learning about the property of "${activeProp.tEn}" (${activeProp.tZh}).
-      Their professional background or interest is: "${bgName}".
-      
-      Task 1: Give a vivid, concrete, and highly inspiring example of how the property "${activeProp.tEn}" applies to their specific field.
-      For example, if they are an industrial designer, explain it using a microwave or an iPhone. If they are a software engineer, explain it using code architecture.
-      Keep it under 150 words.
 
-      Task 2: Provide a highly detailed English image generation prompt (max 20 words) that visualizes this exact example beautifully. Enclose it EXACTLY in this format: [IMAGE: <prompt>]
-      
-      ==================================================
-      ⚠️ CRITICAL OUTPUT LANGUAGE INSTRUCTION ⚠️
-      The example text MUST be STRICTLY in: ${isEn ? 'English' : '简体中文 (Simplified Chinese)'}.
-      The [IMAGE: <prompt>] tag MUST be in English.
-      ==================================================
-    `;
-
-    try {
-      const response = await analyzeStructure(prompt);
-      if (response) {
-        let text = response;
-        let imageUrl: string | undefined = undefined;
-        
-        // Extract image prompt if it exists (using /is to match across newlines if any)
-        const imageMatch = response.match(/\[IMAGE:\s*(.*?)\]/is);
-        if (imageMatch && imageMatch[1]) {
-          const imagePrompt = imageMatch[1].replace(/\n/g, ' ').trim();
-          const seed = Math.floor(Math.random() * 100000);
-          imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=800&height=400&nologo=true&seed=${seed}`;
-          text = response.replace(imageMatch[0], '').trim();
-        }
-        
-        setDynamicExamples(prev => ({ ...prev, [cacheKey]: { text, imageUrl } }));
-      }
-    } catch (error) {
-      console.error("Failed to generate adaptive example:", error);
-    } finally {
-      setIsGeneratingExample(false);
-    }
-  };
-
-  const [activeQuestions, setActiveQuestions] = useState<typeof STATIC_QUESTION_POOL>([]);
-  const [isLoadingDataset, setIsLoadingDataset] = useState(false);
 
   const startTest = async () => {
     setIsLoadingDataset(true);
@@ -845,211 +809,7 @@ export function Theory() {
           </div>
         </Section>
 
-        {/* Section 4: 15 Properties */}
-        <Section title="15 Properties" subTitle={trans.theory?.propertiesSubtitle || "Fundamental patterns of living structure"}>
-
-          <div className="flex flex-col lg:flex-row gap-12 mt-8">
-            <div className="w-full lg:w-1/4 flex flex-col gap-2">
-              {properties.map((prop) => (
-                <button
-                  key={prop.n}
-                  onClick={() => setActivePropId(prop.n)}
-                  className={`text-left px-4 py-3 rounded-md transition-all duration-200 ${activePropId === prop.n
-                      ? 'bg-amber-100 text-amber-900 font-bold border-l-4 border-amber-500 shadow-sm'
-                      : 'bg-transparent text-muted-foreground hover:bg-secondary'
-                    }`}
-                >
-                  <span className="text-xs text-muted-foreground mr-2 font-mono">{String(prop.n).padStart(2, '0')}</span>
-                  {language === 'zh' ? prop.tZh : prop.tEn}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-full lg:w-3/4 flex flex-col gap-8">
-
-              <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden min-h-[500px] flex flex-col">
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeProp.n}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="p-6 md:p-12 flex-grow flex flex-col"
-                  >
-                    <h3 className="text-4xl font-serif font-bold text-foreground mb-6 flex items-baseline gap-4">
-                      <span className="text-amber-500 text-2xl font-mono">{String(activeProp.n).padStart(2, '0')}</span>
-                      {language === 'zh' ? activeProp.tZh : activeProp.tEn}
-                    </h3>
-
-                    <p className="text-lg text-stone-700 leading-relaxed mb-6 border-l-4 border-stone-300 pl-6 italic">
-                      "{language === 'zh' ? activeProp.quoteZh : activeProp.quoteEn}"
-                    </p>
-
-                    <div className="flex items-center gap-2 mb-10">
-                      <span className="px-3 py-1 bg-secondary text-muted-foreground text-xs font-mono rounded-sm border border-border">
-                        {language === 'zh' ? activeProp.mechZh : activeProp.mechEn}
-                      </span>
-                      <span className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-mono rounded-sm border border-amber-200 flex items-center gap-1">
-                        <Info className="w-3 h-3" /> {language === 'zh' ? activeProp.relZh : activeProp.relEn}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-12 mb-8">
-                      {/* Nature Section: Text + Illustration */}
-                      <div className="flex flex-col">
-                        <div className="bg-emerald-50/50 p-6 rounded-t-lg border border-emerald-100 hover:shadow-sm transition-shadow">
-                          <h4 className="flex items-center gap-2 text-emerald-800 font-bold mb-4 uppercase tracking-wider text-sm">
-                            <Leaf className="w-4 h-4" />
-                            {language === 'zh' ? '在自然界中的体现' : 'Manifestation in Nature'}
-                          </h4>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            {language === 'zh' ? activeProp.natureZh : activeProp.natureEn}
-                          </p>
-                        </div>
-                        <div className="border-x border-b border-emerald-100 rounded-b-lg bg-white/50 p-6 flex flex-col items-center">
-                          <p className="text-xs text-muted-foreground uppercase tracking-widest mb-4 font-bold flex items-center gap-2 w-full">
-                            <BookOpen className="w-4 h-4 text-emerald-600" />
-                            {language === 'zh' ? '《秩序的本质》原著图解' : 'Illustration from The Nature of Order'}
-                          </p>
-                          <div className="w-full flex justify-center items-center py-2">
-                            {activeProp.bookImg ? (
-                              <img
-                                src={activeProp.bookImg}
-                                alt="Book Illustration"
-                                className="max-h-[250px] md:max-h-[320px] w-auto max-w-full object-contain mix-blend-multiply opacity-85 group-hover:opacity-100 transition-opacity"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect fill='%23f5f5f4' width='100%25' height='100%25'/%3E%3Ctext fill='%23a8a29e' x='50%25' y='50%25' font-family='sans-serif' font-size='14' text-anchor='middle'%3EWaiting for book image scan...%3C/text%3E%3C/svg%3E"
-                                }}
-                              />
-                            ) : (
-                              <div className="text-muted-foreground text-sm font-mono flex items-center gap-2">
-                                <ScanLine className="w-4 h-4" /> Image scan pending...
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Design Section: Text + Interactive Analysis */}
-                      <div className="flex flex-col">
-                        <div className="bg-muted p-6 rounded-t-lg border border-border hover:shadow-sm transition-shadow">
-                          <h4 className="flex items-center gap-2 text-stone-800 font-bold mb-4 uppercase tracking-wider text-sm">
-                            <Building2 className="w-4 h-4" />
-                            {language === 'zh' ? '在空间设计中的体现' : 'Manifestation in Design'}
-                          </h4>
-                          <p className="text-muted-foreground text-sm leading-relaxed">
-                            {language === 'zh' ? activeProp.exampleZh : activeProp.exampleEn}
-                          </p>
-                        </div>
-                        <div className="border-x border-b border-border rounded-b-lg p-6 md:p-12 bg-card">
-                          <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted-foreground mb-6 flex items-center gap-2">
-                            <ScanLine className="w-4 h-4" /> {language === 'zh' ? '互动分析对比' : 'Interactive Analysis'}
-                          </h4>
-                          <PropertyVisuals
-                            key={activeProp.n}
-                            imgPos={activeProp.imgPos}
-                            imgNeg={activeProp.imgNeg}
-                            title={language === 'zh' ? activeProp.tZh : activeProp.tEn}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Adaptive Example Generation Section */}
-                    <div className="bg-amber-50/30 p-6 rounded-lg border border-amber-100/50 relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition-colors" />
-                      
-                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 relative z-10">
-                        <div>
-                          <h4 className="flex items-center gap-2 text-amber-800 font-bold uppercase tracking-wider text-sm mb-1">
-                            <Sparkles className="w-4 h-4 text-amber-500" />
-                            {isEn ? 'Adaptive AI Example' : '自适应 AI 案例'}
-                          </h4>
-                          <p className="text-xs text-amber-700/70">
-                            {isEn ? 'Select your background to generate a personalized example.' : '选择你的专业背景，生成量身定制的专属解析。'}
-                          </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-                          <select 
-                            value={userBackground}
-                            onChange={(e) => setUserBackground(e.target.value)}
-                            className="w-full sm:w-auto px-3 py-2 bg-white border border-amber-200 rounded-md text-sm text-stone-700 outline-none focus:ring-2 focus:ring-amber-500/50 font-serif"
-                          >
-                            {backgroundOptions.map(bg => (
-                              <option key={bg.id} value={bg.id}>
-                                {isEn ? bg.labelEn : bg.labelZh}
-                              </option>
-                            ))}
-                          </select>
-                          
-                          <button
-                            onClick={handleInspireMe}
-                            disabled={isGeneratingExample || isThinking}
-                            className="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-md text-sm font-bold shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                          >
-                            {isGeneratingExample || isThinking ? (
-                              <><Loader2 className="w-4 h-4 animate-spin" /> {isEn ? 'Generating...' : '生成中...'}</>
-                            ) : (
-                              <>{isEn ? 'Inspire Me' : '给我启发'}</>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      <AnimatePresence mode="wait">
-                        {dynamicExamples[`${activeProp.n}-${userBackground}`] ? (
-                          <motion.div
-                            key="generated-content"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-white/80 p-5 rounded-md border border-amber-100 text-stone-700 text-sm leading-relaxed font-serif shadow-inner relative z-10"
-                          >
-                            <div className="absolute top-2 right-2 flex items-center gap-1 bg-amber-100/80 px-2 py-0.5 rounded text-[10px] text-amber-700 font-mono z-20 shadow-sm border border-amber-200">
-                              {backgroundOptions.find(b => b.id === userBackground)?.icon && React.createElement(backgroundOptions.find(b => b.id === userBackground)!.icon, { className: "w-3 h-3" })}
-                              {isEn ? backgroundOptions.find(b => b.id === userBackground)?.labelEn : backgroundOptions.find(b => b.id === userBackground)?.labelZh}
-                            </div>
-                            
-                            {dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl && (
-                              <div className="mb-5 rounded-lg overflow-hidden shadow-sm border border-amber-200/60 relative bg-amber-50">
-                                <img 
-                                  src={dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl} 
-                                  alt="AI generated example" 
-                                  referrerPolicy="no-referrer"
-                                  className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-700"
-                                />
-                                <div className="absolute bottom-2 right-2 bg-stone-900/60 backdrop-blur px-2 py-0.5 rounded text-[8px] text-white/90 uppercase tracking-widest flex items-center gap-1 shadow-sm">
-                                  <Sparkles className="w-2.5 h-2.5 text-amber-300" /> AI GENERATED
-                                </div>
-                              </div>
-                            )}
-                            
-                            <div className="whitespace-pre-line text-justify text-stone-800">
-                              {dynamicExamples[`${activeProp.n}-${userBackground}`].text}
-                            </div>
-                          </motion.div>
-                        ) : (
-                          <motion.div
-                            key="placeholder"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="bg-white/40 p-5 rounded-md border border-amber-100/50 border-dashed text-amber-800/40 text-sm leading-relaxed font-serif text-center relative z-10 flex flex-col items-center justify-center py-8"
-                          >
-                            <Sparkles className="w-6 h-6 mb-2 opacity-30" />
-                            {isEn ? 'Click "Inspire Me" to generate an example mapped to your chosen field.' : '点击“给我启发”，生成与你所选领域深刻映射的生动案例。'}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-
-            </div>
-          </div>
-        </Section>
+        <PropertiesCTA />
 
 
 

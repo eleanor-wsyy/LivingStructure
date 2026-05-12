@@ -3,7 +3,7 @@ import { Button, Input } from "@/app/components/ui";
 import { 
   Search, Menu, X, Globe, User, Home, BookOpen, BarChart3, 
   PenTool, Layout as LayoutIcon, Library as LibraryIcon, 
-  Users, ChevronUp, Settings, LogOut, ShieldCheck, Camera, Building, Upload
+  Users, ChevronUp, Settings, LogOut, ShieldCheck, Camera, Building, Upload, Sparkles
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/app/components/ui";
@@ -201,6 +201,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
   const menuItems = [
     { id: "discover", label: trans.nav.discover, icon: Home },
     { id: "theory", label: trans.nav.theory, icon: BookOpen },
+    { id: "properties", label: trans.nav.properties, icon: Sparkles },
     { id: "analyze", label: trans.nav.analyze, icon: BarChart3 },
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
