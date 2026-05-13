@@ -689,7 +689,7 @@ export function Theory({ onNavigate }: { onNavigate: (page: string) => void }) {
             {isEn ? (
               <>THEORY OF<br />LIVING STRUCTURE</>
             ) : (
-              <>生 命 结 构 理 论</>
+              <>活 力 结 构 理 论</>
             )}
           </h1>
           <p className="text-muted-foreground font-mono uppercase tracking-widest text-xs">

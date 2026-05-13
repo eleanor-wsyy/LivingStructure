@@ -257,13 +257,6 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
         </nav>
 
         <div className="border-t border-border/50 p-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <Button variant="ghost" size="sm" onClick={toggleLanguage} className="h-8 px-2 text-xs font-medium text-muted-foreground hover:text-foreground">
-              {language === 'en' ? '中文' : 'English'}
-            </Button>
-            <div className="text-xs text-muted-foreground flex items-center gap-1"><Globe className="h-3 w-3" /> EN/ZH</div>
-          </div>
-          
           {/* 💡 调用 UserControl */}
           <UserControl isEn={isEn} />
         </div>
@@ -320,9 +313,21 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
               <span>/</span>
               <span>{studioTitle}</span>
             </div>
-            <div className="relative w-64">
-              <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
-              <input className="h-8 w-full rounded-md border-none bg-muted/50 pl-9 text-xs focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground" placeholder={trans.nav.searchPlaceholder} />
+            <div className="flex items-center gap-6">
+              <div className="relative w-64">
+                <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
+                <input className="h-8 w-full rounded-md border-none bg-muted/50 pl-9 text-xs focus:ring-1 focus:ring-primary/50 placeholder:text-muted-foreground" placeholder={trans.nav.searchPlaceholder} />
+              </div>
+              
+              <div className="h-4 w-px bg-border/80"></div>
+              
+              <button 
+                onClick={toggleLanguage}
+                className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-widest group"
+              >
+                <Globe className="h-3.5 w-3.5 group-hover:text-amber-500 transition-colors" />
+                <span>{language === 'en' ? 'Language: EN' : '语言: 中文'}</span>
+              </button>
             </div>
           </div>
           
