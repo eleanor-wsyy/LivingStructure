@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
 import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare, Copy, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
@@ -14,6 +14,7 @@ export function Analyze() {
   const [analysisResult, setAnalysisResult] = useState<any>(null); 
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [retryCount, setRetryCount] = useState<number>(0);
+  const analysisCache = useRef<Record<string, any>>({});
   
   // --- Prompt Lab State ---
   const [skeleton, setSkeleton] = useState("");
@@ -293,13 +294,6 @@ Final Instruction: Compose these layers into a single coherent image that feels 
     setRetryCount(0);
 
     try {
-      // 处理前端 Base64 图片
-      const imagePayloads = images.map(img => {
-        const [header, base64Data] = img.split(',');
-        const mimeType = header.split(':')[1].split(';')[0];
-        return { mimeType, base64Data };
-      });
-
       const isCompare = images.length === 2;
 
       const safeUserIntent = sanitizePromptInput(userIntent);
@@ -313,16 +307,18 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         : "1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性";
 
       // 核心 Prompt：学术内核用英文定义，输出要求根据 targetLanguage 动态切换
-      const promptText = `
+      const singleImagePrompt = `
         [Role Definition]
         You are an expert architectural theorist and diagnostician specializing in Christopher Alexander's "The Nature of Order", "Living Structure", and "Degree of Beauty". 
         Your analysis MUST be deep, academic, and rooted in the concepts of "Wholeness" and overlapping "Centers". Do not just describe shapes; analyze how spatial relationships create a profound sense of life.
 
-        🚨 [Core Judgement Rules] 🚨
-        1. "Degree of Beauty" (B) strictly depends on the presence of the 15 geometric properties.
-        2. STRICT BINARY SCORING: 1 (Present, strengthening the Wholeness), 0 (Absent or disjointed). No partial scores!
-        3. 🌐 LANGUAGE RULE: ALL your generated JSON values MUST be written in fluent ${targetLanguage}.
-        4. ⚡ PERFORMANCE RULE: Keep ALL text fields extremely short and concise (max 10-15 words). This is critical to prevent system timeouts.
+        🚨 [Core Judgement Rules & Calibration] 🚨
+        1. ABSOLUTE SCORING ONLY: Evaluate the image INDEPENDENTLY.
+        2. OBJECTIVE EVALUATION: Even modern or mechanical buildings might genuinely possess some properties (like 'Contrast', 'Boundaries', or 'Local Symmetries'). If a property is geometrically present, score it 1. However, mechanical buildings typically fail on 'Deep Interlock', 'Not Separateness', 'Strong Centers', or 'Levels of Scale'.
+        3. AVOID EXTREMES: Evaluate EACH property on its own merit. Do NOT force all 0s or all 1s. For example, a building like Porta Pia might score 1 on 'Local Symmetries' but 0 on 'Echoes' because its elements are disjointed.
+        4. STRICT BINARY SCORING: 1 (Present), 0 (Absent). No partial scores!
+        5. 🌐 LANGUAGE RULE: ALL your generated JSON values MUST be written in fluent ${targetLanguage}.
+        6. ⚡ PERFORMANCE RULE: Keep ALL text fields extremely short and concise (max 10-15 words).
 
         [The 15 Properties Map (You MUST use these exact terms for the "name" field in your JSON)]
         ${attributeNames}
@@ -332,88 +328,110 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         You must directly answer this intent in your "core_evaluation".
 
         [Task]
-        ${isCompare ? "The user uploaded 2 images for comparison. Analyze which one possesses a higher degree of life, and then provide specific feedback for EACH image." : "Analyze the living structure of this single image and calculate its degree of beauty."}
+        Analyze the living structure of this single image and calculate its absolute degree of beauty.
 
         OUTPUT STRICTLY AS A JSON OBJECT. STRUCTURE EXACTLY AS FOLLOWS (translate values into ${targetLanguage}):
         {
-          "winner_declaration": "${isCompare ? 'State which image has a higher degree of life.' : 'State the core theoretical verdict.'}",
           "core_evaluation": "Deep architectural analysis addressing the user's intent. Focus on Centers and Wholeness.",
           "expert_footnote": "Quote or reference a specific concept from 'The Nature of Order' to support your claim.",
           "summary": "One concise, profound academic summary.",
-          "image_stats": [
-            {
-              "visual_decoding": "Decode the visual and structural patterns of Image 1...",
-              "personal_perspective": "Emotional, spatial feeling, and psychological impact of Image 1...",
-              "action_advice_urban": "Macro-level structural improvement strategy for Image 1...",
-              "action_advice_personal": "Micro-level geometric optimization advice for Image 1...",
-              "all_attributes": [
-                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain]"},
-                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain]"}
-                // ... Output ALL 15 properties.
-              ]
-            }${isCompare ? `,
-            {
-              "visual_decoding": "Decode the visual and structural patterns of Image 2...",
-              "personal_perspective": "Emotional, spatial feeling of Image 2...",
-              "action_advice_urban": "Macro-level strategy for Image 2...",
-              "action_advice_personal": "Micro-level optimization for Image 2...",
-              "all_attributes": [
-                {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 0, "desc": "..."},
-                {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 1, "desc": "..."}
-                // ... Output all 15.
-              ]
-            }
-            ` : ""}
+          "visual_decoding": "Decode the visual and structural patterns...",
+          "personal_perspective": "Emotional, spatial feeling, and psychological impact...",
+          "action_advice_urban": "Macro-level structural improvement strategy...",
+          "action_advice_personal": "Micro-level geometric optimization advice...",
+          "all_attributes": [
+            {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain]"},
+            {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain]"}
           ]
         }
       `;
 
-      // 引入轻量重试机制，最多重试 1 次 (防止过长等待)
-      let parsedData = null;
-      let attempt = 0;
-      const maxRetries = 1;
-      let lastError = null;
+      // 定义单个图片的分析函数，带硬缓存
+      const analyzeSingleImage = async (imgDataUrl: string, index: number) => {
+        // 如果缓存中存在，直接复用
+        if (analysisCache.current[imgDataUrl]) {
+          console.log(`[Cache Hit] Image ${index + 1} analysis re-used.`);
+          return analysisCache.current[imgDataUrl];
+        }
 
-      while (attempt <= maxRetries) {
-        try {
-          // 通过 Supabase 中转站调用 Gemini
-          const { data, error } = await supabase.functions.invoke('ai-gateway', {
-            body: { 
-              prompt: promptText,
-              images: imagePayloads,
-              model: 'gemini' 
+        const [header, base64Data] = imgDataUrl.split(',');
+        const mimeType = header.split(':')[1].split(';')[0];
+        const payload = { mimeType, base64Data };
+
+        let attempt = 0;
+        const maxRetries = 1;
+        let lastError = null;
+
+        while (attempt <= maxRetries) {
+          try {
+            const { data, error } = await supabase.functions.invoke('ai-gateway', {
+              body: { prompt: singleImagePrompt, images: [payload], model: 'gemini' }
+            });
+            if (error) throw new Error(error.message || "请求中转站失败");
+            
+            const parsed = safeExtractJSON(data.reply || "{}");
+            if (!parsed || !parsed.all_attributes) throw new Error("AI 数据格式错乱");
+            
+            // 存入缓存
+            analysisCache.current[imgDataUrl] = parsed;
+            return parsed;
+          } catch (err: any) {
+            lastError = err;
+            attempt++;
+            if (attempt <= maxRetries) {
+              console.warn(`第 ${attempt} 次尝试失败，正在进行重试...`, err);
+              setRetryCount(attempt);
+              await new Promise(resolve => setTimeout(resolve, 1500));
             }
-          });
-
-          if (error) {
-            throw new Error(error.message || "请求中转站失败");
-          }
-
-          // 提取回复内容并进行 JSON 解析
-          const responseText = data.reply || "{}";
-          parsedData = safeExtractJSON(responseText);
-          
-          if (!parsedData) throw new Error("AI 数据格式错乱");
-
-          // 成功则跳出循环
-          break;
-        } catch (err: any) {
-          lastError = err;
-          attempt++;
-          if (attempt <= maxRetries) {
-            console.warn(`第 ${attempt} 次尝试失败，正在进行重试...`, err);
-            setRetryCount(attempt);
-            // 等待 1.5 秒后重试，避免瞬间连续请求
-            await new Promise(resolve => setTimeout(resolve, 1500));
           }
         }
-      }
-
-      if (!parsedData) {
         throw lastError || new Error("多次尝试后分析依然失败");
+      };
+
+      // 🏆 顺序执行独立分析（完美隔离，防止触发大模型并发速率限制）
+      const results = [];
+      for (let idx = 0; idx < images.length; idx++) {
+        results.push(await analyzeSingleImage(images[idx], idx));
       }
 
-      setAnalysisResult(parsedData);
+      // 聚合数据
+      let finalAnalysisResult: any;
+
+      if (images.length === 1) {
+        const res = results[0];
+        finalAnalysisResult = {
+          winner_declaration: isEn ? "Beauty extraction complete" : "美度提取完成",
+          core_evaluation: res.core_evaluation,
+          expert_footnote: res.expert_footnote,
+          summary: res.summary,
+          image_stats: [res]
+        };
+      } else {
+        const res1 = results[0];
+        const res2 = results[1];
+        
+        const score1 = Array.isArray(res1.all_attributes) ? res1.all_attributes.filter((a: any) => Number(a.score) >= 1).length : 0;
+        const score2 = Array.isArray(res2.all_attributes) ? res2.all_attributes.filter((a: any) => Number(a.score) >= 1).length : 0;
+        
+        let winnerTextEn = score1 > score2 ? "Image 1 possesses a higher degree of living structure." 
+                         : score2 > score1 ? "Image 2 possesses a higher degree of living structure." 
+                         : "Both images exhibit a similar degree of living structure.";
+        let winnerTextZh = score1 > score2 ? "图像 1 具有更高程度的活力结构。" 
+                         : score2 > score1 ? "图像 2 具有更高程度的活力结构。" 
+                         : "两张图像展现出相近的活力结构。";
+                         
+        finalAnalysisResult = {
+          winner_declaration: isEn ? winnerTextEn : winnerTextZh,
+          core_evaluation: isEn 
+              ? `Independent analysis reveals Image 1 scores ${score1}/15 and Image 2 scores ${score2}/15.\n\nImage 1: ${res1.core_evaluation}\n\nImage 2: ${res2.core_evaluation}`
+              : `经过独立测量，图 1 得分为 ${score1}/15，图 2 得分为 ${score2}/15。\n\n图 1：${res1.core_evaluation}\n\n图 2：${res2.core_evaluation}`,
+          expert_footnote: res1.expert_footnote, // 复用图1的注脚
+          summary: isEn ? "Comparative analysis completed via independent parallel execution." : "通过独立的并行计算完成比较分析。",
+          image_stats: [res1, res2]
+        };
+      }
+
+      setAnalysisResult(finalAnalysisResult);
       setStep("results");
 
     } catch (error: any) {

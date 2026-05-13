@@ -25,7 +25,10 @@ serve(async (req) => {
       const genAI = new GoogleGenerativeAI(apiKey);
       
       // 2. 指定模型，SDK 会自动处理底层 v1/v1beta 的网址路由
-      const genModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const genModel = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        generationConfig: { temperature: 0.0 }
+      });
 
       // 3. 构建多模态数据数组 (SDK 要求使用 camelCase 驼峰命名)
       const parts: any[] = [{ text: prompt }];
