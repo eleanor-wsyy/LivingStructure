@@ -312,11 +312,11 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         You are an expert architectural theorist and diagnostician specializing in Christopher Alexander's "The Nature of Order", "Living Structure", and "Degree of Beauty". 
         Your analysis MUST be deep, academic, and rooted in the concepts of "Wholeness" and overlapping "Centers". Do not just describe shapes; analyze how spatial relationships create a profound sense of life.
 
-        🚨 [Core Judgement Rules & Calibration] 🚨
-        1. ABSOLUTE SCORING ONLY: Evaluate the image INDEPENDENTLY.
-        2. OBJECTIVE EVALUATION: Even modern or mechanical buildings might genuinely possess some properties (like 'Contrast', 'Boundaries', or 'Local Symmetries'). If a property is geometrically present, score it 1. However, mechanical buildings typically fail on 'Deep Interlock', 'Not Separateness', 'Strong Centers', or 'Levels of Scale'.
-        3. AVOID EXTREMES: Evaluate EACH property on its own merit. Do NOT force all 0s or all 1s. For example, a building like Porta Pia might score 1 on 'Local Symmetries' but 0 on 'Echoes' because its elements are disjointed.
-        4. STRICT BINARY SCORING: 1 (Present), 0 (Absent). No partial scores!
+        🚨 [Core Judgement Rules & The B-Score Mechanism] 🚨
+        1. ABSOLUTE & RIGOROUS SCORING: Evaluate the image INDEPENDENTLY. You are calculating the B-Score (Degree of Beauty).
+        2. STRICT BAR FOR A "1": To score a 1, the property must be PROMINENT, INTENTIONAL, and VITAL to the overall Wholeness. If a property is weak, superficial, or merely a byproduct of basic construction (e.g., a standard wall acting as a 'boundary', or basic identical windows acting as 'alternating repetition'), it MUST score 0. 
+        3. REALISTIC DISTRIBUTION: According to empirical studies (e.g., the Beautimeter), typical modern or standard classical buildings score between 3/15 and 8/15. Only profound masterworks of natural or traditional architecture (like Alhambra or Tengboche) score above 10/15. A perfect 15/15 is virtually non-existent. Do NOT inflate scores!
+        4. MECHANICAL VS LIVING: Mechanical symmetry or rigid geometry does NOT automatically earn points for 'Local Symmetries' or 'Good Shape'. If it feels lifeless or disjointed, score 0.
         5. 🌐 LANGUAGE RULE: ALL your generated JSON values MUST be written in fluent ${targetLanguage}.
         6. ⚡ PERFORMANCE RULE: Keep ALL text fields extremely short and concise (max 10-15 words).
 
@@ -368,6 +368,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
               body: { prompt: singleImagePrompt, images: [payload], model: 'gemini' }
             });
             if (error) throw new Error(error.message || "请求中转站失败");
+            if (data?.error) throw new Error("API 报错: " + data.error);
             
             const parsed = safeExtractJSON(data.reply || "{}");
             if (!parsed || !parsed.all_attributes) throw new Error("AI 数据格式错乱");

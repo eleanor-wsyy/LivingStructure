@@ -55,9 +55,10 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error("AI Gateway Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    // 返回 200 以避免 Supabase HTTP 拦截，允许前端读取详细错误信息
+    return new Response(JSON.stringify({ error: error.message || error.toString() }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
+      status: 200, 
     });
   }
 });
