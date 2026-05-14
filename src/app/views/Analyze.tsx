@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Card, cn } from "@/app/components/ui";
 import { Upload, Loader2, Plus, X, BookOpen, Sparkles, Image as ImageIcon, MessageSquare, Copy, Info } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion"; 
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 
 import { supabase } from "@/app/lib/supabase";
@@ -9,13 +9,15 @@ import { supabase } from "@/app/lib/supabase";
 export function Analyze() {
   const [view, setView] = useState<"diagnostic" | "lab">("diagnostic");
   const [step, setStep] = useState<"upload" | "processing" | "results">("upload");
-  const [images, setImages] = useState<string[]>([]); 
-  const [userIntent, setUserIntent] = useState<string>(""); 
-  const [analysisResult, setAnalysisResult] = useState<any>(null); 
+  const [images, setImages] = useState<string[]>([]);
+  const [userIntent, setUserIntent] = useState<string>("");
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [retryCount, setRetryCount] = useState<number>(0);
+
+  // 缓存机制优化：使用 SHA-256 Hash 作为 key
   const analysisCache = useRef<Record<string, any>>({});
-  
+
   // --- Prompt Lab State ---
   const [skeleton, setSkeleton] = useState("");
   const [properties, setProperties] = useState("");
@@ -24,7 +26,7 @@ export function Analyze() {
   const [copied, setCopied] = useState(false);
   const [labImage, setLabImage] = useState<string | null>(null);
   const [isExtracting, setIsExtracting] = useState(false);
-  
+
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
@@ -114,10 +116,10 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       `;
 
       const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: { 
+        body: {
           prompt: extractionPrompt,
           images: [imagePayload],
-          model: 'gemini' 
+          model: 'gemini'
         }
       });
 
@@ -158,7 +160,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
           canvas.height = height;
           const ctx = canvas.getContext("2d");
           ctx?.drawImage(img, 0, 0, width, height);
-          
+
           const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
           setImages(prev => {
             const newImages = [...prev, compressedBase64];
@@ -223,8 +225,8 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
   const loadDefaultExamples = async () => {
     try {
-      const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"]; 
-      
+      const DEFAULT_URLS = ["/images/Echoes.png", "/images/ENEG.png"];
+
       const base64Images = await Promise.all(DEFAULT_URLS.map(async url => {
         const res = await fetch(url);
         const blob = await res.blob();
@@ -234,10 +236,10 @@ Final Instruction: Compose these layers into a single coherent image that feels 
           reader.readAsDataURL(blob);
         });
       }));
-      
+
       setImages(base64Images);
       // 根据语言设置默认的提示语
-      setUserIntent(isEn ? "Please compare these two images: which one has a higher degree of living structure?" : "请帮我对比这两张图，哪一张更符合活力与美感的标准？");
+      setUserIntent(isEn ? "Please compare these two images: which one has a higher degree of living structure?" : "请帮我对比这两张图，哪一张更符合活力结构的标准？");
     } catch (error) {
       console.warn("未找到默认图片，等待用户自行上传。");
     }
@@ -245,7 +247,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
   useEffect(() => {
     loadDefaultExamples();
-  }, [isEn]); // 当语言切换时，也可以重新加载默认 intent
+  }, [isEn]);
 
   const safeText = (val: any, fallback = "暂无数据...") => {
     if (val === undefined || val === null) return fallback;
@@ -264,81 +266,61 @@ Final Instruction: Compose these layers into a single coherent image that feels 
     }
   };
 
-  // 防止 prompt 注入：对用户输入做安全处理
-  const sanitizePromptInput = (input: string): string => {
-    if (!input) return '';
-    // 移除可能覆盖系统指令的模式
-    let sanitized = input
-      .replace(/\[Role[\s\S]*?\]/gi, '')
-      .replace(/\[Task[\s\S]*?\]/gi, '')
-      .replace(/\[System[\s\S]*?\]/gi, '')
-      .replace(/\[Output[\s\S]*?\]/gi, '')
-      .replace(/\[Language[\s\S]*?\]/gi, '')
-      .replace(/OUTPUT STRICTLY AS/i, '')
-      .replace(/Ignore all previous/i, '')
-      .replace(/ignore previous/i, '')
-      .replace(/\{[\s\S]*?"winner_declaration"[\s\S]*?\}/gi, '')
-      .trim();
-    // 限制长度防止 token 耗尽
-    if (sanitized.length > 500) {
-      sanitized = sanitized.slice(0, 500) + '...';
-    }
-    return sanitized;
+  // 🔹 新增：基于 Web Crypto API 的图像 SHA-256 哈希计算
+  const computeImageHash = async (base64String: string): Promise<string> => {
+    const msgUint8 = new TextEncoder().encode(base64String);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   };
 
-  // 👇 动态双语的 startAnalysis 函数
+  // 🔹 更新：高度纯粹、无情感、无对比干扰的客观提示词
   const startAnalysis = async () => {
     if (images.length === 0) return;
     setStep("processing");
-    setSelectedIndex(0); 
+    setSelectedIndex(0);
     setRetryCount(0);
 
     try {
-      const isCompare = images.length === 2;
-
-      const safeUserIntent = sanitizePromptInput(userIntent);
-
-      // 🏆 动态语言变量
       const targetLanguage = isEn ? "English" : "Simplified Chinese (简体中文)";
-      
+
       // 🏆 动态属性名称
-      const attributeNames = isEn 
+      const attributeNames = isEn
         ? "1. Levels of Scale  2. Strong Centers  3. Boundaries  4. Alternating Repetition  5. Positive Space  6. Good Shape  7. Local Symmetries  8. Deep Interlock and Ambiguity  9. Contrast  10. Gradients  11. Roughness  12. Echoes  13. The Void  14. Simplicity and Inner Calm  15. Not Separateness"
         : "1.尺度层次 2.强中心 3.边界 4.交替重复 5.正空间 6.良好形状 7.局部对称 8.深度交织与模糊性 9.对比 10.渐变 11.粗糙性 12.共鸣 13.虚空 14.简洁与内在平静 15.非分离性";
 
-      // 核心 Prompt：学术内核用英文定义，输出要求根据 targetLanguage 动态切换
-      const singleImagePrompt = `
+      // 🚨 核心修改：移除一刀切的 0 分恐吓，改为“精准量刑”，允许低生命感建筑获得合理的低分
+      const objectiveImagePrompt = `
         [Role Definition]
-        You are an expert architectural theorist and diagnostician specializing in Christopher Alexander's "The Nature of Order", "Living Structure", and "Degree of Beauty". 
-        Your analysis MUST be deep, academic, and rooted in the concepts of "Wholeness" and overlapping "Centers". Do not just describe shapes; analyze how spatial relationships create a profound sense of life.
+        You are an expert phenomenologist and architectural theorist strictly applying Christopher Alexander's "Living Structure" (活力结构) theory and the "Organic View of Space".
 
-        🚨 [Core Judgement Rules & The B-Score Mechanism] 🚨
-        1. ABSOLUTE & RIGOROUS SCORING: Evaluate the image INDEPENDENTLY. You are calculating the B-Score (Degree of Beauty).
-        2. STRICT BAR FOR A "1": To score a 1, the property must be PROMINENT, INTENTIONAL, and VITAL to the overall Wholeness. If a property is weak, superficial, or merely a byproduct of basic construction (e.g., a standard wall acting as a 'boundary', or basic identical windows acting as 'alternating repetition'), it MUST score 0. 
-        3. REALISTIC DISTRIBUTION: According to empirical studies (e.g., the Beautimeter), typical modern or standard classical buildings score between 3/15 and 8/15. Only profound masterworks of natural or traditional architecture (like Alhambra or Tengboche) score above 10/15. A perfect 15/15 is virtually non-existent. Do NOT inflate scores!
-        4. MECHANICAL VS LIVING: Mechanical symmetry or rigid geometry does NOT automatically earn points for 'Local Symmetries' or 'Good Shape'. If it feels lifeless or disjointed, score 0.
-        5. 🌐 LANGUAGE RULE: ALL your generated JSON values MUST be written in fluent ${targetLanguage}.
-        6. ⚡ PERFORMANCE RULE: Keep ALL text fields extremely short and concise (max 10-15 words).
+        🚨 [ABSOLUTE SCORING RULES - THE CALIBRATED SCALE] 🚨
+        1. TOTAL ISOLATION: Evaluate this image independently. Do not compare it to anything else.
+        2. THE "LIVING" BAR FOR A "1": A property scores 1 if it is present and contributes to the structure's wholeness. 
+        3. THE PORTA PIA CALIBRATION (Avoid the Zero-Trap): Do NOT give a blanket 0/15 just because a building is modern or mechanical. Almost all structures have SOME life. Even mechanical buildings usually possess basic 'Boundaries' or 'Alternating Repetition'. Evaluate EACH property fairly.
+        4. PENALIZE MECHANICAL PATCHWORKS FAIRLY: While you shouldn't score them 0 overall, you MUST penalize them on specific organic properties. If an image is a rigid patchwork of disconnected shapes (like circles and triangles jammed together without family resemblance), it MUST score 0 for 'Echoes', 'Local Symmetries', and 'Good Shape'.
+        5. REWARD ORGANIC UNITY: Reward structures that blend seamlessly. 'Echoes' means elements share a deep morphological family resemblance. 
+        6. SCORING REALITY: 
+           - 12-14: Masterworks of organic/traditional architecture or profound nature.
+           - 8-11: Good, coherent structures with solid centers.
+           - 2-7: Mechanical, modern, or disjointed structures (They still get points for basic geometry).
+           - 0-1: Absolute chaos or featureless voids (Extremely rare).
+        7. 🌐 LANGUAGE RULE: ALL generated JSON values MUST be in fluent ${targetLanguage}.
+        8. ⚡ PERFORMANCE RULE: Keep all text highly concise (max 15 words).
 
-        [The 15 Properties Map (You MUST use these exact terms for the "name" field in your JSON)]
+        [The 15 Properties Map]
         ${attributeNames}
 
-        [User Specific Intent]
-        User asks: "${safeUserIntent || 'Please provide a standard objective analysis.'}"
-        You must directly answer this intent in your "core_evaluation".
-
         [Task]
-        Analyze the living structure of this single image and calculate its absolute degree of beauty.
-
-        OUTPUT STRICTLY AS A JSON OBJECT. STRUCTURE EXACTLY AS FOLLOWS (translate values into ${targetLanguage}):
+        Analyze this image based ONLY on Alexander's ORGANIC Living Structure criteria. Output STRICTLY AS A JSON OBJECT:
         {
-          "core_evaluation": "Deep architectural analysis addressing the user's intent. Focus on Centers and Wholeness.",
-          "expert_footnote": "Quote or reference a specific concept from 'The Nature of Order' to support your claim.",
+          "core_evaluation": "Diagnose the structure's wholeness. Is it highly organic, moderately coherent, or mechanically disjointed?",
+          "expert_footnote": "Quote a specific concept from 'The Nature of Order' supporting this level of livingness.",
           "summary": "One concise, profound academic summary.",
-          "visual_decoding": "Decode the visual and structural patterns...",
-          "personal_perspective": "Emotional, spatial feeling, and psychological impact...",
-          "action_advice_urban": "Macro-level structural improvement strategy...",
-          "action_advice_personal": "Micro-level geometric optimization advice...",
+          "visual_decoding": "Decode the presence of nested centers or mechanical fragmentation...",
+          "personal_perspective": "Objective spatial feeling and psychological resonance...",
+          "action_advice_urban": "Macro-level structural organic improvement...",
+          "action_advice_personal": "Micro-level geometric optimization...",
           "all_attributes": [
             {"name": "${isEn ? 'Levels of Scale' : '尺度层次'}", "score": 1, "desc": "1: Present. [Explain]"},
             {"name": "${isEn ? 'Strong Centers' : '强中心'}", "score": 0, "desc": "0: Absent. [Explain]"}
@@ -346,12 +328,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         }
       `;
 
-      // 定义单个图片的分析函数，带硬缓存
+      // 定义单个图片的分析函数，带完美哈希缓存
       const analyzeSingleImage = async (imgDataUrl: string, index: number) => {
-        // 如果缓存中存在，直接复用
-        if (analysisCache.current[imgDataUrl]) {
-          console.log(`[Cache Hit] Image ${index + 1} analysis re-used.`);
-          return analysisCache.current[imgDataUrl];
+        // 计算图像哈希指纹
+        const imgHash = await computeImageHash(imgDataUrl);
+
+        if (analysisCache.current[imgHash]) {
+          console.log(`[Cache Hit] Image ${index + 1} analysis re-used from hash ${imgHash.substring(0, 8)}.`);
+          return analysisCache.current[imgHash];
         }
 
         const [header, base64Data] = imgDataUrl.split(',');
@@ -364,17 +348,18 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
         while (attempt <= maxRetries) {
           try {
+            // 后端建议强制设定 temperature 为 0 或 0.1 提升稳定性
             const { data, error } = await supabase.functions.invoke('ai-gateway', {
-              body: { prompt: singleImagePrompt, images: [payload], model: 'gemini' }
+              body: { prompt: objectiveImagePrompt, images: [payload], model: 'gemini' }
             });
             if (error) throw new Error(error.message || "请求中转站失败");
             if (data?.error) throw new Error("API 报错: " + data.error);
-            
+
             const parsed = safeExtractJSON(data.reply || "{}");
             if (!parsed || !parsed.all_attributes) throw new Error("AI 数据格式错乱");
-            
+
             // 存入缓存
-            analysisCache.current[imgDataUrl] = parsed;
+            analysisCache.current[imgHash] = parsed;
             return parsed;
           } catch (err: any) {
             lastError = err;
@@ -398,11 +383,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       // 聚合数据
       let finalAnalysisResult: any;
 
+      // 🔹 意图合成阶段：仅在这里将客观分数与用户意图拼接
+      const formatIntentResponse = (intent: string) => intent ? (isEn ? `Addressing: "${intent}"\n\n` : `针对分析意图：“${intent}”\n\n`) : "";
+
       if (images.length === 1) {
         const res = results[0];
         finalAnalysisResult = {
-          winner_declaration: isEn ? "Beauty extraction complete" : "美度提取完成",
-          core_evaluation: res.core_evaluation,
+          winner_declaration: isEn ? "Beauty extraction complete" : "活力结构鉴定完成",
+          core_evaluation: `${formatIntentResponse(userIntent)}${res.core_evaluation}`,
           expert_footnote: res.expert_footnote,
           summary: res.summary,
           image_stats: [res]
@@ -410,24 +398,24 @@ Final Instruction: Compose these layers into a single coherent image that feels 
       } else {
         const res1 = results[0];
         const res2 = results[1];
-        
+
         const score1 = Array.isArray(res1.all_attributes) ? res1.all_attributes.filter((a: any) => Number(a.score) >= 1).length : 0;
         const score2 = Array.isArray(res2.all_attributes) ? res2.all_attributes.filter((a: any) => Number(a.score) >= 1).length : 0;
-        
-        let winnerTextEn = score1 > score2 ? "Image 1 possesses a higher degree of living structure." 
-                         : score2 > score1 ? "Image 2 possesses a higher degree of living structure." 
-                         : "Both images exhibit a similar degree of living structure.";
-        let winnerTextZh = score1 > score2 ? "图像 1 具有更高程度的活力结构。" 
-                         : score2 > score1 ? "图像 2 具有更高程度的活力结构。" 
-                         : "两张图像展现出相近的活力结构。";
-                         
+
+        let winnerTextEn = score1 > score2 ? "Image 1 possesses a higher degree of living structure."
+          : score2 > score1 ? "Image 2 possesses a higher degree of living structure."
+            : "Both images exhibit a similar degree of living structure.";
+        let winnerTextZh = score1 > score2 ? "图像 1 具有更高程度的活力结构。"
+          : score2 > score1 ? "图像 2 具有更高程度的活力结构。"
+            : "两张图像展现出相近的活力结构。";
+
         finalAnalysisResult = {
           winner_declaration: isEn ? winnerTextEn : winnerTextZh,
-          core_evaluation: isEn 
-              ? `Independent analysis reveals Image 1 scores ${score1}/15 and Image 2 scores ${score2}/15.\n\nImage 1: ${res1.core_evaluation}\n\nImage 2: ${res2.core_evaluation}`
-              : `经过独立测量，图 1 得分为 ${score1}/15，图 2 得分为 ${score2}/15。\n\n图 1：${res1.core_evaluation}\n\n图 2：${res2.core_evaluation}`,
+          core_evaluation: isEn
+            ? `${formatIntentResponse(userIntent)}Based on independent, objective calculation, Image 1 scored ${score1}/15 and Image 2 scored ${score2}/15.\n\nImage 1: ${res1.core_evaluation}\n\nImage 2: ${res2.core_evaluation}`
+            : `${formatIntentResponse(userIntent)}经过严格独立的客观测量，图 1 获得 ${score1}/15 分，图 2 获得 ${score2}/15 分。\n\n图 1：${res1.core_evaluation}\n\n图 2：${res2.core_evaluation}`,
           expert_footnote: res1.expert_footnote, // 复用图1的注脚
-          summary: isEn ? "Comparative analysis completed via independent parallel execution." : "通过独立的并行计算完成比较分析。",
+          summary: isEn ? "Comparative analysis completed via strictly isolated parallel evaluation." : "通过绝对隔离的并行运算完成对比评估。",
           image_stats: [res1, res2]
         };
       }
@@ -437,30 +425,29 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
     } catch (error: any) {
       console.error("AI 分析失败:", error);
-      
-      // 友好的报错文案 (修复了转义字符问题)
-      const errorMsgEn = "The AI expert is thinking too deeply and encountered a timeout. Please try again.";
-      const errorMsgZh = "AI 专家思考过于深入导致连接超时，或者网络遇到波动。\n不要灰心，请再试一次！";
-      
+
+      const errorMsgEn = "The AI expert encountered a connection timeout. Please try again.";
+      const errorMsgZh = "AI 诊断程序遇到连接超时或网络波动。\n请放心重试。";
+
       alert(`⚠️ ${isEn ? 'Analysis Interrupted' : '诊断中断'}\n\n${isEn ? errorMsgEn : errorMsgZh}\n\n(Error: ${error.message})`);
       setStep("upload");
     }
   };
 
   const currentStats = analysisResult?.image_stats?.[selectedIndex] || analysisResult;
-  
+
   // 🛡️ 强制防呆逻辑：重新统计得分为 1 的属性个数
-  const beautyScore = Array.isArray(currentStats?.all_attributes) 
-    ? currentStats.all_attributes.filter((attr: any) => Number(attr.score) >= 1).length 
+  const beautyScore = Array.isArray(currentStats?.all_attributes)
+    ? currentStats.all_attributes.filter((attr: any) => Number(attr.score) >= 1).length
     : 0;
 
   return (
     <div className="min-h-screen bg-muted py-6 md:py-12 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden">
       <div className="mx-auto max-w-7xl">
-        
+
         <div className="flex flex-col items-center mb-8 md:mb-12">
           <div className="flex bg-muted/50 p-1 rounded-full mb-8">
-            <button 
+            <button
               onClick={() => setView("diagnostic")}
               className={cn(
                 "px-6 py-2 rounded-full text-sm font-bold transition-all",
@@ -469,7 +456,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
             >
               {isEn ? "Expert Diagnostic" : "专家诊断"}
             </button>
-            <button 
+            <button
               onClick={() => setView("lab")}
               className={cn(
                 "px-6 py-2 rounded-full text-sm font-bold transition-all",
@@ -482,11 +469,11 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
           {view === "diagnostic" && (
             <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm font-medium">
-               <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
-               <div className="h-px w-4 md:w-12 bg-stone-300" />
-               <StepItem current={step} target="processing" number={2} label={trans.analyze.step2} />
-               <div className="h-px w-4 md:w-12 bg-stone-300" />
-               <StepItem current={step} target="results" number={3} label={trans.analyze.step3} />
+              <StepItem current={step} target="upload" number={1} label={trans.analyze.step1} />
+              <div className="h-px w-4 md:w-12 bg-stone-300" />
+              <StepItem current={step} target="processing" number={2} label={trans.analyze.step2} />
+              <div className="h-px w-4 md:w-12 bg-stone-300" />
+              <StepItem current={step} target="results" number={3} label={trans.analyze.step3} />
             </div>
           )}
         </div>
@@ -520,14 +507,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                       </label>
                     )}
                   </div>
-                  
+
                   <div className="flex-1 space-y-4">
                     <div>
                       <h4 className="text-lg font-bold text-foreground">{trans.analyze.promptLab.extractTitle}</h4>
                       <p className="text-sm text-muted-foreground">{trans.analyze.promptLab.extractDesc}</p>
                     </div>
-                    <Button 
-                      onClick={startHierarchyExtraction} 
+                    <Button
+                      onClick={startHierarchyExtraction}
                       disabled={!labImage || isExtracting}
                       className="bg-teal-600 hover:bg-primary-hover text-white rounded-full px-8 py-6 shadow-lg shadow-teal-600/20 disabled:bg-muted"
                     >
@@ -548,10 +535,10 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                           <div className="w-6 h-1 bg-stone-900 rounded-full" /> {trans.analyze.promptLab.layer1}
                         </label>
                         <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer1Desc}</p>
-                        <textarea 
-                          value={skeleton} 
-                          onChange={(e) => setSkeleton(e.target.value)} 
-                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        <textarea
+                          value={skeleton}
+                          onChange={(e) => setSkeleton(e.target.value)}
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20"
                         />
                       </div>
                       <div className="space-y-2">
@@ -559,10 +546,10 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                           <div className="w-6 h-1 bg-stone-500 rounded-full" /> {trans.analyze.promptLab.layer2}
                         </label>
                         <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer2Desc}</p>
-                        <textarea 
-                          value={properties} 
-                          onChange={(e) => setProperties(e.target.value)} 
-                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        <textarea
+                          value={properties}
+                          onChange={(e) => setProperties(e.target.value)}
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20"
                         />
                       </div>
                       <div className="space-y-2">
@@ -570,15 +557,15 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                           <div className="w-6 h-1 bg-stone-300 rounded-full" /> {trans.analyze.promptLab.layer3}
                         </label>
                         <p className="text-[10px] text-muted-foreground italic">{trans.analyze.promptLab.layer3Desc}</p>
-                        <textarea 
-                          value={detail} 
-                          onChange={(e) => setDetail(e.target.value)} 
-                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20" 
+                        <textarea
+                          value={detail}
+                          onChange={(e) => setDetail(e.target.value)}
+                          className="w-full px-4 py-3 bg-muted border border-border rounded-2xl text-sm focus:ring-2 focus:ring-stone-200 outline-none transition-all h-20"
                         />
                       </div>
 
                       <div className="flex items-center gap-3 pt-2">
-                        <button 
+                        <button
                           onClick={() => setUseScaling(!useScaling)}
                           className={cn(
                             "w-10 h-5 rounded-full relative transition-colors",
@@ -611,14 +598,14 @@ Final Instruction: Compose these layers into a single coherent image that feels 
                         {generateFullPrompt()}
                       </div>
                     </div>
-                    
+
                     <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6">
                       <h5 className="text-amber-900 font-bold text-sm mb-2 flex items-center gap-2">
                         <Info className="w-4 h-4" />
                         {isEn ? "How to use this prompt?" : "如何使用此提示词？"}
                       </h5>
                       <p className="text-amber-800/80 text-xs leading-relaxed">
-                        {isEn 
+                        {isEn
                           ? "Copy this prompt and paste it into Gemini or Midjourney. It is optimized to create architectural drawings that respect the 15 geometric properties of living structure through hierarchical line weights."
                           : "复制此提示词并将其粘贴到 Gemini 或 Midjourney 中。它经过优化，可通过层级化的线宽创建遵循活力结构 15 个几何属性的建筑图纸。"}
                       </p>
@@ -628,307 +615,309 @@ Final Instruction: Compose these layers into a single coherent image that feels 
               </motion.div>
             ) : (
               <>
-            {step === "upload" && (
+                {step === "upload" && (
 
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8 max-w-4xl mx-auto">
-                <div className="text-center mb-6 md:mb-8">
-                  <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{trans.analyze.uploadTitle}</h2>
-                  <p className="mt-2 md:mt-3 text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
-                </div>
-
-                <div className="bg-card rounded-3xl p-4 shadow-sm border border-border focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
-                  <div className="flex items-start gap-3">
-                    <MessageSquare className="w-5 h-5 text-teal-600 mt-1 shrink-0" />
-                    <textarea 
-                      value={userIntent}
-                      onChange={(e) => setUserIntent(e.target.value)}
-                      placeholder={isEn ? "Tell the expert your analysis intent... (e.g., Which layout has more living structure?)" : "告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具活力？）"}
-                      className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-muted-foreground text-sm md:text-base h-16"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  {[0, 1].map((index) => (
-                    <div
-                      key={index}
-                      onDragOver={(e) => { e.preventDefault(); setDragTarget(index); }}
-                      onDragLeave={() => setDragTarget(null)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setDragTarget(null);
-                        const file = e.dataTransfer.files[0];
-                        if (file) processFile(file, index);
-                      }}
-                      className={cn(
-                        "relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden",
-                        dragTarget === index ? "border-teal-500 bg-teal-50/60 scale-[1.02]" : "",
-                        images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-muted/50 bg-white"
-                      )}
-                    >
-                      {images[index] ? (
-                        <>
-                          <img src={images[index]} alt={`Upload ${index + 1}`} className="h-full w-full object-cover" />
-                          <button onClick={() => removeImage(index)} className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 backdrop-blur-sm transition-all"><X className="h-4 w-4" /></button>
-                        </>
-                      ) : (
-                        <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-6 md:p-8 text-center">
-                          <div className="mb-4 md:mb-5 rounded-full bg-secondary p-4 md:p-5 shadow-inner">
-                            {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" />}
-                          </div>
-                          <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
-                            {index === 0 ? (isEn ? "Upload Main Scene" : "上传主场景") : (isEn ? "Upload Comparison (Optional)" : "上传对比场景 (可选)")}
-                          </span>
-                          <span className="text-xs text-muted-foreground mt-1">
-                            {isEn ? "Click · Drag & Drop · Paste (Ctrl+V)" : "点击 · 拖拽 · 粘贴 (Ctrl+V)"}
-                          </span>
-                          <input type="file" hidden onChange={handleFileChange} accept="image/*" multiple={index === 0} />
-                        </label>
-                      )}
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6 md:space-y-8 max-w-4xl mx-auto">
+                    <div className="text-center mb-6 md:mb-8">
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{trans.analyze.uploadTitle}</h2>
+                      <p className="mt-2 md:mt-3 text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">{trans.analyze.uploadDesc}</p>
                     </div>
-                  ))}
-                </div>
 
-                {images.length === 0 && (
-                  <div className="text-center mt-4">
-                    <button onClick={loadDefaultExamples} className="text-xs md:text-sm text-teal-600 font-medium hover:text-teal-800 transition-colors border-b border-teal-600/30 hover:border-teal-800 border-dashed pb-0.5">
-                      {isEn ? "No images? Click to load 'The Nature of Order' example" : "没有图片？点击一键载入《秩序的本质》对比图演示"}
-                    </button>
+                    <div className="bg-card rounded-3xl p-4 shadow-sm border border-border focus-within:ring-2 focus-within:ring-teal-500/30 transition-all">
+                      <div className="flex items-start gap-3">
+                        <MessageSquare className="w-5 h-5 text-teal-600 mt-1 shrink-0" />
+                        <textarea
+                          value={userIntent}
+                          onChange={(e) => setUserIntent(e.target.value)}
+                          placeholder={isEn ? "Tell the expert your analysis intent... (e.g., Which layout has more living structure?)" : "告诉诊断专家您的分析意图...（例如：这个建筑好看吗？这两幅画哪幅更具活力？）"}
+                          className="w-full bg-transparent resize-none outline-none text-stone-700 placeholder:text-muted-foreground text-sm md:text-base h-16"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                      {[0, 1].map((index) => (
+                        <div
+                          key={index}
+                          onDragOver={(e) => { e.preventDefault(); setDragTarget(index); }}
+                          onDragLeave={() => setDragTarget(null)}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            setDragTarget(null);
+                            const file = e.dataTransfer.files[0];
+                            if (file) processFile(file, index);
+                          }}
+                          className={cn(
+                            "relative aspect-[4/3] rounded-3xl border-2 border-dashed transition-all flex flex-col items-center justify-center overflow-hidden",
+                            dragTarget === index ? "border-teal-500 bg-teal-50/60 scale-[1.02]" : "",
+                            images[index] ? "border-transparent shadow-xl bg-white" : "border-stone-300 hover:border-teal-500 hover:bg-muted/50 bg-white"
+                          )}
+                        >
+                          {images[index] ? (
+                            <>
+                              <img src={images[index]} alt={`Upload ${index + 1}`} className="h-full w-full object-cover" />
+                              <button onClick={() => removeImage(index)} className="absolute top-4 right-4 p-2 bg-black/60 text-white rounded-full hover:bg-black/80 backdrop-blur-sm transition-all"><X className="h-4 w-4" /></button>
+                            </>
+                          ) : (
+                            <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-6 md:p-8 text-center">
+                              <div className="mb-4 md:mb-5 rounded-full bg-secondary p-4 md:p-5 shadow-inner">
+                                {index === 0 ? <Upload className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" /> : <Plus className="h-7 w-7 md:h-9 md:w-9 text-muted-foreground" />}
+                              </div>
+                              <span className="text-sm md:text-base text-stone-700 font-semibold tracking-wide">
+                                {index === 0 ? (isEn ? "Upload Main Scene" : "上传主场景") : (isEn ? "Upload Comparison (Optional)" : "上传对比场景 (可选)")}
+                              </span>
+                              <span className="text-xs text-muted-foreground mt-1">
+                                {isEn ? "Click · Drag & Drop · Paste (Ctrl+V)" : "点击 · 拖拽 · 粘贴 (Ctrl+V)"}
+                              </span>
+                              <input type="file" hidden onChange={handleFileChange} accept="image/*" multiple={index === 0} />
+                            </label>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {images.length === 0 && (
+                      <div className="text-center mt-4">
+                        <button onClick={loadDefaultExamples} className="text-xs md:text-sm text-teal-600 font-medium hover:text-teal-800 transition-colors border-b border-teal-600/30 hover:border-teal-800 border-dashed pb-0.5">
+                          {isEn ? "No images? Click to load 'The Nature of Order' example" : "没有图片？点击一键载入《秩序的本质》对比图演示"}
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="flex justify-center mt-8 md:mt-12">
+                      <Button className="bg-stone-900 px-8 py-6 md:px-16 md:py-7 text-base md:text-xl rounded-full shadow-lg hover:scale-105 transition-transform w-full md:w-auto mx-4 md:mx-0" onClick={startAnalysis} disabled={images.length === 0}>
+                        {images.length === 2
+                          ? (isEn ? "Start Deep Comparison" : "开始深度对比诊断")
+                          : (isEn ? "Extract Beauty & Analyze" : "开始活力结构鉴定")}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {step === "processing" && (
+                  <div className="flex h-[400px] md:h-[550px] flex-col items-center justify-center text-center px-4">
+                    <div className="relative mb-8 md:mb-10 h-24 w-24 md:h-28 md:w-28">
+                      <div className="absolute inset-0 rounded-full border-4 border-border" />
+                      <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
+                      <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
+                    </div>
+                    <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+                      {isEn ? "Perceiving the 15 geometric properties..." : "正在客观测量空间的 15 个几何属性..."}
+                    </h2>
+                    <p className="mt-3 text-sm md:text-base text-muted-foreground flex flex-col items-center gap-2">
+                      {retryCount > 0 ? (
+                        <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
+                          {isEn ? `AI is thinking deeply... (Auto-retry ${retryCount}/2)` : `诊断程序深度测算中... (自动重试 ${retryCount}/2)`}
+                        </span>
+                      ) : (
+                        <span>{isEn ? "Calculating Degree of Beauty and Vitality..." : "计算活力结构 (Living Structure) 指标..."}</span>
+                      )}
+                    </p>
                   </div>
                 )}
 
-                <div className="flex justify-center mt-8 md:mt-12">
-                  <Button className="bg-stone-900 px-8 py-6 md:px-16 md:py-7 text-base md:text-xl rounded-full shadow-lg hover:scale-105 transition-transform w-full md:w-auto mx-4 md:mx-0" onClick={startAnalysis} disabled={images.length === 0}>
-                    {images.length === 2 
-                      ? (isEn ? "Start Deep Comparison" : "开始深度对比诊断") 
-                      : (isEn ? "Extract Beauty & Analyze" : "开始美度提取与诊断")}
-                  </Button>
-                </div>
-              </motion.div>
-            )}
+                {step === "results" && analysisResult && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col lg:grid gap-6 md:gap-10 lg:grid-cols-12">
 
-            {step === "processing" && (
-              <div className="flex h-[400px] md:h-[550px] flex-col items-center justify-center text-center px-4">
-                <div className="relative mb-8 md:mb-10 h-24 w-24 md:h-28 md:w-28">
-                   <div className="absolute inset-0 rounded-full border-4 border-border" />
-                   <motion.div className="absolute inset-0 rounded-full border-4 border-teal-600 border-t-transparent" animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
-                   <div className="absolute inset-0 flex items-center justify-center"><Sparkles className="h-8 w-8 md:h-10 md:w-10 text-teal-600 animate-pulse" /></div>
-                </div>
-                <h2 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
-                  {isEn ? "Perceiving the 15 geometric properties..." : "正在感知空间的 15 个几何属性..."}
-                </h2>
-                <p className="mt-3 text-sm md:text-base text-muted-foreground flex flex-col items-center gap-2">
-                  {retryCount > 0 ? (
-                    <span className="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-xs font-semibold animate-pulse">
-                      {isEn ? `AI is thinking deeply... (Auto-retry ${retryCount}/2)` : `AI 专家深度思考中... (自动重试 ${retryCount}/2)`}
-                    </span>
-                  ) : (
-                    <span>{isEn ? "Calculating Degree of Beauty and Vitality..." : "计算美度 (Beauty) 及其活力指标..."}</span>
-                  )}
-                </p>
-              </div>
-            )}
+                    <div className="order-2 lg:order-1 lg:col-span-8 space-y-6 md:space-y-8 w-full">
 
-            {step === "results" && analysisResult && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col lg:grid gap-6 md:gap-10 lg:grid-cols-12">
-                
-                <div className="order-2 lg:order-1 lg:col-span-8 space-y-6 md:space-y-8 w-full">
-                  
-                  <motion.div 
-                    initial={{ scale: 0.98, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 0.1 }}
-                    className="bg-card rounded-3xl p-2 md:p-3 shadow-md flex gap-2 md:gap-3 h-[240px] md:h-[360px] w-full"
-                  >
-                    {images.map((img, idx) => (
-                      <div 
-                        key={idx} 
-                        onClick={() => setSelectedIndex(idx)}
-                        className={cn(
-                          "relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300",
-                          images.length === 2 ? "w-1/2" : "w-full",
-                          selectedIndex === idx 
-                            ? "ring-4 ring-teal-500 shadow-xl opacity-100" 
-                            : "opacity-60 hover:opacity-90 hover:ring-2 hover:ring-stone-300"
-                        )}
+                      <motion.div
+                        initial={{ scale: 0.98, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.1 }}
+                        className="bg-card rounded-3xl p-2 md:p-3 shadow-md flex gap-2 md:gap-3 h-[240px] md:h-[360px] w-full"
                       >
-                        <img src={img} alt={`Scene ${idx + 1}`} className="w-full h-full object-cover" />
-                        {images.length === 2 && (
-                          <div className={cn(
-                            "absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold transition-colors",
-                            selectedIndex === idx ? "bg-teal-500 text-white" : "bg-black/50 text-white backdrop-blur-md"
-                          )}>
-                            {isEn ? `Image ${idx + 1}` : `图 ${idx + 1}`} {selectedIndex === idx && (isEn ? " (Current)" : " (当前)")}
+                        {images.map((img, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => setSelectedIndex(idx)}
+                            className={cn(
+                              "relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-300",
+                              images.length === 2 ? "w-1/2" : "w-full",
+                              selectedIndex === idx
+                                ? "ring-4 ring-teal-500 shadow-xl opacity-100"
+                                : "opacity-60 hover:opacity-90 hover:ring-2 hover:ring-stone-300"
+                            )}
+                          >
+                            <img src={img} alt={`Scene ${idx + 1}`} className="w-full h-full object-cover" />
+                            {images.length === 2 && (
+                              <div className={cn(
+                                "absolute top-2 left-2 md:top-4 md:left-4 px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-bold transition-colors",
+                                selectedIndex === idx ? "bg-teal-500 text-white" : "bg-black/50 text-white backdrop-blur-md"
+                              )}>
+                                {isEn ? `Image ${idx + 1}` : `图 ${idx + 1}`} {selectedIndex === idx && (isEn ? " (Current)" : " (当前)")}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </motion.div>
+
+                      <div className="bg-card rounded-3xl p-5 md:p-8 shadow-sm border border-border relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
+                        {userIntent && (
+                          <div className="mb-4 inline-block bg-secondary px-3 py-1 rounded-md text-xs text-muted-foreground font-medium">
+                            🎯 {isEn ? "Addressing your input" : "已收录您的意图信息"}
                           </div>
                         )}
-                      </div>
-                    ))}
-                  </motion.div>
-                  
-                  <div className="bg-card rounded-3xl p-5 md:p-8 shadow-sm border border-border relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-1.5 md:w-2 h-full bg-teal-500"></div>
-                    <div className="mb-4 inline-block bg-secondary px-3 py-1 rounded-md text-xs text-muted-foreground font-medium">
-                      🎯 {isEn ? "Targeting your intent: " : "针对您的问题："}{userIntent || (isEn ? "Overall Assessment" : "整体评估")}
-                    </div>
-                    <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
-                      🏆 {safeText(analysisResult?.winner_declaration, isEn ? "Beauty extraction complete" : "美度提取完成")}
-                    </h2>
-                    <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4">
-                      {safeText(analysisResult?.core_evaluation)}
-                    </p>
-                    <div className="mt-4 md:mt-6 p-4 md:p-5 bg-muted rounded-2xl border border-border text-muted-foreground text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
-                      <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-muted-foreground shrink-0" />
-                      <span>{safeText(analysisResult?.expert_footnote)}</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 md:space-y-6">
-                    <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
-                      🔍 {isEn ? "Multi-dimensional Diagnostic Report" : "深度多维诊断报告"}
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-                      <div className="bg-muted rounded-2xl p-5 md:p-6 border border-border">
-                        <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 {isEn ? "Visual & Structural Decoding" : "视觉与结构解码"}</h4>
-                        <p className="text-muted-foreground text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(currentStats?.visual_decoding)}
+                        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                          🏆 {safeText(analysisResult?.winner_declaration, isEn ? "Beauty extraction complete" : "活力结构鉴定完成")}
+                        </h2>
+                        <p className="text-base md:text-lg text-stone-700 font-medium leading-relaxed mt-4 whitespace-pre-line">
+                          {safeText(analysisResult?.core_evaluation)}
                         </p>
+                        <div className="mt-4 md:mt-6 p-4 md:p-5 bg-muted rounded-2xl border border-border text-muted-foreground text-xs md:text-sm leading-relaxed italic flex flex-col md:flex-row gap-3 md:gap-4">
+                          <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-muted-foreground shrink-0" />
+                          <span>{safeText(analysisResult?.expert_footnote)}</span>
+                        </div>
                       </div>
-                      <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
-                        <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 {isEn ? "Emotional & Healing Experience" : "情绪与疗愈体验"}</h4>
-                        <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(currentStats?.personal_perspective)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
-                    <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
-                      🛠️ {isEn ? "Structural Improvement Guide" : "结构改进指南"}
-                    </h3>
-                    <div className="grid md:grid-cols-2 gap-4 md:gap-6">
-                      <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
-                        <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ {isEn ? "Macro-scale Strategy" : "宏观尺度策略"}</h4>
-                        <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(currentStats?.action_advice_urban)}
-                        </p>
-                      </div>
-                      <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
-                        <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 {isEn ? "Micro-scale Optimization" : "微观尺度优化"}</h4>
-                        <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                          {safeText(currentStats?.action_advice_personal)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
-                    <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
-                      "{safeText(analysisResult?.summary, isEn ? "The 15 properties collectively shape the sense of life in space." : "15个属性共同塑造了空间的生命感。")}"
-                    </p>
-                  </div>
-                </div>
-
-                <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full">
-                  <AnimatePresence mode="popLayout">
-                    <motion.div
-                      key={selectedIndex}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <Card className="bg-card border-border shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
-                        
-                        <div className="p-6 md:p-8 text-center border-b border-border bg-gradient-to-b from-stone-50 to-white relative pb-10">
-                          {images.length === 2 && (
-                            <div className="absolute top-3 left-0 w-full flex justify-center">
-                              <span className="bg-secondary text-muted-foreground text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
-                                <ImageIcon className="w-3 h-3" />
-                                {isEn ? `Viewing Image ${selectedIndex + 1} Data` : `正在查看图 ${selectedIndex + 1} 数据`}
-                              </span>
-                            </div>
-                          )}
-                          
-                          <div className="pt-4">
-                            <BeautyGauge n={beautyScore} />
+                      <div className="space-y-4 md:space-y-6">
+                        <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
+                          🔍 {isEn ? "Multi-dimensional Diagnostic Report" : "深度多维诊断报告"}
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                          <div className="bg-muted rounded-2xl p-5 md:p-6 border border-border">
+                            <h4 className="font-bold text-stone-800 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">👀 {isEn ? "Visual & Structural Decoding" : "视觉与结构解码"}</h4>
+                            <p className="text-muted-foreground text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                              {safeText(currentStats?.visual_decoding)}
+                            </p>
+                          </div>
+                          <div className="bg-amber-50/50 rounded-2xl p-5 md:p-6 border border-amber-100/50">
+                            <h4 className="font-bold text-amber-900 mb-2 md:mb-3 text-xs md:text-sm tracking-wider">🎨 {isEn ? "Emotional & Healing Experience" : "情绪与疗愈体验"}</h4>
+                            <p className="text-amber-800/90 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                              {safeText(currentStats?.personal_perspective)}
+                            </p>
                           </div>
                         </div>
-                        
-                        <div className="p-4 md:p-6 bg-white">
-                          <h4 className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
-                            <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> {isEn ? "15 Properties Matrix" : "15项几何属性鉴定矩阵"}
-                          </h4>
-                          
-                          {Array.isArray(currentStats?.all_attributes) ? (
-                            <div className="grid grid-cols-3 gap-1 md:gap-3">
-                              {currentStats.all_attributes.map((attr: any, idx: number) => {
-                                const isPresent = Number(attr.score) >= 1;
-                                return (
-                                  <div 
-                                    key={idx} 
-                                    title={safeText(attr.desc, isEn ? "No detailed description" : "无详细描述")} 
-                                    className={cn(
-                                      "flex flex-col items-center justify-center p-2.5 md:p-3 rounded-xl border transition-all cursor-help",
-                                      isPresent 
-                                        ? "bg-teal-50/50 border-teal-200 hover:bg-teal-100" 
-                                        : "bg-muted border-transparent opacity-50 grayscale hover:opacity-80"
-                                    )}
-                                  >
-                                    <span className={cn(
-                                      "text-[10px] md:text-xs font-bold text-center leading-tight truncate w-full",
-                                      isPresent ? "text-teal-800" : "text-muted-foreground line-through"
-                                    )}>
-                                      {safeText(attr.name, isEn ? "Unknown" : "未知")}
-                                    </span>
-                                    
-                                    <div className={cn(
-                                      "mt-2 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black font-mono shadow-inner",
-                                      isPresent ? "bg-teal-500 text-white" : "bg-muted text-muted-foreground"
-                                    )}>
-                                      {isPresent ? "1" : "0"}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <p className="text-xs md:text-sm text-muted-foreground text-center py-6 md:py-10">
-                              {isEn ? "Loading matrix data..." : "正在为您加载矩阵数据..."}
+                      </div>
+
+                      <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
+                        <h3 className="text-lg md:text-xl font-bold text-foreground flex items-center gap-2 border-b border-border pb-2 md:pb-3">
+                          🛠️ {isEn ? "Structural Improvement Guide" : "结构改进指南"}
+                        </h3>
+                        <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                          <div className="bg-blue-50/50 rounded-2xl p-5 md:p-6 border border-blue-100">
+                            <h4 className="font-bold text-blue-900 mb-2 md:mb-3 text-xs md:text-sm">🏙️ {isEn ? "Macro-scale Strategy" : "宏观尺度策略"}</h4>
+                            <p className="text-blue-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                              {safeText(currentStats?.action_advice_urban)}
                             </p>
-                          )}
-                          <p className="text-center text-[10px] text-muted-foreground mt-4 italic">
-                            💡 {isEn ? "Hint: Hover over the blocks to see the reasoning" : "提示：将鼠标悬停在方块上可查看判定原因"}
-                          </p>
+                          </div>
+                          <div className="bg-emerald-50/50 rounded-2xl p-5 md:p-6 border border-emerald-100">
+                            <h4 className="font-bold text-emerald-900 mb-2 md:mb-3 text-xs md:text-sm">🏠 {isEn ? "Micro-scale Optimization" : "微观尺度优化"}</h4>
+                            <p className="text-emerald-800 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+                              {safeText(currentStats?.action_advice_personal)}
+                            </p>
+                          </div>
                         </div>
-                        
-                        <div className="p-3 md:p-4 bg-muted border-t border-border flex flex-col gap-2">
-                          <Button 
-                            className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary-hover py-5 md:py-6 text-sm md:text-base font-semibold shadow-md" 
-                            onClick={() => { 
-                              setView("lab"); 
-                              if (images[selectedIndex]) setLabImage(images[selectedIndex]);
-                            }}
-                          >
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            {isEn ? "Extract Hierarchy & Generate Prompt" : "提取层级并生成提示词"}
-                          </Button>
-                          <Button variant="outline" className="w-full rounded-full bg-card text-foreground hover:bg-secondary py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
-                            {isEn ? "Analyze Another Space" : "重新分析下一个空间"}
-                          </Button>
-                        </div>
+                      </div>
 
-                      </Card>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
+                      <div className="text-center pt-4 pb-8 md:pt-8 md:pb-4 px-4">
+                        <p className="text-base md:text-lg text-stone-800 font-medium italic leading-relaxed max-w-2xl mx-auto">
+                          "{safeText(analysisResult?.summary, isEn ? "The 15 properties collectively shape the sense of life in space." : "15个几何属性共同塑造了空间的生命感。")}"
+                        </p>
+                      </div>
+                    </div>
 
-              </motion.div>
+                    <div className="order-1 lg:order-2 lg:col-span-4 space-y-4 md:space-y-6 w-full">
+                      <AnimatePresence mode="popLayout">
+                        <motion.div
+                          key={selectedIndex}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Card className="bg-card border-border shadow-lg rounded-3xl overflow-hidden lg:sticky lg:top-8 w-full">
+
+                            <div className="p-6 md:p-8 text-center border-b border-border bg-gradient-to-b from-stone-50 to-white relative pb-10">
+                              {images.length === 2 && (
+                                <div className="absolute top-3 left-0 w-full flex justify-center">
+                                  <span className="bg-secondary text-muted-foreground text-[10px] md:text-xs px-3 py-1 rounded-full font-semibold flex items-center gap-1">
+                                    <ImageIcon className="w-3 h-3" />
+                                    {isEn ? `Viewing Image ${selectedIndex + 1} Data` : `正在查看图 ${selectedIndex + 1} 数据`}
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="pt-4">
+                                <BeautyGauge n={beautyScore} />
+                              </div>
+                            </div>
+
+                            <div className="p-4 md:p-6 bg-white">
+                              <h4 className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <Sparkles className="w-3 h-3 md:w-4 md:h-4" /> {isEn ? "15 Properties Matrix" : "15项几何属性鉴定矩阵"}
+                              </h4>
+
+                              {Array.isArray(currentStats?.all_attributes) ? (
+                                <div className="grid grid-cols-3 gap-1 md:gap-3">
+                                  {currentStats.all_attributes.map((attr: any, idx: number) => {
+                                    const isPresent = Number(attr.score) >= 1;
+                                    return (
+                                      <div
+                                        key={idx}
+                                        title={safeText(attr.desc, isEn ? "No detailed description" : "无详细描述")}
+                                        className={cn(
+                                          "flex flex-col items-center justify-center p-2.5 md:p-3 rounded-xl border transition-all cursor-help",
+                                          isPresent
+                                            ? "bg-teal-50/50 border-teal-200 hover:bg-teal-100"
+                                            : "bg-muted border-transparent opacity-50 grayscale hover:opacity-80"
+                                        )}
+                                      >
+                                        <span className={cn(
+                                          "text-[10px] md:text-xs font-bold text-center leading-tight truncate w-full",
+                                          isPresent ? "text-teal-800" : "text-muted-foreground line-through"
+                                        )}>
+                                          {safeText(attr.name, isEn ? "Unknown" : "未知")}
+                                        </span>
+
+                                        <div className={cn(
+                                          "mt-2 w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-black font-mono shadow-inner",
+                                          isPresent ? "bg-teal-500 text-white" : "bg-muted text-muted-foreground"
+                                        )}>
+                                          {isPresent ? "1" : "0"}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <p className="text-xs md:text-sm text-muted-foreground text-center py-6 md:py-10">
+                                  {isEn ? "Loading matrix data..." : "正在为您加载矩阵数据..."}
+                                </p>
+                              )}
+                              <p className="text-center text-[10px] text-muted-foreground mt-4 italic">
+                                💡 {isEn ? "Hint: Hover over the blocks to see the reasoning" : "提示：将鼠标悬停在方块上可查看判定原因"}
+                              </p>
+                            </div>
+
+                            <div className="p-3 md:p-4 bg-muted border-t border-border flex flex-col gap-2">
+                              <Button
+                                className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary-hover py-5 md:py-6 text-sm md:text-base font-semibold shadow-md"
+                                onClick={() => {
+                                  setView("lab");
+                                  if (images[selectedIndex]) setLabImage(images[selectedIndex]);
+                                }}
+                              >
+                                <Sparkles className="w-4 h-4 mr-2" />
+                                {isEn ? "Extract Hierarchy & Generate Prompt" : "提取层级并生成提示词"}
+                              </Button>
+                              <Button variant="outline" className="w-full rounded-full bg-card text-foreground hover:bg-secondary py-5 md:py-6 text-sm md:text-base font-semibold shadow-sm" onClick={() => { setStep("upload"); setImages([]); setAnalysisResult(null); setUserIntent(""); }}>
+                                {isEn ? "Analyze Another Space" : "重新分析下一个空间"}
+                              </Button>
+                            </div>
+
+                          </Card>
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+
+                  </motion.div>
+                )}
+              </>
             )}
-          </>
-        )}
-      </motion.div>
-    </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
@@ -940,7 +929,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 function BeautyGauge({ n }: { n: number }) {
   const percentage = n / 15;
   const rotation = percentage * 240 - 120;
-  const dashLength = 294; 
+  const dashLength = 294;
   const dashOffset = dashLength - percentage * dashLength;
 
   return (
@@ -948,7 +937,7 @@ function BeautyGauge({ n }: { n: number }) {
       <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1 z-10 relative">
         Degree of Beauty (B)
       </div>
-      
+
       <div className="w-full relative px-2">
         <svg viewBox="0 0 200 160" className="w-full drop-shadow-sm overflow-visible">
           <defs>
@@ -960,16 +949,16 @@ function BeautyGauge({ n }: { n: number }) {
           </defs>
 
           <path d="M 39.4 135 A 70 70 0 1 1 160.6 135" fill="none" stroke="#f5f5f4" strokeWidth="16" strokeLinecap="round" />
-          
-          <motion.path 
-            d="M 39.4 135 A 70 70 0 1 1 160.6 135" 
-            fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round" 
+
+          <motion.path
+            d="M 39.4 135 A 70 70 0 1 1 160.6 135"
+            fill="none" stroke="url(#gaugeGrad)" strokeWidth="16" strokeLinecap="round"
             strokeDasharray={dashLength}
             initial={{ strokeDashoffset: dashLength }}
             animate={{ strokeDashoffset: dashOffset }}
             transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
           />
-          
+
           <text x="22" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">0</text>
           <text x="178" y="148" fontSize="14" fill="#a8a29e" fontWeight="bold" textAnchor="middle">15</text>
 
