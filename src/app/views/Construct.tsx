@@ -66,7 +66,7 @@ const HighLowGallery = ({ isEn }: { isEn: boolean }) => {
 
   return (
     <Section
-      title={isEn ? 'Living Structure Studio' : '活力结构工作室'}
+      title={isEn ? 'Living Structure Community' : '活力结构社区'}
       subTitle={isEn ? '5 Before/After case studies with L-score, B-score, and VAS scanning from Chapter 4.' : '来自第四章的 5 组建筑改造 Before/After 案例：L-score、B-score 与 VAS 扫描量化对比。'}
       className="!pt-0 !border-t-0"
     >

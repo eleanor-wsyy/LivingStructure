@@ -115,15 +115,7 @@ Final Instruction: Compose these layers into a single coherent image that feels 
         Respond in ${targetLanguage}. Keep descriptions concise but academic (max 20 words per field).
       `;
 
-      const { data, error } = await supabase.functions.invoke('ai-gateway', {
-        body: {
-          prompt: extractionPrompt,
-          images: [imagePayload],
-          model: 'gemini'
-        }
-      });
-
-      if (error) throw new Error(error.message);
+      const data = await callAI(extractionPrompt, [imagePayload]);
 
       const parsed = safeExtractJSON(data.reply || "{}");
       if (parsed) {
@@ -274,6 +266,61 @@ Final Instruction: Compose these layers into a single coherent image that feels 
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   };
 
+  // 🔹 新增：强大的本地后备方案 (Robust Local Fallback)
+  const callGeminiDirectly = async (prompt: string, imagesPayload: any[]) => {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) throw new Error("Missing VITE_GEMINI_API_KEY for local fallback");
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parts: any[] = [{ text: prompt }];
+    imagesPayload.forEach((img: any) => {
+      parts.push({
+        inlineData: {
+          mimeType: img.mimeType,
+          data: img.base64Data
+        }
+      });
+    });
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts }],
+        generationConfig: { temperature: 0.0 }
+      })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Local Fallback Failed: ${response.status} ${errText}`);
+    }
+
+    const data = await response.json();
+    const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!replyText) throw new Error("No response text from local fallback");
+    
+    return { reply: replyText };
+  };
+
+  const callAI = async (prompt: string, imagesPayload: any[]) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-gateway', {
+        body: { prompt, images: imagesPayload, model: 'gemini' }
+      });
+      if (error || data?.error) {
+        console.warn("Edge Function failed:", error || data?.error);
+        throw new Error("Edge Function Failed");
+      }
+      return data;
+    } catch (err) {
+      console.log("Triggering robust local fallback to direct Gemini API...");
+      return await callGeminiDirectly(prompt, imagesPayload);
+    }
+  };
+
   // 🔹 更新：高度纯粹、无情感、无对比干扰的客观提示词
   const startAnalysis = async () => {
     if (images.length === 0) return;
@@ -348,12 +395,8 @@ Final Instruction: Compose these layers into a single coherent image that feels 
 
         while (attempt <= maxRetries) {
           try {
-            // 后端建议强制设定 temperature 为 0 或 0.1 提升稳定性
-            const { data, error } = await supabase.functions.invoke('ai-gateway', {
-              body: { prompt: objectiveImagePrompt, images: [payload], model: 'gemini' }
-            });
-            if (error) throw new Error(error.message || "请求中转站失败");
-            if (data?.error) throw new Error("API 报错: " + data.error);
+            // 通过 callAI，优先调用 Edge Function，失败后自动 fallback 本地请求
+            const data = await callAI(objectiveImagePrompt, [payload]);
 
             const parsed = safeExtractJSON(data.reply || "{}");
             if (!parsed || !parsed.all_attributes) throw new Error("AI 数据格式错乱");

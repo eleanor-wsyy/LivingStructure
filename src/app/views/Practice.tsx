@@ -49,8 +49,8 @@ export function Practice() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
 
-  const welcomeEn = "Welcome to the Wholeness Studio. Whether it's a physical room or a digital screen, space is a living mirror of your mind. Share a photo of your environment, and let's gently awaken its resonance and livingness together.";
-  const welcomeZh = "欢迎来到整体性空间疗愈所。无论是物理房间还是数字屏幕，空间都是你内心的镜像。分享一张你当前环境的照片，让我们一起温柔地唤醒它的共鸣与活力。";
+  const welcomeEn = "Welcome to the Wholeness Community. Whether it's a physical room or a digital screen, space is a living mirror of your mind. Share a photo of your environment, and let's gently awaken its resonance and livingness together.";
+  const welcomeZh = "欢迎来到整体性空间社区。无论是物理房间还是数字屏幕，空间都是你内心的镜像。分享一张你当前环境的照片，让我们一起温柔地唤醒它的共鸣与活力。";
 
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);

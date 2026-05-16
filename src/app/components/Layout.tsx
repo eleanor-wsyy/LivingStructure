@@ -206,14 +206,14 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
     { id: "library", label: trans.nav.library, icon: LibraryIcon },
-    { id: "community", label: language === 'zh' ? '社区' : 'Community', icon: Users },
+    { id: "community", label: trans.nav.community, icon: Users },
   ];
 
-  const studioTitle = language === 'zh' ? "活力结构工作室 v1.2" : "Living Structure Studio v1.2";
+  const communityTitle = language === 'zh' ? "活力结构社区 v1.2" : "Living Structure Community v1.2";
 
   React.useEffect(() => {
-    document.title = studioTitle;
-  }, [studioTitle]);
+    document.title = communityTitle;
+  }, [communityTitle]);
 
   return (
     <div
@@ -311,7 +311,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
             <div className="flex items-center text-xs text-muted-foreground gap-2">
               <span className="font-medium text-muted-foreground uppercase tracking-wider">{currentPage}</span>
               <span>/</span>
-              <span>{studioTitle}</span>
+              <span>{communityTitle}</span>
             </div>
             <div className="flex items-center gap-6">
               <div className="relative w-64">

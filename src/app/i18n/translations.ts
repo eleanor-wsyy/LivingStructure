@@ -8,13 +8,14 @@ export const translations = {
       practice: "Healing",
       library: "Studies",
       properties: "15 Properties",
+      community: "Community",
       about: "About",
       signIn: "Sign in",
       searchPlaceholder: "Search theories, papers, or authors...",
       institutionalAccess: "Institutional Access: MIT Architecture"
     },
     studio: {
-      title: "Living Structure Studio",
+      title: "Living Structure Community",
       steps: {
         1: "Center",
         2: "Scale",
@@ -195,7 +196,7 @@ export const translations = {
       today: "Today"
     },
     construct: {
-      title: "Structure Studio",
+      title: "Structure Community",
       subtitle: "Explore how vitality emerges from the strengthening of centers, boundaries, and levels of scale in architectural space.",
       initialState: "Initial State",
       emergingOrder: "Emerging Order",
@@ -233,13 +234,14 @@ export const translations = {
       practice: "疗愈",
       library: "研究",
       properties: "15个属性",
+      community: "社区",
       about: "关于",
       signIn: "登录",
       searchPlaceholder: "搜索理论、论文或作者...",
       institutionalAccess: "机构访问：麻省理工学院建筑系"
     },
     studio: {
-      title: "活力结构工作室",
+      title: "活力结构社区",
       steps: {
         1: "中心",
         2: "尺度",
@@ -420,7 +422,7 @@ export const translations = {
       today: "今天"
     },
     construct: {
-      title: "结构工作室",
+      title: "活力结构社区",
       subtitle: "探索活力如何从建筑空间中中心、边界和尺度层级的强化中涌现。",
       initialState: "初始状态",
       emergingOrder: "涌现秩序",
