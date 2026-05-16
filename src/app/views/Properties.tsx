@@ -60,7 +60,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
       <div
         ref={containerRef}
         className={cn(
-          "w-full aspect-[4/3] md:aspect-[2/1] bg-secondary rounded-sm relative overflow-hidden border border-border select-none",
+          "w-full aspect-[4/3] md:aspect-[3/2] bg-stone-100 rounded-sm relative overflow-hidden border border-border select-none",
           viewMode === 'compare' ? "cursor-ew-resize touch-none" : ""
         )}
         onMouseMove={handleMouseMove}
@@ -72,13 +72,13 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
               <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
                 <Check className="w-3 h-3" /> Strong
               </div>
-              <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" />
             </div>
             <div className="relative overflow-hidden group grayscale opacity-90">
               <div className="absolute top-2 left-2 bg-muted text-muted-foreground text-[9px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 opacity-80 backdrop-blur-sm">
                 <X className="w-3 h-3" /> Weak
               </div>
-              <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105" />
             </div>
           </div>
         )}
@@ -87,7 +87,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
             <div className="absolute top-4 left-4 bg-primary text-primary-foreground text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm">
               <Check className="w-3 h-3" /> Strong Structure
             </div>
-            <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover" />
+            <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover object-top" />
           </div>
         )}
         {viewMode === 'weak' && (
@@ -95,13 +95,13 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
             <div className="absolute top-4 left-4 bg-muted text-muted-foreground text-[10px] px-3 py-1.5 uppercase tracking-widest font-bold z-10 flex items-center gap-2 shadow-sm border border-stone-300">
               <X className="w-3 h-3" /> Weak Structure
             </div>
-            <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover opacity-80" />
+            <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover object-top opacity-80" />
           </div>
         )}
         {viewMode === 'compare' && (
           <div className="w-full h-full relative group">
             <div className="absolute inset-0 grayscale opacity-90">
-              <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover" />
+              <ImageWithFallback src={finalImgNeg} alt="Weak" className="w-full h-full object-cover object-top" />
               <div className="absolute top-4 right-4 bg-muted/90 text-muted-foreground text-[10px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 backdrop-blur-sm pointer-events-none">
                 <X className="w-3 h-3" /> Weak
               </div>
@@ -110,7 +110,7 @@ const PropertyVisuals = ({ imgPos, imgNeg, title }: { imgPos: string, imgNeg?: s
               className="absolute inset-0 overflow-hidden"
               style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
             >
-              <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover" />
+              <ImageWithFallback src={imgPos} alt="Strong" className="w-full h-full object-cover object-top" />
               <div className="absolute top-4 left-4 bg-stone-900/90 text-white text-[10px] px-2 py-1 uppercase tracking-widest font-bold z-10 flex items-center gap-1 backdrop-blur-sm pointer-events-none">
                 <Check className="w-3 h-3" /> Strong
               </div>
@@ -427,29 +427,29 @@ export function Properties() {
                       {dynamicExamples[`${activeProp.n}-${userBackground}`] ? (
                         <motion.div
                           key="generated-content"
-                          initial={{ opacity: 0, scale: 0.98 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch relative z-10"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex flex-col gap-8 relative z-10"
                         >
-                          <div className="bg-stone-900/50 p-8 rounded-3xl border border-stone-800 flex flex-col justify-center">
+                          <div className="bg-stone-900/50 p-8 md:p-10 rounded-3xl border border-stone-800">
                             <div className="flex items-center gap-2 mb-6">
                               <div className="h-px w-8 bg-amber-500/50" />
                               <span className="text-[10px] font-mono text-amber-500 uppercase tracking-widest">Interpretation</span>
                             </div>
-                            <p className="text-stone-200 text-lg leading-relaxed font-serif text-justify whitespace-pre-line">
+                            <p className="text-stone-200 text-lg md:text-xl leading-relaxed font-serif text-justify whitespace-pre-line">
                               {dynamicExamples[`${activeProp.n}-${userBackground}`].text}
                             </p>
                           </div>
 
                           {dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl && (
-                            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-stone-800 aspect-video lg:aspect-auto">
+                            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-stone-800 bg-stone-900 w-full group/img">
                               <img
                                 src={dynamicExamples[`${activeProp.n}-${userBackground}`].imageUrl}
                                 alt="AI generated example"
                                 referrerPolicy="no-referrer"
-                                className="w-full h-full object-cover"
+                                className="w-full h-auto max-h-[60vh] object-contain block mx-auto"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent opacity-60" />
                               <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <div className="w-8 h-8 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center">

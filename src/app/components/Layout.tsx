@@ -205,8 +205,7 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
     { id: "analyze", label: trans.nav.analyze, icon: BarChart3 },
     { id: "construct", label: trans.nav.construct, icon: PenTool },
     { id: "practice", label: trans.nav.practice, icon: LayoutIcon },
-    { id: "library", label: trans.nav.library, icon: LibraryIcon },
-    { id: "community", label: trans.nav.community, icon: Users },
+    { id: "communities", label: trans.nav.communities, icon: Users },
   ];
 
   const communityTitle = language === 'zh' ? "活力结构社区 v1.2" : "Living Structure Community v1.2";
@@ -236,8 +235,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
       <aside className="hidden w-64 flex-col border-r border-border bg-card/60 backdrop-blur-sm md:flex z-20 shadow-sm">
         <div className="flex h-16 items-center border-b border-border/50 px-6">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("discover")}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-5 w-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/50 shadow-sm overflow-hidden">
+              <img src="/logo.png" className="h-full w-full object-contain p-1" alt="logo" onError={(e) => (e.currentTarget.style.display = 'none')} />
             </div>
             <span className="text-lg font-bold tracking-tight text-foreground font-serif">{isEn ? 'Living Structure' : '活力结构'}</span>
           </div>
@@ -266,8 +265,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden relative" style={{ backgroundColor: 'rgba(250, 249, 245, 0.90)' }}>
         <header className="flex h-14 items-center justify-between border-b border-border bg-card/90 backdrop-blur-md px-4 md:hidden z-30 relative shadow-sm">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground shadow-sm">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
+            <div className="flex h-7 w-7 items-center justify-center rounded bg-white border border-border/50 shadow-sm overflow-hidden">
+              <img src="/logo.png" className="h-full w-full object-contain p-1" alt="logo" />
             </div>
             <span className="font-bold text-foreground">{isEn ? 'Living Structure' : '活力结构'}</span>
           </div>

@@ -61,7 +61,25 @@ const PROPERTIES_TAGS = [
 
 // --- 💎 完整的初始数据 ---
 const INITIAL_POSTS: Post[] = [
-  // ── 行1：机构资源 ──
+  {
+    id: 'ext_10',
+    author: 'CES Archive',
+    avatar: '/images/CESA.png',
+    imageUrl: '/images/CES.png',
+    titleEn: 'CES Archive',
+    titleZh: '环境结构中心 (CES) 档案库',
+    descriptionEn: 'The official digital archive of the Center for Environmental Structure (CES). A comprehensive repository of Christopher Alexander’s research, manuscripts, and architectural projects.',
+    descriptionZh: '环境结构中心 (CES) 的官方数字档案库。收录了克里斯托弗·亚历山大毕生的研究成果、手稿以及建筑项目。',
+    likes: 4200,
+    tagsEn: ['Archive', 'Research'],
+    tagsZh: ['档案', '研究'],
+    locationEn: 'CES Archive',
+    locationZh: 'CES 官方档案',
+    dateEn: 'Resource',
+    dateZh: '核心资源',
+    isExternal: true,
+    externalUrl: 'https://christopher-alexander-ces-archive.org/'
+  },
   {
     id: 'ext_7',
     author: 'LivableCityLAB · HKUST-GZ',
@@ -237,7 +255,55 @@ const INITIAL_POSTS: Post[] = [
   }
 ];
 
-export default function Community() {
+// --- 📚 归档资源 (合并自原 Library 模块) ---
+const ACADEMIC_RESOURCES = [
+  {
+    id: 'res_bb',
+    type: "link",
+    titleEn: "Building Beauty Program",
+    titleZh: "Building Beauty 活力建造学院",
+    author: "BuildingBeauty.org",
+    year: "Education",
+    abstractEn: "A multidisciplinary program committed to building places that nurture people and life, founded on Alexander's principles.",
+    abstractZh: "一个致力于创造滋养人类与生命之场所的跨学科教育项目，以亚历山大的建筑原则为核心。",
+    externalUrl: "https://www.buildingbeauty.org/"
+  },
+  {
+    id: 'res_3',
+    type: "link",
+    titleEn: "The Nature of Order Bookstore",
+    titleZh: "《秩序的本质》官方书店",
+    author: "PatternLanguage.com",
+    year: "Official",
+    abstractEn: "The definitive bookstore for Christopher Alexander's Nature of Order series and related publications.",
+    abstractZh: "克里斯托弗·亚历山大《秩序的本质》系列丛书及相关出版物的官方在线书店。",
+    externalUrl: "https://www.patternlanguage.com/bookstore/nature-of-order.html"
+  },
+  {
+    id: 'res_1',
+    type: "book",
+    titleEn: "The Nature of Order, Book 1: The Phenomenon of Life",
+    titleZh: "秩序的本质（卷一）：生命现象",
+    author: "Christopher Alexander",
+    year: 2002,
+    abstractEn: "Introduces the concept of living structure and the 15 fundamental properties.",
+    abstractZh: "引入了活力结构的概念以及构成所有生命系统的 15 个基本几何属性。",
+    fileUrl: "/pdfs/book1.pdf"
+  },
+  {
+    id: 'res_2',
+    type: "book",
+    titleEn: "Living Structure: Exploring the Beauty of Chinese Traditional Buildings",
+    titleZh: "活力结构：AI视角下的中国传统建筑之美",
+    author: "LivableCityLAB, HKUST (GZ)",
+    year: 2025,
+    abstractEn: "Written by the LivableCityLAB team under the guidance of Prof. Bin Jiang.",
+    abstractZh: "由香港科技大学（广州）宜居城市实验室团队编撰，在江斌教授的指导下完成。",
+    fileUrl: "/pdfs/LivingStructure.pdf"
+  }
+];
+
+export default function Communities() {
   const { language } = useLanguage();
   const isEn = language === 'en';
 
@@ -445,6 +511,47 @@ export default function Community() {
             </motion.div>
           ))}
         </div>
+
+        {/* --- 📚 归档资源区 (Academic Archive) --- */}
+        <div className="mt-24 pt-16 border-t border-border">
+          <div className="flex items-center gap-3 mb-10">
+            <div className="w-10 h-10 bg-stone-900 rounded-xl flex items-center justify-center">
+              <Link2 className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-serif font-bold text-foreground">{isEn ? 'Core Resources & Education' : '核心资源与教育'}</h2>
+              <p className="text-sm text-muted-foreground">{isEn ? 'Access foundational texts, archives, and educational pathways.' : '访问基础文献、学术档案与教育进修路径。'}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {ACADEMIC_RESOURCES.map(res => (
+              <div key={res.id} className="p-6 bg-secondary/50 rounded-2xl border border-border hover:border-amber-200 transition-all group">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="p-3 bg-white rounded-lg shadow-sm">
+                    {res.externalUrl ? <ExternalLink className="w-5 h-5 text-amber-600" /> : <CheckCircle2 className="w-5 h-5 text-amber-600" />}
+                  </div>
+                  {res.externalUrl ? (
+                    <a href={res.externalUrl} target="_blank" rel="noreferrer" className="p-2 bg-stone-900 text-white rounded-full hover:bg-stone-700 transition-colors">
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  ) : (
+                    <a href={res.fileUrl} download className="p-2 bg-stone-900 text-white rounded-full hover:bg-stone-700 transition-colors">
+                      <Upload className="w-4 h-4 rotate-180" />
+                    </a>
+                  )}
+                </div>
+                <h3 className="text-lg font-serif font-bold text-stone-800 mb-2">{isEn ? res.titleEn : res.titleZh}</h3>
+                <p className="text-xs text-muted-foreground mb-4 line-clamp-2">{isEn ? res.abstractEn : res.abstractZh}</p>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-stone-500 uppercase tracking-widest">
+                  <span>{res.author}</span>
+                  <span>•</span>
+                  <span>{res.year}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* --- 详情弹窗 (含有外部跳转代码) --- */}
@@ -502,7 +609,7 @@ export default function Community() {
                       <a href={viewingPost.externalUrl} target="_blank" rel="noreferrer"
                         className="flex items-center justify-center gap-2 w-full py-3 bg-secondary rounded-xl text-foreground text-xs font-bold uppercase tracking-widest hover:bg-amber-50 hover:border-amber-200 transition-all border border-border group mb-2">
                         <ExternalLink className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
-                        {isEn ? `Read on ${new URL(viewingPost.externalUrl).hostname.replace('www.','')}` : `在 ${new URL(viewingPost.externalUrl).hostname.replace('www.','')} 查看原文`}
+                        {isEn ? `Read on ${new URL(viewingPost.externalUrl).hostname.replace('www.', '')}` : `在 ${new URL(viewingPost.externalUrl).hostname.replace('www.', '')} 查看原文`}
                       </a>
                     )}
                   </div>

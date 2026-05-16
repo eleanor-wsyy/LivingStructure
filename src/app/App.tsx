@@ -5,9 +5,8 @@ import { Theory } from "@/app/views/Theory";
 import { Properties } from "@/app/views/Properties";
 import { Analyze } from "@/app/views/Analyze";
 import { Practice } from "@/app/views/Practice";
-import { Library } from "@/app/views/Library";
 import { Construct } from "@/app/views/Construct";
-import Community from "@/app/views/Community"; 
+import Communities from "@/app/views/Community"; 
 import { LanguageProvider } from "@/app/i18n/LanguageContext";
 
 export default function App() {
@@ -27,10 +26,8 @@ export default function App() {
         return <Construct />;
       case "practice":
         return <Practice />;
-      case "library":
-        return <Library />;
-      case "community":
-        return <Community />;
+      case "communities":
+        return <Communities />;
       default:
         return <Discover onNavigate={setCurrentPage} />;
     }
