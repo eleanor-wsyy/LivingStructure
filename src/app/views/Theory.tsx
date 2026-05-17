@@ -152,7 +152,7 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
         <p className="text-sm text-muted-foreground leading-relaxed font-serif">
           {isEn
             ? "For 300 years, the mechanistic worldview taught us that space is a neutral, lifeless coordinate system. Matter is separate from us, and environmental geometry has no bearing on our inner emotional life."
-            : "三百年来，机械论教导我们：空间只是中性、死寂的空盒子。物质与人是割裂的，周围的几何形状与我们内在的情感生活毫无瓜葛。"}
+            : "三百年来，机械论教导我们：空间只是中性、死寂的空盒子。物质与人是割裂的，周围的物理几何形状与我们内在的情感生活毫无瓜葛。"}
         </p>
       </div>
 
@@ -163,8 +163,8 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
         <h4 className="text-xl font-serif font-bold text-amber-950 mb-4 relative z-10">{isEn ? "The Organic Living Space" : "有机的「活力」空间"}</h4>
         <p className="text-sm text-amber-800/90 leading-relaxed font-serif relative z-10">
           {isEn
-            ? "Space is a living organism. Healing the physical wholeness of our environment (moving a chair, softening an edge) is inextricably linked to healing our own inner fragmentation."
-            : "空间是一个有生命的有机体。每一次几何结构的微调都在改变其生命度。治愈外部物理环境的整体性，就是在直接疗愈我们内心的破碎。"}
+            ? "Space is a living organism. Healing the physical wholeness of our environment based on the 15 properties is inextricably linked to healing our own inner fragmentation."
+            : "空间是一个有生命的有机体。每一次基于15种几何属性的微调都在改变其生命度。治愈外部物理环境的整体性，就是在直接疗愈我们内心的破碎。"}
         </p>
         <Leaf className="absolute -bottom-8 -right-8 w-40 h-40 text-amber-500/10 rotate-12 group-hover:scale-110 transition-transform duration-700" />
       </div>
@@ -175,7 +175,7 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
 
       <div className="text-center mb-12 relative z-10">
         <Badge variant="outline" className="mb-4 border-amber-500/50 text-amber-400 bg-amber-900/30 uppercase tracking-widest backdrop-blur-sm">
-          {isEn ? "Cognitive Architecture" : "建筑认知学"}
+          {isEn ? "Cognitive Architecture" : "建筑认知学：双脑视界"}
         </Badge>
         <h3 className="text-2xl md:text-3xl font-serif font-black text-white">
           {isEn ? "How the Brain Processes Space" : "大脑如何解析空间生命力"}
@@ -187,16 +187,16 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-stone-300">
               <Brain className="w-6 h-6 text-muted-foreground" />
-              <span className="font-bold tracking-widest uppercase text-sm">{isEn ? "Left Hemisphere" : "左脑 (理性)"}</span>
+              <span className="font-bold tracking-widest uppercase text-sm">{isEn ? "Left Hemisphere" : "左脑 (理性分析)"}</span>
             </div>
-            <span className="text-[10px] font-mono text-muted-foreground uppercase">{isEn ? "Objective" : "客观世界"}</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase">{isEn ? "Analytical" : "量化计算"}</span>
           </div>
           <h5 className="text-2xl font-serif font-bold text-white mb-4">
-            {isEn ? "Structural Beauty" : "客观结构美"}
+            {isEn ? "L-Score & B-Score" : "客观指标解构"}
           </h5>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed border-l-2 border-stone-600 pl-3">
-              {isEn ? "Perceives the physical geometry, centers, boundaries, and mathematical order of the environment." : "解析物理几何：寻找中心、边界、粗糙性等客观存在的数学秩序。"}
+              {isEn ? "Perceives the physical geometry, calculating L-Score and B-Score to precisely quantify structural coherence." : "解析物理几何，通过精准计算 L-Score 与 B-Score，将建筑结构之美转化为客观、理性的数学指标。"}
             </p>
             <div className="bg-stone-950 p-4 rounded-xl border border-stone-800 font-mono text-amber-400/90 text-sm flex items-center justify-center">
               L = S × H (Livingness)
@@ -226,19 +226,19 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3 text-teal-100">
               <Heart className="w-6 h-6 text-teal-400" />
-              <span className="font-bold tracking-widest uppercase text-sm">{isEn ? "Right Hemisphere" : "右脑 (感性)"}</span>
+              <span className="font-bold tracking-widest uppercase text-sm">{isEn ? "Right Hemisphere" : "右脑 (直觉感知)"}</span>
             </div>
-            <span className="text-[10px] font-mono text-teal-500/70 uppercase">{isEn ? "Subjective" : "主观感受"}</span>
+            <span className="text-[10px] font-mono text-teal-500/70 uppercase">{isEn ? "Cognitive" : "潜意识验证"}</span>
           </div>
           <h5 className="text-2xl font-serif font-bold text-white mb-4">
-            {isEn ? "Felt Sense & Wholeness" : "主观生命感"}
+            {isEn ? "MOST & VAS Scanning" : "主观共鸣测试"}
           </h5>
           <div className="space-y-4">
             <p className="text-sm text-teal-200/80 leading-relaxed border-l-2 border-teal-600 pl-3">
-              {isEn ? "Translates the structural complexity into a profound psychological feeling of safety, healing, and life." : "将复杂的客观几何结构，转化为深刻的心理感受：安全、治愈与生命力。"}
+              {isEn ? "Validates the structure using the Mirror of the Self Test (MOST) and biometric Visual Attention Software (VAS) heatmaps." : "利用“自我之镜测试”(MOST) 与眼动追踪 (VAS热力图)，在生物本能层面验证几何结构对人类心理的真实治愈感。"}
             </p>
             <div className="bg-teal-950/50 p-4 rounded-xl border border-teal-800/50 font-serif text-teal-300 text-sm flex items-center justify-center italic">
-              "Felt more alive" (整体感)
+              "Felt more alive" (生命体认)
             </div>
           </div>
         </div>
@@ -247,8 +247,8 @@ const OrganicViewSection = ({ isEn }: { isEn: boolean }) => (
       <div className="mt-12 text-center relative z-10">
         <p className="text-muted-foreground text-xs max-w-3xl mx-auto leading-relaxed">
           {isEn
-            ? "The essence of Living Structure theory is to bridge this gap. By measuring and designing the objective geometric properties (Left Brain), we can reliably predict and cultivate the profound psychological wholeness experienced by human beings (Right Brain)."
-            : "活力结构理论的核心正是跨越这道鸿沟。通过量化设计客观的几何属性（左脑），我们能够可靠地预测并培养人类深刻的心理整体感（右脑）。这就解释了为什么一个冰冷的空间被微调后，能让人感到被“治愈”。"}
+            ? "The essence of Living Structure theory is to bridge this gap. By measuring the objective geometric properties (Left Brain), we can reliably predict the profound psychological wholeness experienced by human beings (Right Brain)."
+            : "【阅读指南】：在后续探索中，当你看到层级分析与L/B公式时，这是在运用“左脑”进行客观确权；当你看到眼动热力图和双盲直觉测试时，这是在用“右脑”验证生命力。这正是跨越了三百年笛卡尔鸿沟的双脑验证体系。"}
         </p>
       </div>
     </div>
@@ -697,7 +697,7 @@ export function Theory({ onNavigate }: { onNavigate: (page: string) => void }) {
           </p>
         </motion.div>
 
-        {/* 💡 全新理论模块：有机的空间观 */}
+        {/* 💡 理论模块：有机的空间观（双脑验证体系） */}
         <OrganicViewSection isEn={isEn} />
 
         {/* Section 1: Origin */}

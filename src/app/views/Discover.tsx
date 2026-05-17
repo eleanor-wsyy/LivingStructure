@@ -367,8 +367,8 @@ export function Discover({ onNavigate }: DiscoverProps) {
           
           <p className="text-base md:text-lg text-muted-foreground font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
             {isEn
-              ? "Space is not a dead box, but a true mirror of your inner state. Upload an image, and our structural algorithm (L = S × H) will measure the objective 'Livingness' of your environment. By applying the 15 properties of life for spatial micro-interventions, we help you repair fragmentation and rediscover profound inner peace."
-              : "这是一款基于「活力结构」理论的空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。只需上传一张照片，「愈合之镜」将通过底层结构算法（L = S × H）精准测算你所在空间的客观生命力。我们基于15种属性为你提供空间“微介入”处方，通过极简的物理调整，修补环境的割裂，助你找回内心的平静与完整。"}
+              ? "Space is not a dead box, but a true mirror of your inner state. By integrating the 15 geometric properties with a dual-brain scientific framework (Left Brain L-Scores vs Right Brain VAS scanning), our platform measures the objective 'Livingness' of your environment and helps you rediscover profound inner peace."
+              : "这是一款基于「活力结构」理论的空间诊断与疗愈工具。空间不是死寂的空盒子，而是你内心状态的真实镜像。我们整合了15种几何属性与双脑科学框架（左脑算法计算 L-Score，右脑潜意识验证），精准测算空间的客观生命力，修补环境割裂，助你找回内心的平静与完整。"}
           </p>
           
           <Button 
@@ -383,15 +383,53 @@ export function Discover({ onNavigate }: DiscoverProps) {
       {/* 2. 新书发布 */}
       <BookLaunchExperiment />
 
-      {/* 3. Platform Statement */}
-      <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto mb-32">
-        <div className="bg-muted border border-border p-12 md:p-16 relative">
-          <Quote className="absolute top-8 left-8 w-6 h-6 text-stone-300" />
-          <div className="relative z-10 text-center space-y-6">
-            <p className="text-lg font-serif text-stone-800 leading-relaxed italic max-w-2xl mx-auto">
-              {trans.discover.platformStatement?.desc || (language === 'en' 
-                ? "This platform explores Living Structure as an aesthetic and architectural principle. It aims to cultivate structural perception and restore a sense of order and inner calm." 
-                : "本平台将“活力结构”作为一种美学与建筑原则进行探索，旨在培养对结构的感知力，重建空间秩序与内心的宁静。")}
+      {/* 3. Three Dimensions Statement */}
+      <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
+        <div className="text-center mb-16">
+          <Badge variant="outline" className="mb-4 border-amber-500/50 text-amber-600 bg-amber-50 uppercase tracking-widest px-4 py-1.5 rounded-full font-bold">
+             {isEn ? "Core Methodology" : "核心研究方法论"}
+          </Badge>
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+            {isEn ? "The Three Dimensions" : "活力结构三大维度"}
+          </h2>
+          <p className="text-muted-foreground text-base md:text-lg font-serif max-w-2xl mx-auto italic">
+            {isEn 
+              ? "Bridging the Cartesian gap through a dual-brain scientific framework." 
+              : "通过双脑科学框架，跨越三百年的笛卡尔主客观鸿沟。"}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-card p-10 border border-border rounded-2xl shadow-sm text-center group hover:border-amber-400 hover:shadow-md transition-all">
+            <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-500 transition-colors">
+              <Box className="w-6 h-6 text-muted-foreground group-hover:text-white" />
+            </div>
+            <h3 className="text-xl font-bold font-serif mb-2">{isEn ? "Physical Geometry" : "物理几何"}</h3>
+            <p className="text-xs font-mono uppercase tracking-widest text-muted-foreground mb-6 pb-6 border-b border-border">{isEn ? "15 Properties" : "15 个基本属性"}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {isEn ? "The objective spatial structure, acting as the foundation of architectural life." : "客观存在的空间几何排列，构筑生命力的物质基础。"}
+            </p>
+          </div>
+
+          <div className="bg-stone-900 p-10 border border-stone-800 rounded-2xl shadow-lg text-center group hover:border-blue-500 transition-all scale-105 z-10">
+            <div className="w-16 h-16 bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-500 transition-colors">
+              <Microscope className="w-6 h-6 text-stone-400 group-hover:text-white" />
+            </div>
+            <h3 className="text-xl font-bold font-serif text-white mb-2">{isEn ? "Left Brain (Analytical)" : "左脑分析"}</h3>
+            <p className="text-xs font-mono uppercase tracking-widest text-blue-400 mb-6 pb-6 border-b border-stone-700">{isEn ? "L-Score & B-Score" : "量化与计算"}</p>
+            <p className="text-sm text-stone-400 leading-relaxed">
+              {isEn ? "Transforming complex geometry into precise mathematical coherence and computable metrics." : "通过精密算法，将复杂的空间几何解构为客观、精确的活力得分。"}
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-br from-[#0f3531] to-teal-950 p-10 border border-teal-900 rounded-2xl shadow-lg text-center group hover:border-teal-400 transition-all">
+            <div className="w-16 h-16 bg-teal-900/50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-teal-500 transition-colors">
+              <ScanEye className="w-6 h-6 text-teal-400 group-hover:text-white" />
+            </div>
+            <h3 className="text-xl font-bold font-serif text-white mb-2">{isEn ? "Right Brain (Cognitive)" : "右脑感知"}</h3>
+            <p className="text-xs font-mono uppercase tracking-widest text-teal-400 mb-6 pb-6 border-b border-teal-800/50">{isEn ? "MOST & VAS Scanning" : "直觉与生物潜意识"}</p>
+            <p className="text-sm text-teal-100/70 leading-relaxed">
+              {isEn ? "Validating physical structures through deep psychological resonance and eye-tracking biology." : "利用视觉热力图与双盲测试，验证几何结构对内心的真实治愈力。"}
             </p>
           </div>
         </div>
