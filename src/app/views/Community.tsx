@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart, Plus, X, Sparkles, Twitter,
   Facebook, ExternalLink, Send,
-  BadgeCheck, Link2, Upload, Share2, CheckCircle2, MessageCircle
+  BadgeCheck, Link2, Upload, Share2, CheckCircle2, MessageCircle, BookOpen
 } from 'lucide-react';
 import { cn } from "@/app/components/ui";
 import { useLanguage } from "@/app/i18n/LanguageContext";
@@ -311,6 +311,7 @@ export default function Communities() {
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [viewingPostId, setViewingPostId] = useState<string | null>(null);
+  const [viewingPdfUrl, setViewingPdfUrl] = useState<string | null>(null);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
   const [commentsByPost, setCommentsByPost] = useState<Record<string, Comment[]>>({});
@@ -536,9 +537,9 @@ export default function Communities() {
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   ) : (
-                    <a href={res.fileUrl} download className="p-2 bg-stone-900 text-white rounded-full hover:bg-stone-700 transition-colors">
-                      <Upload className="w-4 h-4 rotate-180" />
-                    </a>
+                    <button onClick={() => setViewingPdfUrl(res.fileUrl)} className="p-2 bg-stone-900 text-white rounded-full hover:bg-stone-700 transition-colors" title="Read Online">
+                      <BookOpen className="w-4 h-4" />
+                    </button>
                   )}
                 </div>
                 <h3 className="text-lg font-serif font-bold text-stone-800 mb-2">{isEn ? res.titleEn : res.titleZh}</h3>
@@ -809,6 +810,31 @@ export default function Communities() {
               <div className="p-6 border-t border-border bg-muted flex justify-end gap-3">
                 <button onClick={() => setIsCreateModalOpen(false)} className="px-6 py-2.5 text-xs font-bold text-muted-foreground">Cancel</button>
                 <button type="submit" form="post-form" className="px-8 py-2.5 bg-primary text-primary-foreground rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-primary-hover transition-all shadow-lg active:scale-95">Publish</button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* --- PDF Viewer Modal --- */}
+      <AnimatePresence>
+        {viewingPdfUrl && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setViewingPdfUrl(null)} className="absolute inset-0 bg-stone-900/80 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-4xl h-[90vh] bg-card rounded-3xl shadow-2xl flex flex-col overflow-hidden">
+              <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-stone-50 shrink-0">
+                <h3 className="text-xl font-serif font-bold text-foreground flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-amber-600" />
+                  {isEn ? 'PDF Reader' : 'PDF 阅读器'}
+                </h3>
+                <button onClick={() => setViewingPdfUrl(null)} className="p-2 hover:bg-muted rounded-full transition text-muted-foreground"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="flex-1 bg-stone-100 relative">
+                <iframe 
+                  src={`${viewingPdfUrl}#toolbar=0&view=FitH`} 
+                  className="absolute inset-0 w-full h-full border-0" 
+                  title="PDF Viewer"
+                />
               </div>
             </motion.div>
           </div>
