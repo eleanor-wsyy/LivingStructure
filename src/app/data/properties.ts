@@ -7,13 +7,13 @@ export const properties = [
     mechZh: "小尺度中心数量远多于大尺度中心，形成层级深度 H。",
     relEn: "Primarily increases H (Hierarchy) by establishing depth.",
     relZh: "通过建立深度主要增加 H（层级）。",
-    natureEn: "A microscopic cross-section of biological tissue reveals nested scales: large cell clusters contain medium cells, each housing yet smaller organelles—a seamless cascade of distinct levels, each scale strengthening the ones above and below.",
-    natureZh: "生物组织的显微截面揭示了嵌套的尺度层级：大细胞群包含中等细胞，每个细胞又容纳更小的细胞器——层层嵌套，形成无缝级联，每个尺度都强化着上下相邻的层级。",
+    natureEn: "An electric discharge pattern reveals nested scales: a massive central node branches into thick primary veins, which subdivide into secondary lightning-like threads, ending in microscopic tendrils—a seamless cascade of distinct levels, each scale strengthening the ones above and below.",
+    natureZh: "高压放电的图案揭示了嵌套的尺度层级：巨大的中心节点延伸出粗壮的主脉络，这些脉络进一步分裂成次级的闪电状细纹，最终以微观的卷须结束——层层嵌套，形成无缝级联，每个尺度都强化着上下相邻的层级。",
     exampleEn: "The architectural facade in the left image exhibits a rich scaling hierarchy through the use of variably sized windows and brickwork. The fenestration is further subdivided by frames into smaller panes, while the brick surfaces feature subtle textures. This creates a multi-level scalar structure that transitions seamlessly from the overall facade to the windows, subdivisions, bricks, and finally to the micro-textures.In contrast, the facade in the right image lacks such intricate articulation of its windows and wall surfaces. Its overall texture and detailing are relatively monotonous, resulting in a flat scaling hierarchy and a comparatively bland appearance.",
     exampleZh: "左图展示的建筑立面通过不同大小的窗户和墙面砖块体现了丰富的尺度层次。窗户由窗框进一步划分为小的分格，而砖块表面还有细腻的纹理，形成了从立面整体到窗户、分格、砖块，再到纹理的多重尺度层级。右图的建筑立面缺乏窗户和墙面的细致划分，整体纹理和细节也较为单一，导致其尺度层次单薄，显得较为平淡。",
     imgPos: "/images/level of scale.png",
     imgNeg: "/images/LOSNEG.png",
-    bookImg: "/images/LOSP.png"
+    bookImg: "/images/electric_discharge.png"
   },
   {
     n: 2, tEn: "Strong Centers", tZh: "强中心",
