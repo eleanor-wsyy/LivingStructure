@@ -279,28 +279,7 @@ const ACADEMIC_RESOURCES = [
     abstractZh: "克里斯托弗·亚历山大《秩序的本质》系列丛书及相关出版物的官方在线书店。",
     externalUrl: "https://www.patternlanguage.com/bookstore/nature-of-order.html"
   },
-  {
-    id: 'res_1',
-    type: "book",
-    titleEn: "The Nature of Order, Book 1: The Phenomenon of Life",
-    titleZh: "秩序的本质（卷一）：生命现象",
-    author: "Christopher Alexander",
-    year: 2002,
-    abstractEn: "Introduces the concept of living structure and the 15 fundamental properties.",
-    abstractZh: "引入了活力结构的概念以及构成所有生命系统的 15 个基本几何属性。",
-    fileUrl: "/pdfs/book1.pdf"
-  },
-  {
-    id: 'res_2',
-    type: "book",
-    titleEn: "Living Structure: Exploring the Beauty of Chinese Traditional Buildings",
-    titleZh: "活力结构：AI视角下的中国传统建筑之美",
-    author: "LivableCityLAB, HKUST (GZ)",
-    year: 2025,
-    abstractEn: "Written by the LivableCityLAB team under the guidance of Prof. Bin Jiang.",
-    abstractZh: "由香港科技大学（广州）宜居城市实验室团队编撰，在江斌教授的指导下完成。",
-    fileUrl: "/pdfs/LivingStructure.pdf"
-  }
+
 ];
 
 export default function Communities() {
@@ -830,9 +809,9 @@ export default function Communities() {
                 <button onClick={() => setViewingPdfUrl(null)} className="p-2 hover:bg-muted rounded-full transition text-muted-foreground"><X className="w-5 h-5" /></button>
               </div>
               <div className="flex-1 bg-stone-100 relative">
-                <iframe 
-                  src={`${viewingPdfUrl}#toolbar=0&view=FitH`} 
-                  className="absolute inset-0 w-full h-full border-0" 
+                <iframe
+                  src={`${viewingPdfUrl}#toolbar=0&view=FitH`}
+                  className="absolute inset-0 w-full h-full border-0"
                   title="PDF Viewer"
                 />
               </div>

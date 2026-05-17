@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Columns, MoveHorizontal, Check, X,
   Building2, BookOpen, Sparkles, Loader2,
-  Heart, Box, Activity, Smartphone, Briefcase, Code, Microscope, Palette, Music, PenTool, Coffee, LayoutTemplate, Info, ScanLine, Layers, ArrowRight, Leaf
+  Heart, Box, Activity, Smartphone, Briefcase, Code, Microscope, Palette, Music, PenTool, Coffee, LayoutTemplate, Info, ScanLine, Layers, ArrowRight, Leaf, Settings, Key, Server
 } from "lucide-react";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { useGemini } from '../hooks/useGemini';
@@ -139,6 +139,31 @@ export function Properties() {
   const { trans, language } = useLanguage();
   const isEn = language === 'en';
   const { analyzeStructure, isThinking } = useGemini();
+
+  // AI Settings State
+  const [isAiSettingsOpen, setIsAiSettingsOpen] = useState(false);
+  const [customApiKey, setCustomApiKey] = useState("");
+  const [customBaseUrl, setCustomBaseUrl] = useState("https://api.openai.com");
+  const [customModel, setCustomModel] = useState("gpt-4o");
+
+  React.useEffect(() => {
+    setCustomApiKey(localStorage.getItem('living_structure_openai_key') || '');
+    setCustomBaseUrl(localStorage.getItem('living_structure_openai_base_url') || 'https://api.openai.com');
+    setCustomModel(localStorage.getItem('living_structure_openai_model') || 'gpt-4o');
+  }, []);
+
+  const handleSaveAiSettings = () => {
+    if (customApiKey.trim()) {
+      localStorage.setItem('living_structure_openai_key', customApiKey.trim());
+      localStorage.setItem('living_structure_openai_base_url', customBaseUrl.trim() || 'https://api.openai.com');
+      localStorage.setItem('living_structure_openai_model', customModel.trim() || 'gpt-4o');
+    } else {
+      localStorage.removeItem('living_structure_openai_key');
+      localStorage.removeItem('living_structure_openai_base_url');
+      localStorage.removeItem('living_structure_openai_model');
+    }
+    setIsAiSettingsOpen(false);
+  };
 
   const activeProp = properties.find(p => p.n === activePropId) || properties[0];
 
@@ -410,6 +435,15 @@ export function Properties() {
                         </select>
 
                         <button
+                          onClick={() => setIsAiSettingsOpen(true)}
+                          className="w-12 h-12 flex-shrink-0 bg-stone-900 border border-stone-700 hover:border-amber-500/50 text-stone-400 hover:text-amber-500 rounded-xl flex items-center justify-center transition-all cursor-pointer relative"
+                          title={isEn ? "AI API Settings" : "AI API 设置"}
+                        >
+                          <Settings className="w-5 h-5" />
+                          {customApiKey && <div className="absolute top-2.5 right-2.5 w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.8)]" />}
+                        </button>
+
+                        <button
                           onClick={handleInspireMe}
                           disabled={isGeneratingExample || isThinking}
                           className="w-full sm:w-auto px-8 py-3 bg-amber-500 hover:bg-amber-400 text-stone-950 rounded-xl text-sm font-black tracking-widest uppercase shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-3 disabled:opacity-30 disabled:cursor-not-allowed whitespace-nowrap active:scale-95"
@@ -503,6 +537,90 @@ export function Properties() {
           </div>
         </div>
       </div>
+
+      {/* AI Settings Modal */}
+      <AnimatePresence>
+        {isAiSettingsOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAiSettingsOpen(false)} className="absolute inset-0 bg-stone-950/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-stone-900 border border-stone-700 rounded-3xl shadow-2xl p-8 overflow-hidden">
+              <div className="flex justify-between items-center mb-8 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center">
+                    <Settings className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <h2 className="text-xl font-serif font-bold text-white">{isEn ? 'Custom AI Configuration' : '自定义 AI 配置'}</h2>
+                </div>
+                <button onClick={() => setIsAiSettingsOpen(false)} className="p-2 hover:bg-stone-800 rounded-full transition-colors"><X className="w-5 h-5 text-stone-400" /></button>
+              </div>
+
+              <div className="space-y-6 relative z-10">
+                <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl">
+                  <p className="text-xs text-amber-400/90 leading-relaxed">
+                    {isEn 
+                      ? "By providing your own API key, generations will be directly processed via your account, bypassing built-in proxy limits. Keys are stored locally in your browser."
+                      : "通过提供您自己的 API Key，生成请求将直接通过您的账户处理，解除内置代理的速率限制。密钥仅安全保存在您的本地浏览器缓存中。"}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                    <Key className="w-3 h-3" /> {isEn ? 'OpenAI API Key (or Compatible)' : 'OpenAI API Key (或兼容密钥)'}
+                  </label>
+                  <input 
+                    type="password"
+                    value={customApiKey} 
+                    onChange={e => setCustomApiKey(e.target.value)} 
+                    placeholder="sk-..."
+                    className="w-full px-4 py-3 bg-stone-950 border border-stone-800 rounded-xl focus:ring-2 focus:ring-amber-500/50 outline-none text-sm text-stone-200 transition-all font-mono" 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                    <Server className="w-3 h-3" /> {isEn ? 'Custom Base URL (Optional)' : '自定义接口地址 (可选)'}
+                  </label>
+                  <input 
+                    type="text"
+                    value={customBaseUrl} 
+                    onChange={e => setCustomBaseUrl(e.target.value)} 
+                    placeholder="https://api.openai.com"
+                    className="w-full px-4 py-3 bg-stone-950 border border-stone-800 rounded-xl focus:ring-2 focus:ring-amber-500/50 outline-none text-sm text-stone-200 transition-all font-mono" 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                    <Box className="w-3 h-3" /> {isEn ? 'Model' : '模型'}
+                  </label>
+                  <input 
+                    type="text"
+                    value={customModel} 
+                    onChange={e => setCustomModel(e.target.value)} 
+                    placeholder="gpt-4o"
+                    className="w-full px-4 py-3 bg-stone-950 border border-stone-800 rounded-xl focus:ring-2 focus:ring-amber-500/50 outline-none text-sm text-stone-200 transition-all font-mono" 
+                  />
+                </div>
+              </div>
+
+              <div className="mt-10 flex gap-4 relative z-10">
+                <button 
+                  onClick={() => { setCustomApiKey(''); setCustomBaseUrl('https://api.openai.com'); setCustomModel('gpt-4o'); }} 
+                  className="px-6 py-3 bg-stone-800 text-stone-300 hover:bg-stone-700 rounded-xl font-bold text-xs transition-all"
+                >
+                  {isEn ? 'Clear' : '清除并使用默认'}
+                </button>
+                <button 
+                  onClick={handleSaveAiSettings} 
+                  className="flex-1 py-3 bg-amber-500 text-stone-950 hover:bg-amber-400 rounded-xl font-bold text-xs transition-all shadow-lg shadow-amber-500/20 active:scale-[0.98]"
+                >
+                  {isEn ? 'Save Configuration' : '保存配置'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
