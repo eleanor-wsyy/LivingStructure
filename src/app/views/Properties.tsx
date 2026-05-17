@@ -486,8 +486,8 @@ export function Properties() {
                               <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent opacity-60" />
                               <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-8 h-8 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center">
-                                    <Layers className="w-4 h-4 text-white" />
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D07658] shadow-sm text-white overflow-hidden">
+                                    <img src="/logo.png" className="h-full w-full object-contain p-1 invert mix-blend-screen" alt="logo" />
                                   </div>
                                   <span className="text-xs text-white font-bold uppercase tracking-widest">Visual Reconstruction</span>
                                 </div>
