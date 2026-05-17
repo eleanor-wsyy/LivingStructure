@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Badge } from "@/app/components/ui";
 import { 
   ArrowRight, BookOpen, ScanEye, PenTool, 
-  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User, X, Microscope, Box, Leaf
+  Sparkles, Quote, CheckCircle2, ChevronRight, MousePointer2, User, X, Microscope, Box, Leaf, Heart, Code, Layers, Brain
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion"; 
 import { useLanguage } from "@/app/i18n/LanguageContext";
@@ -337,6 +337,124 @@ const BookLaunchExperiment = () => {
 };
 
 
+const MatrixOfWholeness = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
+  const { language } = useLanguage();
+  const isEn = language === 'en';
+
+  const cols = [
+    { id: 'living', en: 'Living', zh: '生命力 (主观体验)' },
+    { id: 'structure', en: 'Structure', zh: '客观结构 (几何模式)' },
+    { id: 'living-structure', en: 'Living Structure', zh: '活力结构 (主客统一)' },
+  ];
+
+  const rows = [
+    { id: 'having', en: 'Having (Observing)', zh: '观测与拥有 (认知)' },
+    { id: 'creating', en: 'Creating (Generating)', zh: '创造与生成 (实践)' },
+    { id: 'being', en: 'Being (Embodying)', zh: '存在与化身 (内化)' },
+  ];
+
+  const matrix = [
+    [ // Having
+      { titleEn: 'Feeling Wholeness', titleZh: '感受整体性', descEn: 'Developing an empirical sense of life (Mirror of the Self).', descZh: '培养对“生命力”的实证感知（自我之镜）。', action: 'theory', icon: Heart },
+      { titleEn: 'Observing Patterns', titleZh: '观察客观模式', descEn: 'Measuring 15 properties & calculating L-Scores.', descZh: '识别客观模式，测算15个属性与L得分。', action: 'theory', icon: Microscope },
+      { titleEn: 'Cognitive Architecture', titleZh: '双脑共振', descEn: 'Connecting inner feeling with outer geometry.', descZh: '联结内在感受与外在几何，完成主客统一。', action: 'theory', icon: Brain }
+    ],
+    [ // Creating
+      { titleEn: 'Intuitive Design', titleZh: '直觉设计', descEn: 'Healing environments to heal our own fragmented selves.', descZh: '通过疗愈物理环境来治愈我们自己内心的破碎。', action: 'practice', icon: PenTool },
+      { titleEn: 'Generative Processes', titleZh: '生成过程', descEn: 'Applying algorithms to unfold complex nested substructures.', descZh: '应用生成算法，自下而上地展开复杂的嵌套子结构。', action: 'practice', icon: Code },
+      { titleEn: 'Bringing Life to Space', titleZh: '赋予空间生命', descEn: 'Creating places where people feel most profoundly human.', descZh: '为空间注入真正的生命，创造让人回归人性的庇护所。', action: 'construct', icon: Sparkles }
+    ],
+    [ // Being
+      { titleEn: 'Embodying Wholeness', titleZh: '化身为整体', descEn: 'Living in deep harmony with nature and inner self.', descZh: '达到与自然以及内在自我的深度和谐。', action: 'community', icon: Leaf },
+      { titleEn: 'The Cosmic Network', titleZh: '融入宇宙网络', descEn: 'Becoming an active part of the larger structural whole.', descZh: '打破个体孤立，成为更大整体结构中不可或缺的一部分。', action: 'community', icon: Box },
+      { titleEn: 'Non-Separateness', titleZh: '非分离性', descEn: 'The ultimate unity of the creator, the self, and the environment.', descZh: '创造者、自我与物理环境的终极合一，达到天人合一。', action: 'community', icon: Layers }
+    ]
+  ];
+
+  return (
+    <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
+      <div className="text-center mb-16">
+        <Badge variant="outline" className="mb-4 border-teal-500/50 text-teal-600 bg-teal-50 uppercase tracking-widest px-4 py-1.5 rounded-full font-bold">
+           {isEn ? "The Journey of Wholeness" : "整体性的进阶旅程"}
+        </Badge>
+        <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-4">
+          {isEn ? "The Matrix of Living Structure" : "活力结构 3×3 矩阵"}
+        </h2>
+        <p className="text-muted-foreground text-base md:text-lg font-serif max-w-2xl mx-auto italic">
+          {isEn 
+            ? "A profound intersection of ontology (What is it?) and developmental practice (How do we live it?)." 
+            : "本体论（它是何物？）与发展实践（如何活出它？）的深刻交汇。"}
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+        <div className="hidden md:flex flex-col gap-4 mt-12 w-48 shrink-0 justify-around">
+          {rows.map((row, i) => (
+            <div key={i} className="h-40 flex items-center justify-end pr-4 text-right">
+              <h3 className="font-serif font-bold text-lg text-stone-700">{isEn ? row.en : row.zh}</h3>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex-1">
+          <div className="hidden md:grid grid-cols-3 gap-4 mb-4">
+            {cols.map((col, i) => (
+              <div key={i} className="text-center">
+                <h3 className="font-serif font-bold text-lg text-stone-700">{isEn ? col.en : col.zh}</h3>
+              </div>
+            ))}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {matrix.map((row, rowIndex) => (
+              <React.Fragment key={rowIndex}>
+                <div className="md:hidden col-span-1 mt-8 mb-2">
+                  <h3 className="font-serif font-bold text-xl text-stone-700 border-b border-border pb-2">
+                    {isEn ? rows[rowIndex].en : rows[rowIndex].zh}
+                  </h3>
+                </div>
+                
+                {row.map((cell, colIndex) => {
+                  const Icon = cell.icon;
+                  return (
+                    <div 
+                      key={`${rowIndex}-${colIndex}`}
+                      className="group h-40 bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col justify-center cursor-pointer"
+                      onClick={() => onNavigate(cell.action)}
+                    >
+                      <div className="absolute inset-0 bg-stone-900 text-white p-6 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out flex flex-col justify-between">
+                        <div>
+                          <h4 className="font-bold text-lg mb-2">{isEn ? cell.titleEn : cell.titleZh}</h4>
+                          <p className="text-sm text-stone-300 leading-relaxed">{isEn ? cell.descEn : cell.descZh}</p>
+                        </div>
+                        <div className="text-xs uppercase tracking-widest text-teal-400 font-bold flex items-center gap-1">
+                          {isEn ? 'Explore Module' : '探索对应模块'} <ArrowRight className="w-3 h-3" />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center text-center transition-opacity duration-300 group-hover:opacity-0">
+                        <div className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center mb-3 text-stone-500">
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <h4 className="font-serif font-bold text-foreground">
+                          {isEn ? cell.titleEn : cell.titleZh}
+                        </h4>
+                        <span className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2 md:hidden">
+                          {isEn ? cols[colIndex].en : cols[colIndex].zh}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // --- Main Page Component ---
 
 export function Discover({ onNavigate }: DiscoverProps) {
@@ -446,7 +564,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </div>
       </section>
 
-      {/* 4. Theory Founders */}
+      {/* 4. Matrix of Wholeness */}
+      <MatrixOfWholeness onNavigate={onNavigate} />
+
+      {/* 5. Theory Founders */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto mb-32 space-y-20">
         <div className="text-center mb-16">
           <h2 className="text-3xl font-serif font-bold text-foreground">
@@ -473,7 +594,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         />
       </section>
 
-      {/* 5. Quick Start Dashboard */}
+      {/* 6. Quick Start Dashboard */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto mb-32">
         <div className="flex items-center gap-4 mb-12">
           <div className="h-px bg-muted flex-1" />
@@ -489,10 +610,10 @@ export function Discover({ onNavigate }: DiscoverProps) {
         </div>
       </section>
 
-      {/* 6. Progress Indicator */}
+      {/* 7. Progress Indicator */}
       <ProgressIndicator />
 
-      {/* 7. Featured Concept */}
+      {/* 8. Featured Concept */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16 flex items-baseline justify-between">
            <h2 className="text-3xl font-serif font-bold text-foreground">
@@ -505,7 +626,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         <FeaturedConcept onNavigate={onNavigate} />
       </section>
 
-      {/* 8. Interactive Preview */}
+      {/* 9. Interactive Preview */}
       <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="mb-16">
            <h2 className="text-3xl font-serif font-bold text-foreground">
@@ -518,7 +639,7 @@ export function Discover({ onNavigate }: DiscoverProps) {
         <InteractivePreview />
       </section>
 
-      {/* 9. Footer Quote */}
+      {/* 10. Footer Quote */}
       <section className="border-t border-border bg-card py-24 text-center mt-12">
         <div className="max-w-3xl mx-auto px-4">
           <Quote className="h-6 w-6 text-stone-300 mx-auto mb-8" />
