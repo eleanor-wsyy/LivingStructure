@@ -361,9 +361,20 @@ export function Discover({ onNavigate }: DiscoverProps) {
             {isEn ? "Healing Mirror" : "愈合之镜"}
           </h1>
           
-          <h2 className="text-xl md:text-2xl font-serif text-muted-foreground mb-10 italic">
+          <h2 className="text-xl md:text-2xl font-serif text-muted-foreground mb-6 italic">
             {isEn ? "Quantifying the life of space, awakening inner wholeness." : "量化空间的生命力，照见内心的整体性。"}
           </h2>
+
+          <div className="bg-stone-50/80 border-l-4 border-teal-600/60 py-4 px-6 max-w-3xl mx-auto mb-10 rounded-r-2xl inline-block text-left backdrop-blur-sm shadow-sm">
+            <p className="text-base md:text-lg text-stone-800 font-serif italic flex items-start gap-3">
+              <Quote className="w-5 h-5 text-teal-600/40 shrink-0 mt-1" />
+              <span>
+                {isEn
+                  ? "A digital window and analytical filter through which 'The Nature of Order' is to be interrogated, studied, and examined."
+                  : "一扇数字之窗，一层分析滤镜——借此透视、审视并深入探索《秩序的本质》。"}
+              </span>
+            </p>
+          </div>
           
           <p className="text-base md:text-lg text-muted-foreground font-light leading-relaxed max-w-3xl mx-auto mb-12 text-justify md:text-center">
             {isEn
