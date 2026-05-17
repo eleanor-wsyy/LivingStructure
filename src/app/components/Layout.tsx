@@ -3,7 +3,7 @@ import { Button, Input } from "@/app/components/ui";
 import { 
   Search, Menu, X, Globe, User, Home, BookOpen, BarChart3, 
   PenTool, Layout as LayoutIcon, Library as LibraryIcon, 
-  Users, ChevronUp, Settings, LogOut, ShieldCheck, Camera, Building, Upload, Sparkles
+  Users, ChevronUp, Settings, LogOut, ShieldCheck, Camera, Building, Upload, Sparkles, Layers
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/app/components/ui";
@@ -235,8 +235,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
       <aside className="hidden w-64 flex-col border-r border-border bg-card/60 backdrop-blur-sm md:flex z-20 shadow-sm">
         <div className="flex h-16 items-center border-b border-border/50 px-6">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => onNavigate("discover")}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-border/50 shadow-sm overflow-hidden">
-              <img src="/logo.png" className="h-full w-full object-contain p-1" alt="logo" onError={(e) => (e.currentTarget.style.display = 'none')} />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D07658] shadow-sm text-white overflow-hidden">
+              <img src="/logo.png" className="h-full w-full object-contain p-1 invert mix-blend-screen" alt="logo" onError={(e) => (e.currentTarget.style.display = 'none')} />
             </div>
             <span className="text-lg font-bold tracking-tight text-foreground font-serif">{isEn ? 'Living Structure' : '活力结构'}</span>
           </div>
@@ -265,8 +265,8 @@ export function Layout({ children, currentPage, onNavigate }: LayoutProps) {
       <div className="flex flex-1 flex-col overflow-hidden relative" style={{ backgroundColor: 'rgba(250, 249, 245, 0.90)' }}>
         <header className="flex h-14 items-center justify-between border-b border-border bg-card/90 backdrop-blur-md px-4 md:hidden z-30 relative shadow-sm">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded bg-white border border-border/50 shadow-sm overflow-hidden">
-              <img src="/logo.png" className="h-full w-full object-contain p-1" alt="logo" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#D07658] shadow-sm text-white overflow-hidden">
+              <img src="/logo.png" className="h-full w-full object-contain p-1 invert mix-blend-screen" alt="logo" />
             </div>
             <span className="font-bold text-foreground">{isEn ? 'Living Structure' : '活力结构'}</span>
           </div>
