@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/app/i18n/LanguageContext";
 import { supabase } from "@/app/lib/supabase";
 import { createPortal } from 'react-dom';
+import { LivingImagesCalculator } from "@/app/components/LivingImagesCalculator";
 
 interface Message {
   id: string;
@@ -632,6 +633,12 @@ export function Practice() {
           </div>
 
         </div>
+
+        {/* Living Images Calculator Section */}
+        <div className="mt-20">
+          <LivingImagesCalculator />
+        </div>
+
       </div>
 
       <AnimatePresence>
