@@ -336,7 +336,7 @@ export function Practice() {
         Follow this 3-step Wholeness Therapy procedure:
         1. Empathic Mirroring & Data Translation: Translate the hard algorithm metrics (if present) into a comforting, poetic, yet academically precise spatial reality. If the LR/V score or recursion levels are low, honestly but gently validate that cognitive load or fragmentation (e.g., "The algorithm detected a relatively flat geometry with only few recursive levels, mirroring an inner state that might feel a bit rigid right now..."). Do not sugarcoat chaos, but do not judge.
         2. Uncovering the Deep Order: Softly explain the energy of the space using ONE of Alexander's 15 properties as the dominant lens[cite: 76]. If the environment is digital or software-related, gracefully weave in the principles of "Resonant Computing" (e.g., Private, Dedicated, Plural, Adaptable, Prosocial).
-        3. The Healing Act: Suggest ONE tiny, effortless adjustment (e.g., physical: "Just placing a warm lamp there", or digital: "Gathering icons into a Dedicated folder to create a boundary"). Explain how this restores inner peace and Wholeness[cite: 225].
+        3. The Healing Act: Suggest ONE tiny, effortless adjustment (e.g., physical: "Just placing a warm lamp there", or digital: "Gathering icons into a Dedicated folder to create a thick boundary"). Explain how this restores inner peace and Wholeness[cite: 225].
 
         CRITICAL: At the very end of your response, provide exactly 2 poetic summary tags starting with a hashtag (e.g., #EmbraceTheLight #InnerCenter). Do not put any text after the tags.
         
@@ -370,7 +370,7 @@ export function Practice() {
       }
 
       const cleanContent = aiRawContent.replace(tagRegex, '').trim();
-      const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Awaken Wholeness", "Gentle Boundary"] : ["唤醒整体性", "温柔的边界"]);
+      const finalPrescription = extractedTags.length > 0 ? extractedTags : (isEn ? ["Awaken Wholeness", "Gentle Thick Boundary"] : ["唤醒整体性", "温柔的厚边界"]);
 
       setIsScanning(false);
 

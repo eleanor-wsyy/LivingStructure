@@ -18,14 +18,14 @@ export const translations = {
       steps: {
         1: "Center",
         2: "Scale",
-        3: "Boundary",
+        3: "Thick Boundary",
         4: "Symmetry",
         5: "Interlock",
         6: "Reflection"
       },
       controls: {
         addCenter: "Choose a Center",
-        addBoundary: "Add Boundary",
+        addBoundary: "Add Thick Boundary",
         scaleContrast: "Scale Contrast",
         applySymmetry: "Apply Symmetry",
         vitalityRating: "Perceived Vitality",
@@ -45,7 +45,7 @@ export const translations = {
       },
       hints: {
         scale: "Consider stronger scale contrast (1:2.7 ratio).",
-        boundary: "The structure lacks a clear boundary.",
+        boundary: "The structure lacks a clear thick boundary.",
         center: "You may introduce a secondary center.",
         symmetry: "Local symmetries strengthen the whole."
       }
@@ -118,7 +118,7 @@ export const translations = {
       attributes: {
         1: { name: "Levels of Scale", description: "A balanced hierarchy of sizes." },
         2: { name: "Strong Centers", description: "Focal points that organize space." },
-        3: { name: "Boundaries", description: "Thick, connecting edges." },
+        3: { name: "Thick Boundaries", description: "Thick, connecting edges." },
         4: { name: "Alternating Repetition", description: "Rhythmic patterns with variation." },
         5: { name: "Positive Space", description: "Space as a distinct shape, not just leftover." },
         6: { name: "Good Shape", description: "Simple, elementary geometric forms." },
@@ -203,7 +203,7 @@ export const translations = {
       controls: {
         depth: "Hierarchical Depth",
         center: "Center Strength",
-        boundary: "Boundary Clarity"
+        boundary: "Thick Boundary Clarity"
       },
       insight: "As structure deepens, vitality increases.",
       insightSub: "Order is not imposed — it emerges.",
@@ -243,14 +243,14 @@ export const translations = {
       steps: {
         1: "中心",
         2: "尺度",
-        3: "边界",
+        3: "厚边界",
         4: "对称",
         5: "交织",
         6: "映射"
       },
       controls: {
         addCenter: "选择中心",
-        addBoundary: "添加边界",
+        addBoundary: "添加厚边界",
         scaleContrast: "尺度对比",
         applySymmetry: "应用对称",
         vitalityRating: "感知活力",
@@ -270,7 +270,7 @@ export const translations = {
       },
       hints: {
         scale: "考虑更强的尺度对比 (1:2.7 比例)。",
-        boundary: "结构缺乏清晰的边界。",
+        boundary: "结构缺乏清晰的厚边界。",
         center: "你可以引入一个次级中心。",
         symmetry: "局部对称增强整体性。"
       }
@@ -343,7 +343,7 @@ export const translations = {
       attributes: {
         1: { name: "尺度层级 (Levels of Scale)", description: "大小的平衡层级。" },
         2: { name: "强中心 (Strong Centers)", description: "组织空间的焦点。" },
-        3: { name: "边界 (Boundaries)", description: "厚实的连接边缘。" },
+        3: { name: "厚边界 (Thick Boundaries)", description: "厚实的连接边缘。" },
         4: { name: "交替重复 (Alternating Repetition)", description: "带有变化的节奏模式。" },
         5: { name: "正空间 (Positive Space)", description: "空间本身具有清晰形状，而不仅是剩余部分。" },
         6: { name: "好形状 (Good Shape)", description: "简单、基本的几何形式。" },
@@ -428,7 +428,7 @@ export const translations = {
       controls: {
         depth: "层级深度",
         center: "中心强度",
-        boundary: "边界清晰度"
+        boundary: "厚边界清晰度"
       },
       insight: "随着结构加深，活力增强。",
       insightSub: "秩序不是强加的——它是涌现的。",
